@@ -1,6 +1,6 @@
 import os
 
-from discord import Game
+import discord
 
 from bot import Bot
 
@@ -13,7 +13,8 @@ extensions = [
 bot = Bot(
     extensions,
     command_prefix=PREFIX,
-    activity=Game(name=f"{PREFIX}help | Listening to coders!"),
+    intents=discord.Intents.all(),
+    activity=discord.Game(name=f"{PREFIX}help | Listening to coders!"),
     case_insensitive=True,
 )
 
