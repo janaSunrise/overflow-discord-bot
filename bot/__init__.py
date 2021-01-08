@@ -23,7 +23,7 @@ class Bot(AutoShardedBot):
                 self.load_extension(extension)
                 print(f"Cog {extension} loaded.")
             except Exception as e:
-                print(f"Cog {extension} failed to load with {type(e)}: {e}")
+                print(f"Cog {extension} failed to load with {type(e)}: {e!r}")
 
     async def on_ready(self) -> None:
         if self.initial_call:

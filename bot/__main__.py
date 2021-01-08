@@ -7,13 +7,17 @@ from bot import Bot
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = "="
 extensions = [
-    "cogs.overflow"
+    "bot.cogs.overflow"
 ]
+
+intents = discord.Intents.all()
+intents.presences = False
+intents.members = False
 
 bot = Bot(
     extensions,
     command_prefix=PREFIX,
-    intents=discord.Intents.all(),
+    intents=intents,
     activity=discord.Game(name=f"{PREFIX}help | Listening to coders!"),
     case_insensitive=True,
 )
