@@ -11,8 +11,11 @@ invoke it using `=help`
 ### Developement / Contributing
 
 If you're interested in growing this project further,
-Add a .env file based on .env.example file. Grab your StackExchange key 
-from http://stackapps.com/
+Add a .env file based on .env.example file. And add the following things:
+
+- Grab your StackExchange key from http://stackapps.com/
+- A lavalink node for the music cog
+- And, Openweathermap API Key for the weather stuff.
 
 ### Creating the bot on Discord
 
@@ -35,7 +38,7 @@ from http://stackapps.com/
 ### Features planned:
 
 - [x] Stackoverflow search.
-- [ ] Music.
+- [x] Music.
 - [ ] Hacker news.
 - [ ] Scheduled hacker news on guild basis.
 - [ ] Code execution.
