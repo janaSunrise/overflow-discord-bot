@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord.utils import escape_mentions
 from aiohttp import ContentTypeError
 
+from bot import Bot
 from bot.utils.codeswap import add_boilerplate
 from bot.utils.errors import PistonInvalidContentType, PistonInvalidStatus, PistonNoOutput
 
@@ -18,7 +19,7 @@ class RunIO:
 
 
 class Run(commands.Cog, name='CodeExecution'):
-    def __init__(self, client):
+    def __init__(self, client: Bot) -> None:
         self.client = client
         self.languages = {
             'asm': 'nasm',
@@ -82,31 +83,6 @@ class Run(commands.Cog, name='CodeExecution'):
             r'(?s)/(?:edit_last_)?run(?: +(?P<language>\S*)\s*|\s*)(?:\n(?P<args>(?:[^\n\r\f\v]*\n)*?)\s*|\s*)```(?:(?P<syntax>\S+)\n\s*|\s*)(?P<source>.*)```'
         )
 
-    async def send_to_log(self, ctx, language, source):
-        logging_data = {
-            'server': ctx.guild.name if ctx.guild else 'DMChannel',
-            'server_id': str(ctx.guild.id) if ctx.guild else '0',
-            'user': f'{ctx.author.name}#{ctx.author.discriminator}',
-            'user_id': str(ctx.author.id),
-            'language': language,
-            'source': source
-        }
-        headers = {'Authorization': self.client.config["emkc_key"]}
-
-        async with self.client.session.post(
-            'https://emkc.org/api/internal/piston/log',
-            headers=headers,
-            data=json.dumps(logging_data)
-        ) as response:
-            if response.status != 200:
-                await self.client.log_error(
-                    commands.CommandError(f'Error sending log. Status: {response.status}'),
-                    ctx
-                )
-                return False
-
-        return True
-
     async def get_run_output(self, ctx):
         if ctx.message.content.count('```') != 2:
             raise commands.BadArgument('Invalid command format (missing codeblock?)')
@@ -152,8 +128,6 @@ class Run(commands.Cog, name='CodeExecution'):
         if r['output'] is None:
             raise PistonNoOutput()
 
-        # Logging
-        await self.send_to_log(ctx, language, source)
 
         # Return early if no output was received
         if len(r['output']) == 0:
@@ -196,7 +170,7 @@ class Run(commands.Cog, name='CodeExecution'):
     async def delete(self, ctx):
         """
         Delete the most recent output message you caused
-        Type "/run" or "/help" for instructions
+        Type "/run" or "/eval-help" for instructions
         """
         await self.delete_last_output(ctx.author.id)
 
@@ -204,7 +178,7 @@ class Run(commands.Cog, name='CodeExecution'):
     async def run(self, ctx, *, source=None):
         """
         Run some code
-        Type "/run" or "/help" for instructions
+        Type "/run" or "/eval-help" for instructions
         """
         await ctx.trigger_typing()
         if not source:
@@ -234,7 +208,6 @@ class Run(commands.Cog, name='CodeExecution'):
         except KeyError:
             return
         except discord_errors.NotFound:
-            # Message no longer exists in discord
             del self.run_IO_store[ctx.author.id]
             return
         except commands.BadArgument as error:
@@ -297,15 +270,14 @@ class Run(commands.Cog, name='CodeExecution'):
         )
 
         embed = Embed(
-            title='I can execute code right here in Discord! (click here for instructions)',
+            title='I can execute code right here in Discord!',
             description=run_instructions,
-            url='https://github.com/engineer-man/piston-bot#how-to-use',
             color=0x2ECC71
         )
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='help')
+    @commands.command(name='eval-help')
     async def send_help(self, ctx):
         await self.send_howto(ctx)
 

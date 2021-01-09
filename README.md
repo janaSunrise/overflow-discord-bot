@@ -40,9 +40,4 @@ from http://stackapps.com/
 - [ ] Scheduled hacker news on guild basis.
 - [ ] Code execution.
 
-### Credits
-
-Credits for the code execution and the API requests goes to [Engineer Man](https://github.com/engineer-man)
-and [his repo](https://github.com/engineer-man/piston) for safe code eval without any issues.
-
 Made by Sunrit Jana with <3

@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 py-stackexchange = "*"
+discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-ext-menus"}
 
 [dev-packages]
 
