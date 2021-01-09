@@ -41,6 +41,6 @@ Add a .env file based on .env.example file. And add the following things:
 - [x] Music.
 - [ ] Hacker news.
 - [ ] Scheduled hacker news on guild basis.
-- [ ] Searching.
+- [x] Searching.
 
 Made by Sunrit Jana with <3
