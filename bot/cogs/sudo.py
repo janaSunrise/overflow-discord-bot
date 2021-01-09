@@ -95,7 +95,7 @@ class Sudo(Cog):
         embed.add_field(name="**❯❯ System**", value=system, inline=True)
 
         embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text=f"Made by Sunrit Jana.")
+        embed.set_footer(text=f"Made by {config.creator}.")
 
         await ctx.send(embed=embed)
 
