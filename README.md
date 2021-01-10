@@ -42,5 +42,6 @@ Add a .env file based on .env.example file. And add the following things:
 - [ ] Hacker news.
 - [ ] Scheduled hacker news on guild basis.
 - [x] Searching.
+- [ ] Code evaluation.
 
 Made by Sunrit Jana with <3

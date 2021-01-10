@@ -7,6 +7,7 @@ from bot import Bot
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = "="
 extensions = [
+    "bot.cogs.hackernews",
     "bot.cogs.help",
     "bot.cogs.music",
     "bot.cogs.overflow",

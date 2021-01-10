@@ -2,6 +2,7 @@ import typing as t
 from datetime import datetime
 
 import aiohttp
+import aiosqlite
 from discord.ext.commands import AutoShardedBot
 
 
@@ -15,6 +16,23 @@ class Bot(AutoShardedBot):
 
         self.extension_list = extensions
         self.initial_call = True
+
+        self.db = None
+
+    async def init_db(self) -> None:
+        commands = [
+            """
+            CREATE TABLE IF NOT EXISTS newsfeed (
+                guild_id INTEGER NOT NULL UNIQUE,
+                channel_id INTEGER NOT NULL UNIQUE
+            )
+            """
+        ]
+        self.db = await aiosqlite.connect("overflow-bot.db")
+
+        for command in commands:
+            await self.db.execute(command)
+            await self.db.commit()
 
     async def load_extensions(self) -> None:
         """Load all listed cogs."""
@@ -42,6 +60,7 @@ class Bot(AutoShardedBot):
 
     async def start(self, *args, **kwargs) -> None:
         self.session = aiohttp.ClientSession()
+        await self.init_db()
         await super().start(*args, **kwargs)
 
     async def close(self) -> None:

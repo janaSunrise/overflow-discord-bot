@@ -9,6 +9,7 @@ discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-e
 wavelink = "*"
 "discord.py" = {extras = ["voice"], version = "*"}
 html2text = "*"
+aiosqlite = "*"
 
 [dev-packages]
 
