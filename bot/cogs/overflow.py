@@ -24,6 +24,9 @@ class Overflow(commands.Cog):
 
     @commands.command(aliases=["overflow", "stack", "stacksearch"])
     async def stackoverflow(self, ctx, *, query: str) -> None:
+        """
+        Search stackoverflow for a query.
+        """
         try:
             qs = self.so.search(intitle=query, sort=Sort.Votes, order=DESC)
         except UnicodeEncodeError:

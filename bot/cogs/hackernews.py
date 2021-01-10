@@ -44,6 +44,9 @@ class HackerNews(commands.Cog):
 
     @commands.command(name="new-stories")
     async def new_stories(self, ctx: commands.Context, count: int = 5) -> None:
+        """
+        Get all the newest and fresh hacker news.
+        """
         if not 1 < count < 20:
             await ctx.send(":x: You cannot view more than 20 Stories or less than 2!")
 
@@ -57,6 +60,9 @@ class HackerNews(commands.Cog):
 
     @commands.command(name="top-stories")
     async def top_stories(self, ctx: commands.Context, count: int = 5) -> None:
+        """
+        Get all the trending hacker news.
+        """
         if not 1 < count < 20:
             await ctx.send(":x: You cannot view more than 20 Stories or less than 2!")
 
@@ -70,6 +76,9 @@ class HackerNews(commands.Cog):
 
     @commands.command()
     async def subscribe(self, ctx: commands.Context, channel: t.Optional[discord.TextChannel] = None) -> None:
+        """
+        Subscribe to the scheduled hacker news feed.
+        """
         if not channel:
             await ctx.send("Please specify a channel to send the feed!")
             return
@@ -87,6 +96,9 @@ class HackerNews(commands.Cog):
 
     @commands.command()
     async def unsubscribe(self, ctx: commands.Context) -> None:
+        """
+        Unsubscribe from the scheduled hacker news feed.
+        """
         async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
             row = await cursor.fetchone()
 

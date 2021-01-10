@@ -66,7 +66,7 @@ class Player(wavelink.Player):
         if self.is_playing or self.waiting:
             return
 
-        # Clear the votes for a new song...
+        # Clear the votes for a new song.
         self.pause_votes.clear()
         self.resume_votes.clear()
         self.skip_votes.clear()
@@ -78,13 +78,13 @@ class Player(wavelink.Player):
             with async_timeout.timeout(300):
                 track = await self.queue.get()
         except asyncio.TimeoutError:
-            # No music has been played for 5 minutes, cleanup and disconnect...
+            # No music has been played for 5 minutes, cleanup and disconnect.
             return await self.teardown()
 
         await self.play(track)
         self.waiting = False
 
-        # Invoke our players controller...
+        # Invoke our players controller.
         await self.invoke_controller()
 
     async def invoke_controller(self) -> None:
@@ -291,13 +291,12 @@ class PaginatorSource(menus.ListPageSource):
         return embed
 
     def is_paginating(self):
-        # We always want to embed even on 1 page of results...
+        # We always want to embed even on 1 page of results.
         return True
 
 
 class Music(commands.Cog, wavelink.WavelinkMixin):
     """Music Cog."""
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -380,7 +379,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         return True
 
     async def cog_before_invoke(self, ctx: commands.Context):
-        """Coroutine called before command invocation.
+        """
+        Coroutine called before command invocation.
 
         We mainly just want to check whether the user is in the players controller channel.
         """
@@ -527,6 +527,14 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command()
     async def repeat(self, ctx, mode: str):
+        """
+        Repeat one or more songs.
+
+        MODES:
+        - None (stop repeat)
+        - 1
+        - all
+        """
         if mode not in ("none", "1", "all"):
             raise InvalidRepeatMode
 

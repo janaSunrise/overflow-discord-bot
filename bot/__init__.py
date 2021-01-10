@@ -20,6 +20,7 @@ class Bot(AutoShardedBot):
         self.db = None
 
     async def init_db(self) -> None:
+        """Initialize the database."""
         commands = [
             """
             CREATE TABLE IF NOT EXISTS newsfeed (
@@ -53,12 +54,14 @@ class Bot(AutoShardedBot):
             print("Bot connection reinitialized")
 
     def run(self, token: t.Optional[str]) -> None:
+        """Run the bot and add missing token check."""
         if not token:
             print("Missing Bot Token!")
         else:
             super().run(token)
 
     async def start(self, *args, **kwargs) -> None:
+        """Starts the bot."""
         self.session = aiohttp.ClientSession()
         await self.init_db()
         await super().start(*args, **kwargs)
