@@ -14,7 +14,7 @@ NEWS_URL = "https://hacker-news.firebaseio.com/v0/"
 class HackerNews(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.send_feed.start()
+        # self.send_feed.start()
 
     def cog_unload(self):
         self.send_feed.cancel()
@@ -127,13 +127,7 @@ class HackerNews(commands.Cog):
                 print(f"Sending to {channel}")
                 channel = self.bot.get_channel(channel)
                 await channel.send("Here's your feed :tada:")
-                # await EmbedPages(article_embeds).start(channel)
-
-    @commands.command()
-    async def test(self, ctx) -> None:
-        async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
-            rows = [row[1] for row in (await cursor.fetchall())]
-        await ctx.send(rows)
+                await EmbedPages(article_embeds).start(channel)
 
 
 def setup(bot: Bot) -> None:
