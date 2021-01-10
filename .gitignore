@@ -6,3 +6,7 @@ __pycache__/
 
 .env
 TODO
+
+*.sqlite3
+*.sqlite
+*.db

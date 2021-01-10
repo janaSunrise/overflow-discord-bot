@@ -14,6 +14,10 @@ NEWS_URL = "https://hacker-news.firebaseio.com/v0/"
 class HackerNews(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.send_feed.start()
+
+    def cog_unload(self):
+        self.send_feed.cancel()
 
     async def _generate_embeds(self, article_numbers: list) -> list:
         article_embeds = []
@@ -68,12 +72,13 @@ class HackerNews(commands.Cog):
     async def subscribe(self, ctx: commands.Context, channel: t.Optional[discord.TextChannel] = None) -> None:
         if not channel:
             await ctx.send("Please specify a channel to send the feed!")
+            return
 
-        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", ctx.guild.id) as cursor:
+        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
             row = await cursor.fetchone()
 
         if not row:
-            await self.bot.db.execute("INSERT INTO newsfeed VALUES (?, ?)", ctx.guild.id, channel.id)
+            await self.bot.db.execute("INSERT INTO newsfeed VALUES (?, ?)", (ctx.guild.id, channel.id))
             await self.bot.db.commit()
 
             await ctx.send("Congrats :tada: You're now subscribed to the feed!")
@@ -82,19 +87,19 @@ class HackerNews(commands.Cog):
 
     @commands.command()
     async def unsubscribe(self, ctx: commands.Context) -> None:
-        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", ctx.guild.id) as cursor:
+        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
             row = await cursor.fetchone()
 
         if not row:
-            await self.bot.db.execute("DELETE from newsfeed WHERE guild_id=?", ctx.guild.id)
-            await self.bot.db.commit()
-
             await ctx.send(":x: You're already unsubscribed from the feed!")
         else:
+            await self.bot.db.execute("DELETE FROM newsfeed where guild_id=?", (ctx.guild.id,))
+            await self.bot.db.commit()
+
             await ctx.send("Aww :( We hate to see you unsubscribe from the feed!")
 
     # @tasks.loop(hours=24)
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=5.0)
     async def send_feed(self) -> None:
         async with self.bot.session.get(NEWS_URL + "topstories.json") as resp:
             data = await resp.json()
@@ -103,11 +108,20 @@ class HackerNews(commands.Cog):
         article_embeds = await self._generate_embeds(article_numbers)
 
         async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
-            channels = [row["channel_id"] for row in await cursor.fetchall()]
+            channels = [row[1] for row in (await cursor.fetchall())]
+            print(channels)
 
             for channel in channels:
+                print(f"Sending to {channel}")
                 channel = self.bot.get_channel(channel)
-                await EmbedPages(article_embeds).start(channel)
+                await channel.send("Here's your feed :tada:")
+                # await EmbedPages(article_embeds).start(channel)
+
+    @commands.command()
+    async def test(self, ctx) -> None:
+        async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
+            rows = [row[1] for row in (await cursor.fetchall())]
+        await ctx.send(rows)
 
 
 def setup(bot: Bot) -> None:
