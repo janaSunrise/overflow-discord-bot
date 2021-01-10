@@ -467,8 +467,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 track = Track(track.id, track.info, requester=ctx.author)
                 await player.queue.put(track)
 
-            await ctx.send(f'```ini\nAdded the playlist {tracks.data["playlistInfo"]["name"]}'
-                           f' with {len(tracks.tracks)} songs to the queue.\n```', delete_after=15)
+            await ctx.send(
+                f'```ini\nAdded the playlist {tracks.data["playlistInfo"]["name"]}'
+                f' with {len(tracks.tracks)} songs to the queue.\n```', delete_after=15
+            )
         else:
             track = Track(tracks[0].id, tracks[0].info, requester=ctx.author)
             await ctx.send(f'```ini\nAdded {track.title} to the Queue\n```', delete_after=15)
@@ -530,10 +532,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         """
         Repeat one or more songs.
 
-        MODES:
-        - None (stop repeat)
-        - 1
-        - all
+        **MODES**:
+            - `none` (stop repeat)
+            - `1`
+            - `all`
         """
         if mode not in ("none", "1", "all"):
             raise InvalidRepeatMode
