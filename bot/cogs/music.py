@@ -110,7 +110,7 @@ class Player(wavelink.Player):
         channel = self.bot.get_channel(int(self.channel_id))
         qsize = self.queue.qsize()
 
-        embed = discord.Embed(title=f'Music Controller | {channel.name}', colour=0xebb145)
+        embed = discord.Embed(title=f'Let\'s Listen to Music 🎵| {channel.name}', colour=discord.Color.blue())
         embed.description = f'Now Playing:\n**`{track.title}`**\n\n'
         embed.set_thumbnail(url=track.thumb)
 
@@ -293,6 +293,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.bot.wavelink.nodes:
             previous = self.bot.wavelink.nodes.copy()
+
             for node in previous.values():
                 await node.destroy()
 
@@ -325,13 +326,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         channel = self.bot.get_channel(int(player.channel_id))
 
         if member == player.dj and after.channel is None:
-            for m in channel.members:
-                if m.bot:
+            for mem in channel.members:
+                if mem.bot:
                     continue
                 else:
-                    player.dj = m
+                    player.dj = mem
                     return
-
         elif after.channel == channel and player.dj not in channel.members:
             player.dj = member
 
@@ -366,7 +366,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 )
                 raise IncorrectChannelError
 
-        if ctx.command.name == 'connect' and not player.context:
+        if ctx.command.name in ['connect',  'play', 'equalizer', 'volume', 'repeat'] and not player.context:
             return
         elif self.is_privileged(ctx):
             return
@@ -415,8 +415,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.connect(channel.id)
 
     @commands.command(aliases=["leave"])
-    async def disconnect(self, ctx):
-        player = self.get_player(ctx)
+    async def disconnect(self, ctx: commands.Context):
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
         await player.teardown()
         await ctx.send("Disconnect.")
 
@@ -463,6 +464,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx):
             await ctx.send('An admin or DJ has paused the player.', delete_after=10)
+            await ctx.message.add_reaction('⏯')
             player.pause_votes.clear()
 
             return await player.set_pause(True)
@@ -472,6 +474,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if len(player.pause_votes) >= required:
             await ctx.send('Vote to pause passed. Pausing player.', delete_after=10)
+            await ctx.message.add_reaction('⏯')
             player.pause_votes.clear()
             await player.set_pause(True)
         else:
@@ -487,6 +490,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx):
             await ctx.send('An admin or DJ has resumed the player.', delete_after=10)
+            await ctx.message.add_reaction('⏯')
             player.resume_votes.clear()
 
             return await player.set_pause(False)
@@ -496,6 +500,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if len(player.resume_votes) >= required:
             await ctx.send('Vote to resume passed. Resuming player.', delete_after=10)
+            await ctx.message.add_reaction('⏯')
             player.resume_votes.clear()
             await player.set_pause(False)
         else:
@@ -514,7 +519,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if mode not in ("none", "1", "all"):
             raise InvalidRepeatMode
 
-        player = self.get_player(ctx)
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
         player.queue.set_repeat_mode(mode)
         await ctx.send(f"The repeat mode has been set to {mode}.")
 
@@ -528,12 +534,14 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx):
             await ctx.send('An admin or DJ has skipped the song.', delete_after=10)
+            await ctx.message.add_reaction('⏭')
             player.skip_votes.clear()
 
             return await player.stop()
 
         if ctx.author == player.current.requester:
             await ctx.send('The song requester has skipped the song.', delete_after=10)
+            await ctx.message.add_reaction('⏭')
             player.skip_votes.clear()
 
             return await player.stop()
@@ -558,6 +566,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx):
             await ctx.send('An admin or DJ has stopped the player.', delete_after=10)
+            await ctx.message.add_reaction('⏹')
             return await player.teardown()
 
         required = self.required(ctx)
@@ -565,6 +574,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if len(player.stop_votes) >= required:
             await ctx.send('Vote to stop passed. Stopping the player.', delete_after=10)
+            await ctx.message.add_reaction('⏹')
             await player.teardown()
         else:
             await ctx.send(f'{ctx.author.mention} has voted to stop the player.', delete_after=15)
@@ -724,11 +734,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             player.dj = member
             return await ctx.send(f'{member.mention} is now the DJ.')
 
-        for m in members:
-            if m == player.dj or m.bot:
+        for mem in members:
+            if mem == player.dj or mem.bot:
                 continue
             else:
-                player.dj = m
+                player.dj = mem
                 return await ctx.send(f'{member.mention} is now the DJ.')
 
 
