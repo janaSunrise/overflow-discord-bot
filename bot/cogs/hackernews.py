@@ -28,7 +28,7 @@ class HackerNews(commands.Cog):
 
                 description = dedent(f"""
                 • Story ID: **{data["id"]}**
-                • URL: [Here]({data["url"]})
+                • URL: [Here]({data.get("url")})
                 • Score: **{data["score"]}**
                 • Author: **{data["by"]}**
                 """)
@@ -53,7 +53,7 @@ class HackerNews(commands.Cog):
                 TITLE: **{data["title"]}**
 
                 • Story ID: **{data["id"]}**
-                • URL: [Here]({data["url"]})
+                • URL: [Here]({data.get("url")})
                 • Score: **{data["score"]}**
                 • Author: **{data["by"]}**\n
                 """)

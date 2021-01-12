@@ -1,0 +1,40 @@
+import os
+
+# ---- About bot section ----
+creator = "Sunrit Jana"
+devs = [711194921683648523, 372063179557175297]
+
+# ---- Config settings section ----
+
+# -- Music --
+nodes = {
+    'MAIN': {
+        'host': os.getenv("LAVALINK_HOST"),
+        'port': os.getenv("LAVALINK_PORT"),
+        'rest_uri': "http://" + os.getenv("LAVALINK_HOST") + ":" + os.getenv("LAVALINK_PORT"),
+        'password': os.getenv("LAVALINK_PASSWORD"),
+        'identifier': 'MAIN',
+        'region': 'us_central'
+    }
+}
+
+# -- Search --
+basic_search_categories = [
+    "web",
+    "videos",
+    "music",
+    "files",
+    "images",
+    "it",
+    "maps",
+]
+
+# ---- Cogs resource section ----
+WEATHER_ICONS = {
+    "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
+    "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
+    "sun": "https://cdn.discordapp.com/attachments/728569086174298112/735550167859593306/sunny.png",
+    "cloud": "https://cdn.discordapp.com/attachments/728569086174298112/735550159781494865/cloudy.png",
+    "partly": "https://cdn.discordapp.com/attachments/728569086174298112/735550162721701979/partly.png",
+    "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png"
+}

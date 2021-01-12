@@ -10,8 +10,7 @@ from discord import Color, DiscordException, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, NotOwner, group
 
-from bot.utils import config
-from bot import Bot
+from bot import Bot, config
 
 
 class Sudo(Cog):

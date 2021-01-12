@@ -1,38 +1,26 @@
 import asyncio
-import async_timeout
 import copy
 import datetime
-import discord
 import math
-import os
 import random
 import re
-import typing
-import wavelink
+import typing as t
+
+import async_timeout
+import discord
 from discord.ext import commands, menus
+import wavelink
+
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
+from bot import config
 
 # URL matching REGEX.
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
 
 
-class NoChannelProvided(commands.CommandError):
-    """Error raised when no suitable voice channel was supplied."""
-    pass
-
-
-class IncorrectChannelError(commands.CommandError):
-    """Error raised when commands are issued outside of the players session channel."""
-    pass
-
-
-class InvalidRepeatMode(commands.CommandError):
-    pass
-
-
 class Track(wavelink.Track):
     """Wavelink Track object with a requester attribute."""
-
-    __slots__ = ('requester', )
+    __slots__ = ('requester',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args)
@@ -41,8 +29,7 @@ class Track(wavelink.Track):
 
 
 class Player(wavelink.Player):
-    """Custom wavelink Player class."""
-
+    """Custom wavelink player class."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -91,7 +78,6 @@ class Player(wavelink.Player):
         """Method which updates or sends a new player controller."""
         if self.updating:
             return
-
         self.updating = True
 
         if not self.controller:
@@ -115,7 +101,7 @@ class Player(wavelink.Player):
 
         self.updating = False
 
-    def build_embed(self) -> typing.Optional[discord.Embed]:
+    def build_embed(self) -> t.Optional[discord.Embed]:
         """Method which builds our players controller embed."""
         track = self.current
         if not track:
@@ -165,7 +151,6 @@ class Player(wavelink.Player):
 
 class InteractiveController(menus.Menu):
     """The Players interactive controller menu class."""
-
     def __init__(self, *, embed: discord.Embed, player: Player):
         super().__init__(timeout=None)
 
@@ -176,7 +161,6 @@ class InteractiveController(menus.Menu):
         """Update our context with the user who reacted."""
         ctx = copy.copy(self.ctx)
         ctx.author = payload.member
-
         return ctx
 
     def reaction_check(self, payload: discord.RawReactionActionEvent):
@@ -280,14 +264,12 @@ class InteractiveController(menus.Menu):
 
 class PaginatorSource(menus.ListPageSource):
     """Player queue paginator class."""
-
     def __init__(self, entries, *, per_page=8):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
         embed = discord.Embed(title='Coming Up...', colour=0x4f0321)
         embed.description = '\n'.join(f'`{index}. {title}`' for index, title in enumerate(page, 1))
-
         return embed
 
     def is_paginating(self):
@@ -311,22 +293,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.bot.wavelink.nodes:
             previous = self.bot.wavelink.nodes.copy()
-
             for node in previous.values():
                 await node.destroy()
 
-        nodes = {
-            'MAIN': {
-                'host': os.getenv("LAVALINK_HOST"),
-                'port': os.getenv("LAVALINK_PORT"),
-                'rest_uri': "http://" + os.getenv("LAVALINK_HOST") + ":" + os.getenv("LAVALINK_PORT"),
-                'password': os.getenv("LAVALINK_PASSWORD"),
-                'identifier': 'MAIN',
-                'region': 'us_central'
-            }}
-
-        for n in nodes.values():
-            await self.bot.wavelink.initiate_node(**n)
+        for node in config.nodes.values():
+            await self.bot.wavelink.initiate_node(**node)
 
     @wavelink.WavelinkMixin.listener()
     async def on_node_ready(self, node: wavelink.Node):
@@ -339,7 +310,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await payload.player.do_next()
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+    async def on_voice_state_update(
+            self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState
+    ) -> None:
         if member.bot:
             return
 
@@ -388,7 +361,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if player.context:
             if player.context.channel != ctx.channel:
-                await ctx.send(f'{ctx.author.mention}, you must be in {player.context.channel.mention} for this session.')
+                await ctx.send(
+                    f'{ctx.author.mention}, you must be in {player.context.channel.mention} for this session.'
+                )
                 raise IncorrectChannelError
 
         if ctx.command.name == 'connect' and not player.context:
@@ -414,10 +389,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         channel = self.bot.get_channel(int(player.channel_id))
         required = math.ceil((len(channel.members) - 1) / 2.5)
 
-        if ctx.command.name == 'stop':
+        if ctx.command.name in ["stop", "skip"]:
             if len(channel.members) == 3:
                 required = 2
-
         return required
 
     def is_privileged(self, ctx: commands.Context):
@@ -454,9 +428,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not player.is_connected:
             await ctx.invoke(self.connect)
 
-        query = query.strip('<>')
+        query = query.strip("<>")
         if not URL_REG.match(query):
-            query = f'ytsearch:{query}'
+            query = f"ytsearch:{query}"
 
         tracks = await self.bot.wavelink.get_tracks(query)
         if not tracks:
@@ -681,10 +655,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not self.is_privileged(ctx):
             return await ctx.send('Only the DJ or admins may change the equalizer.')
 
-        eqs = {'flat': wavelink.Equalizer.flat(),
-               'boost': wavelink.Equalizer.boost(),
-               'metal': wavelink.Equalizer.metal(),
-               'piano': wavelink.Equalizer.piano()}
+        eqs = {
+            'flat': wavelink.Equalizer.flat(),
+            'boost': wavelink.Equalizer.boost(),
+            'metal': wavelink.Equalizer.metal(),
+            'piano': wavelink.Equalizer.piano()
+        }
 
         eq = eqs.get(equalizer.lower(), None)
 

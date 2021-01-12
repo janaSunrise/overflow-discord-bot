@@ -9,8 +9,7 @@ from discord.ext.commands import Cog, CommandError, Context, command
 from discord.ext.commands.errors import CommandInvokeError
 
 import html2text
-from bot import Bot
-from bot.utils import config
+from bot import Bot, config
 
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
