@@ -14,12 +14,12 @@ NEWS_URL = "https://hacker-news.firebaseio.com/v0/"
 class HackerNews(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        # self.send_feed.start()
+        self.send_feed.start()
 
     def cog_unload(self):
         self.send_feed.cancel()
 
-    async def _generate_embeds(self, article_numbers: list) -> list:
+    async def _generate_embeds(self, article_numbers: list) -> t.List[discord.Embed]:
         article_embeds = []
 
         for item_id in article_numbers:
@@ -27,10 +27,10 @@ class HackerNews(commands.Cog):
                 data = await resp.json()
 
                 description = dedent(f"""
-                • Story ID: **{data['id']}**
-                • URL: [Click here]({data['url']})
-                • Score: **{data['score']}**
-                • Author: **{data['by']}**
+                • Story ID: **{data["id"]}**
+                • URL: [Here]({data["url"]})
+                • Score: **{data["score"]}**
+                • Author: **{data["by"]}**
                 """)
 
                 embed = discord.Embed(
@@ -41,6 +41,29 @@ class HackerNews(commands.Cog):
             article_embeds.append(embed)
 
         return article_embeds
+
+    async def _generate_newsfeed_embed(self, article_numbers: list) -> list:
+        description = ""
+
+        for item_id in article_numbers:
+            async with self.bot.session.get(NEWS_URL + f"item/{item_id}.json") as resp:
+                data = await resp.json()
+
+                description += dedent(f"""
+                TITLE: **{data["title"]}**
+
+                • Story ID: **{data["id"]}**
+                • URL: [Here]({data["url"]})
+                • Score: **{data["score"]}**
+                • Author: **{data["by"]}**\n
+                """)
+
+        embed = discord.Embed(
+            title="Quick news feed!",
+            description=description,
+            color=discord.Color.blue()
+        )
+        return embed
 
     @commands.command(name="new-stories")
     async def new_stories(self, ctx: commands.Context, count: int = 5) -> None:
@@ -110,24 +133,20 @@ class HackerNews(commands.Cog):
 
             await ctx.send("Aww :( We hate to see you unsubscribe from the feed!")
 
-    # @tasks.loop(hours=24)
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(hours=24)
     async def send_feed(self) -> None:
         async with self.bot.session.get(NEWS_URL + "topstories.json") as resp:
             data = await resp.json()
 
-        article_numbers = random.sample(data, 10)
-        article_embeds = await self._generate_embeds(article_numbers)
+        article_numbers = random.sample(data, 8)
+        article_embed = await self._generate_newsfeed_embed(article_numbers)
 
         async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
             channels = [row[1] for row in (await cursor.fetchall())]
-            print(channels)
 
             for channel in channels:
-                print(f"Sending to {channel}")
                 channel = self.bot.get_channel(channel)
-                await channel.send("Here's your feed :tada:")
-                await EmbedPages(article_embeds).start(channel)
+                await channel.send("Here's your feed :tada:", embed=article_embed)
 
 
 def setup(bot: Bot) -> None:

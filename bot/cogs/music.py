@@ -11,7 +11,7 @@ import typing
 import wavelink
 from discord.ext import commands, menus
 
-# URL matching REGEX...
+# URL matching REGEX.
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
 
 
