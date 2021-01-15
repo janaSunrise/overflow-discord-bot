@@ -29,6 +29,17 @@ basic_search_categories = [
     "maps",
 ]
 
+# -- Study --
+RESPONSES = {
+    200: True,
+    301: "Switching to a different endpoint",
+    400: "Bad Request",
+    401: "Not Authenticated",
+    404: "The resource you tried to access wasn't found on the server.",
+    403: "The resource you’re trying to access is forbidden — you don’t have the right permissions to see it.",
+}
+
+
 # ---- Cogs resource section ----
 WEATHER_ICONS = {
     "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",

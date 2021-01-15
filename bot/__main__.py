@@ -12,6 +12,7 @@ extensions = [
     "bot.cogs.music",
     "bot.cogs.overflow",
     "bot.cogs.search",
+    "bot.cogs.study",
     "bot.cogs.sudo"
 ]
 
