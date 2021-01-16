@@ -23,7 +23,7 @@ class Github(Cog):
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
-    async def issue(self, ctx: Context, issue_num: int, repository: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
+    async def issue(self, ctx: Context, issue_num: int, repository: str, user: str) -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
         url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
         merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}/merge"
@@ -51,7 +51,7 @@ class Github(Cog):
 
         issue_url = json_data.get("html_url")
         resp = Embed(
-            title=f"{icon_url} {title}",
+            title=f"{title}",
             colour=Color.gold(),
             description=textwrap.dedent(
                 f"""
@@ -67,7 +67,7 @@ class Github(Cog):
 
     @command()
     @cooldown(1, 5, type=BucketType.user)
-    async def ghrepo(self, ctx: Context, repo: str = "HotWired-Bot", user: str = "The-Codin-Hole") -> None:
+    async def ghrepo(self, ctx: Context, repo: str, user: str) -> None:
         """Show info about a given GitHub repository.
 
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
