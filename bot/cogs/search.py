@@ -109,7 +109,7 @@ class Search(Cog):
             # Builds message
             msg = textwrap.dedent(
                 f"""
-                [{first_title}]({first_url})
+                [{first_title}]({first_url})\n
                 {first_desc}
                 {other_msg}
                 """
@@ -132,15 +132,16 @@ class Search(Cog):
 
     @command()
     async def search(self, ctx: Context, category: str, *, query: str) -> None:
-        """Search online for general results.
-        Valid Categories:
-             - web
-             - videos
-             - music
-             - files
-             - images
-             - it
-             - maps
+        """
+        Search online for general results.
+        **Valid Categories:**
+        - web
+        - videos
+        - music
+        - files
+        - images
+        - it
+        - maps
         """
         if category not in config.basic_search_categories:
             await ctx.send(
