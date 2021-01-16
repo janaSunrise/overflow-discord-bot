@@ -46,7 +46,7 @@ class Nasa(Cog):
             color=Color.blurple()
         )
         embed.set_image(url=data["hdurl"])
-        embed.set_footer(text=f"Taken on {data['date']} by {data['copyright']} | Powered by HotWired")
+        embed.set_footer(text=f"Taken on {data['date']} by {data['copyright']}")
 
         await ctx.send(embed=embed)
 
@@ -66,7 +66,7 @@ class Nasa(Cog):
                 color=Color.blurple()
             )
             embed.set_image(url=item["links"][0]["href"])
-            embed.set_footer(text=f"ID: {item['data'][0]['nasa_id']} | Powered by HotWired")
+            embed.set_footer(text=f"ID: {item['data'][0]['nasa_id']}")
 
             await ctx.send(embed=embed)
         else:
@@ -82,7 +82,7 @@ class Nasa(Cog):
             items = data["collection"]["items"][0]["href"]
             embed = Embed(color=Color.blurple())
             embed.set_image(url=items)
-            embed.set_footer(text=f"ID: {id} | Powered by HotWired")
+            embed.set_footer(text=f"ID: {id}")
         except KeyError:
             await ctx.send("No results found!")
 
@@ -109,7 +109,6 @@ class Nasa(Cog):
                 description=remove_tags(description),
                 color=Color.blurple()
             )
-            embed.set_footer(text="Powered by HotWired")
 
             await ctx.send(embed=embed)
         else:
