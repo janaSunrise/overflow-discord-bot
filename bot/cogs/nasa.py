@@ -80,6 +80,7 @@ class Nasa(Cog):
 
         try:
             items = data["collection"]["items"][0]["href"]
+
             embed = Embed(color=Color.blurple())
             embed.set_image(url=items)
             embed.set_footer(text=f"ID: {id}")
@@ -117,7 +118,8 @@ class Nasa(Cog):
     @command()
     async def epic(self, ctx: Context, max: int = 1) -> None:
         """
-        Get images from DSCOVR's Earth Polychromatic Imaging Camera. can specify a maximum number of images to retrieve.
+        Get images from DISCOVR's Earth Polychromatic Imaging Camera.
+        Can specify a maximum number of images to retrieve.
         """
         async with self.bot.session.get("https://epic.gsfc.nasa.gov/api/images.php") as response:
             json = await response.json()
@@ -146,7 +148,8 @@ class Nasa(Cog):
             return
 
         async with self.bot.session.get(
-            "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos", params={"earth_date": date, "api_key": NASA_API}
+            "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos",
+            params={"earth_date": date, "api_key": NASA_API}
         ) as response:
             images = await response.json()
             if not images.get("photos", []):
