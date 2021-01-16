@@ -46,7 +46,7 @@ class Nasa(Cog):
             color=Color.blurple()
         )
         embed.set_image(url=data["hdurl"])
-        embed.set_footer(text=f"Taken on {data['date']} by {data['copyright']}")
+        embed.set_footer(text=f"Taken on {data['date']}.")
 
         await ctx.send(embed=embed)
 

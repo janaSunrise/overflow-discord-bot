@@ -138,7 +138,7 @@ class HackerNews(commands.Cog):
         async with self.bot.session.get(NEWS_URL + "topstories.json") as resp:
             data = await resp.json()
 
-        article_numbers = random.sample(data, 8)
+        article_numbers = random.sample(data, 6)
         article_embed = await self._generate_newsfeed_embed(article_numbers)
 
         async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
