@@ -97,7 +97,7 @@ class HackerNews(commands.Cog):
 
         await EmbedPages(article_embeds).start(ctx)
 
-    @commands.command()
+    @commands.command(manage_channels=True)
     async def subscribe(self, ctx: commands.Context, channel: t.Optional[discord.TextChannel] = None) -> None:
         """
         Subscribe to the scheduled hacker news feed.
@@ -117,7 +117,7 @@ class HackerNews(commands.Cog):
         else:
             await ctx.send(":x: You're already subscribed to the feed!")
 
-    @commands.command()
+    @commands.command(manage_channels=True)
     async def unsubscribe(self, ctx: commands.Context) -> None:
         """
         Unsubscribe from the scheduled hacker news feed.
