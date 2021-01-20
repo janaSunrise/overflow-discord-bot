@@ -133,11 +133,6 @@ class Github(Cog):
             if response["message"]:
                 await ctx.send(f"ERROR: {response['message']}")
         except KeyError:
-            if response["description"] == "":
-                desc = "No description provided."
-            else:
-                desc = response["description"]
-
             description = textwrap.dedent(
                 f"""
                 Name: {"No Name!" if not response["name"] else response["name"]}
@@ -156,7 +151,7 @@ class Github(Cog):
                 """
             )
 
-            embed.title = f"{user} on github"
+            embed.title = f"{user} on Github"
             embed.description = description
             embed.set_thumbnail(url=response["avatar_url"])
 
