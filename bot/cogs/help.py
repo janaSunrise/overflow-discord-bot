@@ -228,7 +228,9 @@ class HelpCommand(BaseHelpCommand):
 
         return embed
 
-    async def _format_cog(self, cog: t.Optional[Cog], commands: t.Optional[t.List[Command]] = None) -> t.Union[Embed, HelpPages]:
+    async def _format_cog(
+            self, cog: t.Optional[Cog], commands: t.Optional[t.List[Command]] = None
+    ) -> t.Union[Embed, HelpPages]:
         """
         Format a help embed message for the given `cog`.
         If `commands` are provided, they'll be used without any additional filtering,
