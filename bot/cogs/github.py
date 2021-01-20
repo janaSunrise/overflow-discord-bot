@@ -56,8 +56,10 @@ class Github(Cog):
             description=textwrap.dedent(
                 f"""
                 Repository : **{user}/{repository}**
+
                 Title : **{json_data.get('title')}**
                 ID : **`{issue_num}`**
+
                 Link :  [Here]({issue_url})
                 """
             )
@@ -92,11 +94,14 @@ class Github(Cog):
             description = textwrap.dedent(
                 f"""
                 Description: **{desc}**
+
                 Stars: **{response["stargazers_count"]}**
                 Forks: **{response["forks_count"]}**
+
                 Language: **{response["language"]}**
                 License: **{response["license"]["name"]}**
-                Command: **git clone {response["clone_url"]}**
+
+                Command: `git clone {response["clone_url"]}`
                 Link: [here]({response["html_url"]})
                 """
             )
