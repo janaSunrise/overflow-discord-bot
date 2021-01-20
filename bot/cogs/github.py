@@ -146,11 +146,11 @@ class Github(Cog):
                 Followers: **{response["followers"]}**
                 Following: **{response["following"]}**
 
-                Company: {response["company"]}
+                Company: **{response["company"]}**
                 Site / Blog: {"No website given!" if response["blog"] == "" else response["blog"]}
                 
                 Twitter: {"No twitter handles!" if not response["twitter_username"] else response["twitter_username"]}
-                Location: {"No location given!" if not response["location"] else response["location"]}
+                Location: **{"No location given!" if not response["location"] else response["location"]}**
 
                 Link: [here]({response["html_url"]})
                 """
