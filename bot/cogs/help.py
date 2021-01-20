@@ -81,13 +81,13 @@ class HelpPages(EmbedPages):
         for page, message in enumerate(split_messages[1:]):
             embeds.append(
                 Embed(
-                    title=f"{initial_embed.title} {page + 2}",
+                    title=f"{initial_embed.title} [{page + 2}]",
                     description=message,
                     color=Color.blue()
                 )
             )
 
-        initial_embed.title = f"{initial_embed.title} 1"
+        initial_embed.title = f"{initial_embed.title} [1]"
 
         return embeds
 
@@ -104,7 +104,7 @@ class HelpPages(EmbedPages):
 
         for page, page_fields in enumerate(fields[1:]):
             embed = Embed(
-                title=f"{initial_embed.title} {page + 2}",
+                title=f"{initial_embed.title} [{page + 2}]",
                 color=Color.blue()
             )
             for fld in page_fields:
@@ -115,7 +115,7 @@ class HelpPages(EmbedPages):
                 )
             embeds.append(embed)
 
-        initial_embed.title = f"{initial_embed.title} 1"
+        initial_embed.title = f"{initial_embed.title} [1]"
 
         return embeds
 
