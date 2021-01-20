@@ -70,7 +70,8 @@ class Github(Cog):
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def ghrepo(self, ctx: Context, repo: str, user: str) -> None:
-        """Show info about a given GitHub repository.
+        """
+        Show info about a given GitHub repository.
 
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """
@@ -109,6 +110,55 @@ class Github(Cog):
             embed.title = f"{repo} on GitHub"
             embed.description = description
             embed.set_thumbnail(url=response["owner"]["avatar_url"])
+
+            await ctx.send(embed=embed)
+
+    @command()
+    @cooldown(1, 5, type=BucketType.user)
+    async def ghuser(self, ctx: Context, user: str) -> None:
+        """
+        Show info about a given GitHub repository.
+
+        This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
+        """
+        embed = Embed(color=Color.blue())
+        async with await self.bot.session.get(f"https://api.github.com/users/{user}") as resp:
+            response = await resp.json()
+
+        if resp.status in BAD_RESPONSES:
+            await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
+            return
+
+        try:
+            if response["message"]:
+                await ctx.send(f"ERROR: {response['message']}")
+        except KeyError:
+            if response["description"] == "":
+                desc = "No description provided."
+            else:
+                desc = response["description"]
+
+            description = textwrap.dedent(
+                f"""
+                Name: {"No Name!" if not response["name"] else response["name"]}
+                Bio: {"No Bio!" if not response["bio"] else response["bio"]}
+                
+                Followers: **{response["followers"]}**
+                Following: **{response["following"]}**
+
+                Company: {response["company"]}
+                Site / Blog: {"No website given!" if response["blog"] == "" else response["blog"]}
+                
+                Twitter: {"No twitter handles!" if not response["twitter_username"] else response["twitter_username"]}
+                Location: {"No location given!" if not response["location"] else response["location"]}
+
+                Link: [here]({response["html_url"]})
+                """
+            )
+
+            embed.title = f"{user} on github"
+            embed.description = description
+            embed.set_thumbnail(url=response["avatar_url"])
 
             await ctx.send(embed=embed)
 
