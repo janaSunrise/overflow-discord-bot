@@ -49,11 +49,11 @@ class Commands(commands.Cog):
             file_paste = 'https://www.hasteb.in/' + key
 
             await ctx.send(
-                embed=discord.Embed(title="File pastes", description=file_paste, color=Color.blue())
+                embed=discord.Embed(title="File pastes", description=file_paste, color=discord.Color.blue())
             )
 
     @staticmethod
-    def _clean_code(self, code: str) -> str:
+    def _clean_code(code: str) -> str:
         codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)
         if codeblock_match:
             lang = codeblock_match.group(1)
