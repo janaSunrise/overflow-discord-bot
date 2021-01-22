@@ -18,6 +18,21 @@ class Sudo(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    def get_uptime(self) -> str:
+        """Get formatted server uptime."""
+        now = datetime.utcnow()
+        delta = now - self.bot.start_time
+
+        hours, rem = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(rem, 60)
+        days, hours = divmod(hours, 24)
+
+        if days:
+            formatted = f"{days} days, {hours} hr, {minutes} mins, and {seconds} secs"
+        else:
+            formatted = f"{hours} hr, {minutes} mins, and {seconds} secs"
+        return formatted
+
     @group(hidden=True)
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
@@ -80,7 +95,7 @@ class Sudo(Cog):
             • Servers: **`{len(self.bot.guilds)}`**
             • Commands: **`{len(self.bot.commands)}`**
             • Members: **`{len(set(self.bot.get_all_members()))}`**
-            • Uptime: **{humanize_time(datetime.utcnow() - self.bot.start_time)}**
+            • Uptime: **`{self.get_uptime()}`**
             """
         )
         system = textwrap.dedent(

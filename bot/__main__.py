@@ -2,12 +2,13 @@ import os
 
 import discord
 
-from bot import Bot
+from bot import Bot, config
 
 TOKEN = os.getenv("BOT_TOKEN")
-PREFIX = "="
+PREFIX = config.COMMAND_PREFIX
 extensions = [
     "bot.cogs.commands",
+    "bot.cogs.conversion",
     "bot.cogs.github",
     "bot.cogs.hackernews",
     "bot.cogs.help",

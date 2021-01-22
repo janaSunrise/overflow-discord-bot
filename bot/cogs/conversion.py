@@ -6,7 +6,7 @@ from discord import Embed
 from discord.ext.commands import Cog, Context, command
 
 from bot import config
-from bot.core.bot import Bot
+from bot import Bot
 
 
 class Conversion(Cog):
@@ -59,10 +59,10 @@ class Conversion(Cog):
         unit = unit.capitalize()
 
         if unit not in units:
-            return await ctx.send(f"Available units are `{'`, `'.join(units)}`.")
+            await ctx.send(f"Available units are `{'`, `'.join(units)}`.")
+            return
 
         embed = Embed(title="Binary Convertor")
-        # TODO: Look into this code
         index = units.index(unit)
 
         for i, u in enumerate(units):
@@ -79,7 +79,6 @@ class Conversion(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            # TODO: `self.algos` doesn't seem to be defined
             matches = "\n".join([supported for supported in self.hash_algos if algo in supported][:10])
             message = f"`{algorithm}` not available."
             if matches:
