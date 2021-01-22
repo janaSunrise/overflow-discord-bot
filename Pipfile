@@ -11,6 +11,7 @@ wavelink = "*"
 html2text = "*"
 aiosqlite = "*"
 python-dateutil = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 
