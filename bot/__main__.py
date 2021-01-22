@@ -7,6 +7,7 @@ from bot import Bot, config
 TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
 extensions = [
+    "bot.cogs.comics",
     "bot.cogs.commands",
     "bot.cogs.conversion",
     "bot.cogs.github",
