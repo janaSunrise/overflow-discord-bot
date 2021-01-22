@@ -10,6 +10,7 @@ wavelink = "*"
 "discord.py" = {extras = ["voice"], version = "*"}
 html2text = "*"
 aiosqlite = "*"
+python-dateutil = "*"
 
 [dev-packages]
 

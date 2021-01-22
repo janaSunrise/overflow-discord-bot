@@ -11,6 +11,7 @@ from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, NotOwner, group
 
 from bot import Bot, config
+from bot.utils.time import humanize_time
 
 
 class Sudo(Cog):
@@ -79,7 +80,7 @@ class Sudo(Cog):
             • Servers: **`{len(self.bot.guilds)}`**
             • Commands: **`{len(self.bot.commands)}`**
             • Members: **`{len(set(self.bot.get_all_members()))}`**
-            • Uptime: **{datetime.utcnow() - self.bot.start_time}**
+            • Uptime: **{humanize_time(datetime.utcnow() - self.bot.start_time)}**
             """
         )
         system = textwrap.dedent(
