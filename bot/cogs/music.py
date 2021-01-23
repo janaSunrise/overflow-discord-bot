@@ -11,10 +11,12 @@ import discord
 from discord.ext import commands, menus
 import wavelink
 
-from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot import config
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
+from bot.utils.utils import format_time
 
 # URL matching REGEX.
+TIME_REG = re.compile("[0-9]+")
 URL_REG = re.compile(r'https?://(?:www\.)?.+')
 
 
@@ -505,6 +507,30 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await player.set_pause(False)
         else:
             await ctx.send(f'{ctx.author.mention} has voted to resume the player.', delete_after=15)
+
+    @commands.command()
+    async def seek(self, ctx: commands.Context, *, time: str) -> None:
+        """Seek to a given position in a track."""
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
+        raw_seconds = TIME_REG.search(time)
+        if not raw_seconds:
+            await ctx.send(
+                "You need to specify the amount of seconds to skip!"
+            )
+            return
+
+        seconds = int(raw_seconds.group()) * 1000
+
+        if time.startswith("-"):
+            seconds *= -1
+
+        track_time = player.position + seconds
+        await player.seek(track_time)
+
+        await ctx.send(
+            f"Moved track to **{format_time(track_time)}**"
+        )
 
     @commands.command()
     async def repeat(self, ctx, mode: str):
