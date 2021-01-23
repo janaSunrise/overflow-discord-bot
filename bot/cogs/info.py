@@ -26,12 +26,12 @@ class Info(commands.Cog):
         file_amount = 0
         list_of_files = []
 
-        for filepath, _, files in os.walk('.'):
+        for filepath, _, files in os.walk('bot'):
             for name in files:
                 if name.endswith('.py'):
                     file_lines = 0
                     file_amount += 1
-                    with codecs.open('./' + str(pathlib.PurePath(filepath,name)), 'r', 'utf-8') as file:
+                    with codecs.open('./' + str(pathlib.PurePath(filepath, name)), 'r', 'utf-8') as file:
                         for _, line in enumerate(file):
                             if line.strip().startswith('#') or len(
                                     line.strip()) == 0:
