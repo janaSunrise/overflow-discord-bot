@@ -1,22 +1,26 @@
+import io
 import os
 import platform
 import textwrap
 import time
 import traceback
 import typing as t
+from contextlib import redirect_stdout
 from datetime import datetime
 
 from discord import Color, DiscordException, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, NotOwner, group
+import humanize
+import psutil
 
 from bot import Bot, config
-from bot.utils.time import humanize_time
 
 
 class Sudo(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self._last_eval_result = None
 
     def get_uptime(self) -> str:
         """Get formatted server uptime."""
@@ -106,13 +110,87 @@ class Sudo(Cog):
         )
 
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
-        embed.add_field(name="**❯❯ General**", value=general, inline=True)
-        embed.add_field(name="**❯❯ System**", value=system, inline=True)
+        embed.add_field(name="**❯ General**", value=general, inline=True)
+        embed.add_field(name="**❯ System**", value=system, inline=True)
+
+        process = psutil.Process()
+        with process.oneshot():
+            mem = process.memory_full_info()
+            name = process.name()
+            pid = process.pid
+            threads = process.num_threads()
+            value = textwrap.dedent(
+                f"""
+                • Physical memory: **`{humanize.naturalsize(mem.rss)}`**
+                • Virtual memory: **`{humanize.naturalsize(mem.vms)}`**
+                • PID: `{pid}` (`{name}`)
+                • Threads: **`{threads}`**
+                """
+            )
+            embed.add_field(
+                name="**❯ Memory info**",
+                value=value,
+                inline=False,
+            )
 
         embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=f"Made by {config.creator}.")
 
         await ctx.send(embed=embed)
+
+    @staticmethod
+    def cleanup_code(content: str) -> str:
+        """Automatically removes code blocks from the code."""
+        if content.startswith('```') and content.endswith('```'):
+            return '\n'.join(content.split('\n')[1:-1])
+
+        return content.strip('` \n')
+
+    @sudo.command(name='eval')
+    async def _eval(self, ctx: Context, *, code: str):
+        """Eval some code"""
+        env = {
+            'bot': self.bot,
+            'ctx': ctx,
+            'guild': ctx.guild,
+            'channel': ctx.channel,
+            'author': ctx.author,
+            'message': ctx.message,
+            '_': self._last_eval_result
+        }
+        env.update(globals())
+
+        code = self.cleanup_code(code)
+        buffer = io.StringIO()
+
+        to_compile = f'async def func():\n{textwrap.indent(code, " ")}'
+
+        try:
+            exec(to_compile, env)
+        except Exception as error:
+            return await ctx.send(f'```py\n{error.__class__.__name__}: {error}\n``')
+
+        func = env['func']
+
+        try:
+            with redirect_stdout(buffer):
+                ret = await func()
+        except Exception:
+            value = buffer.getvalue()
+            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+        else:
+            value = buffer.getvalue()
+            try:
+                await ctx.message.add_reaction('\N{INCOMING ENVELOPE}')
+            except DiscordException:
+                pass
+
+            if ret is None:
+                if value:
+                    await ctx.send(f'```py\n{value}\n```')
+                else:
+                    self._last_result = ret
+                    await ctx.send(f'```py\n{value}{ret}\n```')
 
     async def cog_check(self, ctx: Context) -> t.Optional[bool]:
         """Only the bot owners can use this."""

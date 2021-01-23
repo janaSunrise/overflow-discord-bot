@@ -13,6 +13,7 @@ extensions = [
     "bot.cogs.github",
     "bot.cogs.hackernews",
     "bot.cogs.help",
+    "bot.cogs.info",
     "bot.cogs.music",
     "bot.cogs.nasa",
     "bot.cogs.overflow",

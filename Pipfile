@@ -12,6 +12,8 @@ html2text = "*"
 aiosqlite = "*"
 python-dateutil = "*"
 beautifulsoup4 = "*"
+psutil = "*"
+humanize = "*"
 
 [dev-packages]
 

@@ -117,7 +117,7 @@ class Github(Cog):
     @cooldown(1, 5, type=BucketType.user)
     async def ghuser(self, ctx: Context, user: str) -> None:
         """
-        Show info about a given GitHub repository.
+        Show info about a given GitHub user.
 
         This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
         """

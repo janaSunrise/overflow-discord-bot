@@ -1,6 +1,6 @@
 import typing as t
 
-from discord import Embed
+from discord import Color, Embed
 from discord.ext.commands import Context
 from discord.ext.menus import ListPageSource, Menu, MenuPages
 
@@ -20,3 +20,18 @@ class EmbedPages(ListPageSource):
             **menupages_kwargs
         )
         await pages.start(ctx)
+
+
+class SauceSource(ListPageSource):
+    """Source for the sauce command."""
+
+    async def format_page(self, menu: Menu, page: str):
+        """Format the page of code."""
+        max_pages = self.get_max_pages()
+        embed = Embed(
+            description=page,
+            colour=Color.purple()
+        )
+        if max_pages > 1:
+            embed.set_footer(text=f"Page {menu.current_page + 1}/{max_pages}")
+        return embed
