@@ -4,6 +4,13 @@ import typing as t
 import discord
 
 
+def format_time(time):
+    hours, remainder = divmod(time / 1000, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    return f"{hours:.2f}{minutes:.2f}{seconds:.2f}"
+
+
 async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     BRACKETED = re.compile(r"(\[(.+?)\])")
     embeds_list = []
@@ -36,12 +43,3 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
         embeds_list.append(embed)
 
     return embeds_list
-
-
-def format_time(time):
-    hours, remainder = divmod(time / 1000, 3600)
-    minutes, seconds = divmod(remainder, 60)
-
-    return '%02d:%02d:%02d' % (hours, minutes, seconds)
-
-

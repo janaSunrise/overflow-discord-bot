@@ -171,10 +171,13 @@ class InteractiveController(menus.Menu):
 
         if not payload.member:
             return False
+
         if payload.member.bot:
             return False
+
         if payload.message_id != self.message.id:
             return False
+
         if payload.member not in self.bot.get_channel(int(self.player.channel_id)).members:
             return False
 
@@ -274,8 +277,7 @@ class PaginatorSource(menus.ListPageSource):
         embed.description = '\n'.join(f'`{index}. {title}`' for index, title in enumerate(page, 1))
         return embed
 
-    def is_paginating(self):
-        # We always want to embed even on 1 page of results.
+    def is_paginating(self) -> bool:
         return True
 
 
@@ -290,7 +292,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         bot.loop.create_task(self.start_nodes())
 
     async def start_nodes(self) -> None:
-        """Connect and intiate nodes."""
+        """Connect and initiate nodes."""
         await self.bot.wait_until_ready()
 
         if self.bot.wavelink.nodes:
@@ -538,9 +540,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         Repeat one or more songs.
 
         **MODES**:
-            - `none` (stop repeat)
-            - `1`
-            - `all`
+        - `none` (stop repeat)
+        - `1`
+        - `all`
         """
         if mode not in ("none", "1", "all"):
             raise InvalidRepeatMode
