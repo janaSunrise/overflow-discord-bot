@@ -437,6 +437,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.invoke(self.connect)
 
         query = query.strip("<>")
+
         if not URL_REG.match(query):
             query = f"ytsearch:{query}"
 
