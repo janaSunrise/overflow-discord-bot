@@ -113,7 +113,7 @@ class Player(wavelink.Player):
         channel = self.bot.get_channel(int(self.channel_id))
         qsize = self.queue.qsize()
 
-        embed = discord.Embed(title=f'Let\'s Listen to Music 🎵| {channel.name}', colour=discord.Color.blue())
+        embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 | {channel.name}', colour=discord.Color.blurple())
         embed.description = f'Now Playing:\n**`{track.title}`**\n\n'
         embed.set_thumbnail(url=track.thumb)
 
@@ -425,7 +425,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         await player.teardown()
         await ctx.send(
-            embed=discord.Embed(description="Successfully disconnected.", color=discord.Color.blurple())
+            embed=discord.Embed(description="Successfully disconnected.", color=discord.Color.green())
         )
 
     @commands.command()
