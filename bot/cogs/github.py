@@ -17,7 +17,11 @@ BAD_RESPONSES = {
 
 
 class Github(Cog):
-    """Add GitHub integration to the bot."""
+    """
+    Add GitHub integration to the bot.
+
+    **This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.**
+    """
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -70,11 +74,7 @@ class Github(Cog):
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def ghrepo(self, ctx: Context, repo: str, user: str) -> None:
-        """
-        Show info about a given GitHub repository.
-
-        This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
-        """
+        """Show info about a given GitHub repository."""
         embed = Embed(color=Color.blue())
         async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
             response = await resp.json()
@@ -116,11 +116,7 @@ class Github(Cog):
     @command()
     @cooldown(1, 5, type=BucketType.user)
     async def ghuser(self, ctx: Context, user: str) -> None:
-        """
-        Show info about a given GitHub user.
-
-        This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.
-        """
+        """Show info about a given GitHub user."""
         embed = Embed(color=Color.blue())
         async with await self.bot.session.get(f"https://api.github.com/users/{user}") as resp:
             response = await resp.json()

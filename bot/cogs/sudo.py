@@ -130,7 +130,7 @@ class Sudo(Cog):
             embed.add_field(
                 name="**❯ Memory info**",
                 value=value,
-                inline=False,
+                inline=True,
             )
 
         embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)

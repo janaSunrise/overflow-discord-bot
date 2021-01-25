@@ -94,7 +94,7 @@ class Search(Cog):
                 return await ctx.send(f"No results found for `{query_display}`.")
 
             # Gets the first entry's data
-            first_title = self.tomd.handle(results[0]["title"]).rstrip("\n")
+            first_title = self.tomd.handle(results[0]["title"]).rstrip("\n").strip("<>")
             first_url = results[0]["url"]
             first_desc = self.tomd.handle(results[0]["desc"]).rstrip("\n")
 
@@ -110,7 +110,7 @@ class Search(Cog):
             msg = textwrap.dedent(
                 f"""
                 [{first_title}]({first_url})\n
-                {first_desc}
+                {first_desc}\n
                 {other_msg}
                 """
             )
@@ -285,15 +285,15 @@ class Search(Cog):
             await ctx.send("Fetch Error!")
             return
 
-        async with aiohttp.ClientSession() as session:
-            weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}" \
-                                 f"&appid={WEATHER_API_KEY}"
-            async with session.get(weather_lookup_url) as resp:
-                data = await resp.json()
+        weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}" \
+                             f"&appid={WEATHER_API_KEY}"
+        async with self.bot.session.get(weather_lookup_url) as resp:
+            data = await resp.json()
 
         if data["cod"] == "401":
             await ctx.send("Invalid API key")
             return
+
         if data["cod"] == "404":
             await ctx.send("Invalid city name")
             return
@@ -302,24 +302,28 @@ class Search(Cog):
             title=f"Current Weather in {city.capitalize()}",
             color=Color.blue()
         )
+
         longtitude = data["coord"]["lon"]
         lattitude = data["coord"]["lat"]
         weather_embed.add_field(
             name="❯❯ Coordinates",
             value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"
         )
+
         actual_temp = round(data["main"]["temp"] / 10, 1)
         feels_like = round(data["main"]["feels_like"] / 10, 1)
         weather_embed.add_field(
             name="❯❯ Temperature",
             value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`"
         )
+
         wind_speed = data["wind"]["speed"]
         wind_direction = data["wind"]["deg"]
         weather_embed.add_field(
             name="❯❯ Wind",
             value=f"**Speed: **`{wind_speed}km/h`\n**Direction: **`{wind_direction}°`",
         )
+
         visibility = round(data["visibility"] / 1000, 2)
         humidity = data["main"]["humidity"]
         weather_description = data["weather"][0]["description"]

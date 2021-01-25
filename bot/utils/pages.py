@@ -24,7 +24,6 @@ class EmbedPages(ListPageSource):
 
 class SauceSource(ListPageSource):
     """Source for the sauce command."""
-
     async def format_page(self, menu: Menu, page: str):
         """Format the page of code."""
         max_pages = self.get_max_pages()
