@@ -367,7 +367,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if player.context:
             if player.context.channel != ctx.channel:
                 await ctx.send(
-                    f'{ctx.author.mention}, you must be in {player.context.channel.mention} for this session.'
+                    embed=discord.Embed(
+                        description=f'{ctx.author.mention}, you must be in {player.context.channel.mention} for this session.',
+                        color=discord.Color.red()
+                    )
                 )
                 raise IncorrectChannelError
 
@@ -385,7 +388,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if player.is_connected:
             if ctx.author not in channel.members:
-                await ctx.send(f'{ctx.author.mention}, you must be in `{channel.name}` to use voice commands.')
+                await ctx.send(
+                    embed=discord.Embed(
+                        description=f'{ctx.author.mention}, you must be in `{channel.name}` to use voice commands.',
+                        color=discord.Color.red()
+                    )
+                )
                 raise IncorrectChannelError
 
     def required(self, ctx: commands.Context):
@@ -488,7 +496,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='An admin or DJ has paused the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -504,7 +512,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='Vote to pause passed. Pausing player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -515,7 +523,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to pause the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -532,7 +540,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='An admin or DJ has resumed the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -548,7 +556,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='Vote to resume passed. Resuming player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -559,7 +567,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to resume the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -629,7 +637,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='An admin or DJ has skipped the song.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -642,7 +650,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='The song requester has skipped the song.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -668,7 +676,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to skip the song.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=15
             )
@@ -685,7 +693,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='An admin or DJ has stopped the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -709,7 +717,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to stop the player.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -773,7 +781,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description='An admin or DJ has shuffled the playlist.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=10
             )
@@ -797,7 +805,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to shuffle the playlist.',
-                    color=discord.Color.dark_gold()
+                    color=discord.Color.gold()
                 ),
                 delete_after=15
             )
