@@ -935,7 +935,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.invoke_controller()
 
     @commands.command(aliases=["clear-queue", "clear-q"])
-    async def clear_queue(self, ctx: commands.Context, song: int):
+    async def clear_queue(self, ctx: commands.Context):
         """Clear the songs from the queue."""
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
