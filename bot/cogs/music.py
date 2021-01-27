@@ -46,6 +46,7 @@ class Player(wavelink.Player):
         self.waiting = False
         self.updating = False
 
+        self.clear_votes = set()
         self.pause_votes = set()
         self.resume_votes = set()
         self.skip_votes = set()
@@ -57,6 +58,7 @@ class Player(wavelink.Player):
             return
 
         # Clear the votes for a new song.
+        self.clear_votes.clear()
         self.pause_votes.clear()
         self.resume_votes.clear()
         self.skip_votes.clear()
@@ -931,6 +933,70 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             return
 
         await player.invoke_controller()
+
+    @commands.command(aliases=["clear-queue", "clear-q"])
+    async def clear_queue(self, ctx: commands.Context, song: int):
+        """Clear the songs from the queue."""
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
+        if not player.is_connected:
+            return
+
+        if self.is_privileged(ctx) or ctx.author == player.current.requester:
+            if player.is_playing:
+                while player.is_playing:
+                    return await player.stop()
+
+                await ctx.send(
+                    embed=discord.Embed(
+                        description="Cleared the queue!",
+                        color=discord.Color.green()
+                    ),
+                    delete_after=10
+                )
+            else:
+                await ctx.send(
+                    embed=discord.Embed(
+                        description="Nothing to clear!",
+                        color=discord.Color.gold()
+                    ),
+                    delete_after=10
+                )
+
+        required = self.required(ctx)
+        player.clear_votes.add(ctx.author)
+
+        if len(player.clear_votes) >= required:
+            if player.is_playing:
+                while player.is_playing:
+                    return await player.stop()
+
+                await ctx.send(
+                    embed=discord.Embed(
+                        description="Cleared the queue!",
+                        color=discord.Color.green()
+                    ),
+                    delete_after=10
+                )
+            else:
+                await ctx.send(
+                    embed=discord.Embed(
+                        description="Nothing to clear!",
+                        color=discord.Color.gold()
+                    ),
+                    delete_after=10
+                )
+
+            player.clear_votes.clear()
+            await player.stop()
+        else:
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'{ctx.author.mention} has voted to clear the queue.',
+                    color=discord.Color.dark_gold()
+                ),
+                delete_after=15
+            )
 
     @commands.command(aliases=['swap'])
     async def swap_dj(self, ctx: commands.Context, *, member: discord.Member = None):
