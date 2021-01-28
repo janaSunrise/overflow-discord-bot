@@ -55,7 +55,7 @@ class Sudo(Cog):
         await self.bot.close()
 
         time.sleep(1)
-        os.system("pipenv run start")
+        os.system("python -m pipenv run start")
 
     async def _manage_cog(self, ctx: Context, process: str, extension: t.Optional[str] = None) -> None:
         if not extension:

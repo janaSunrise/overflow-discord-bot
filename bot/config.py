@@ -17,6 +17,14 @@ nodes = {
         'password': os.getenv("LAVALINK_PASSWORD"),
         'identifier': 'MAIN',
         'region': 'us_central'
+    },
+    'BACKUP': {
+        'host': 'katrina.qub.io',
+        'port': 2333,
+        'rest_uri': 'http://katrina.qub.io:2333',
+        'password': 'terribleconsequences',
+        'identifier': 'BACKUP',
+        'region': 'us_central'
     }
 }
 

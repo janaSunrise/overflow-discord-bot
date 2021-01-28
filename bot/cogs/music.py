@@ -947,7 +947,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 while player.is_playing:
                     return await player.stop()
 
-                await ctx.send(
+                return await ctx.send(
                     embed=discord.Embed(
                         description="Cleared the queue!",
                         color=discord.Color.green()
@@ -955,7 +955,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     delete_after=10
                 )
             else:
-                await ctx.send(
+                return await ctx.send(
                     embed=discord.Embed(
                         description="Nothing to clear!",
                         color=discord.Color.gold()
@@ -969,9 +969,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if len(player.clear_votes) >= required:
             if player.is_playing:
                 while player.is_playing:
-                    return await player.stop()
+                    await player.stop()
 
-                await ctx.send(
+                return await ctx.send(
                     embed=discord.Embed(
                         description="Cleared the queue!",
                         color=discord.Color.green()
@@ -988,9 +988,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 )
 
             player.clear_votes.clear()
-            await player.stop()
+            return await player.stop()
         else:
-            await ctx.send(
+            return await ctx.send(
                 embed=discord.Embed(
                     description=f'{ctx.author.mention} has voted to clear the queue.',
                     color=discord.Color.dark_gold()
