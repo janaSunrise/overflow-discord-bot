@@ -125,6 +125,7 @@ class Sudo(Cog):
                 • Virtual memory: **`{humanize.naturalsize(mem.vms)}`**
                 • PID: `{pid}` (`{name}`)
                 • Threads: **`{threads}`**
+                • Core count: **`{psutil.cpu_count(logical=False)}`** / **`{psutil.cpu_count(logical=True)}`**
                 """
             )
             embed.add_field(
