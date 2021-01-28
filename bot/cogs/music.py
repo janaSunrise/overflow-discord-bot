@@ -945,7 +945,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if self.is_privileged(ctx) or ctx.author == player.current.requester:
             if player.is_playing:
                 while player.is_playing:
-                    return await player.stop()
+                    await player.stop()
 
                 return await ctx.send(
                     embed=discord.Embed(
