@@ -10,6 +10,7 @@ extensions = [
     # Cog packages
     "bot.cogs.coding",
     "bot.cogs.fun",
+    "bot.cogs.moderation",
     "bot.cogs.study",
     
     # Cogs
