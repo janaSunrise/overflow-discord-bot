@@ -22,8 +22,7 @@ class Lock(commands.Cog):
         """
         Set slowmode in 1 or more channel.
 
-        Specify the duration to add slowmode, or just execute the command without adding anything to remove the
-        slowmode.
+        Specify the duration for slowmode, or just execute the command without adding anything to remove the slowmode.
         """
         if not 0 <= duration <= 21600:
             await ctx.send(
