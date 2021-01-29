@@ -141,7 +141,3 @@ class HackerNews(commands.Cog):
             for channel in channels:
                 channel = self.bot.get_channel(channel)
                 await channel.send("Here's your feed :tada:", embed=article_embed)
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(HackerNews(bot))

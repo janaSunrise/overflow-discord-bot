@@ -100,16 +100,18 @@ class Search(Cog):
 
             # Builds the substring for each of the other result.
             other_results: List[str] = []
+
             for result in results[1:count]:
                 title = self.tomd.handle(result["title"]).rstrip("\n")
                 url = result["url"]
-                other_results.append(f"**{title}** {url}")
+                other_results.append(f"**{title}**\n{url}")
+
             other_msg = "\n\n".join(other_results).strip()
 
             # Builds message
             msg = textwrap.dedent(
                 f"""
-                [{first_title}]({first_url})\n
+                [{first_title.strip("<>")}]({first_url.strip("<>")})\n
                 {first_desc}\n
                 {other_msg}
                 """
@@ -342,8 +344,3 @@ class Search(Cog):
             weather_embed.set_image(url=config.WEATHER_ICONS["sun"])
 
         await ctx.send(embed=weather_embed)
-
-
-def setup(bot: Bot) -> None:
-    """Load the Search cog."""
-    bot.add_cog(Search(bot))

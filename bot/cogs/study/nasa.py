@@ -165,8 +165,3 @@ class Nasa(Cog):
                 embed.set_image(url=images["photos"][i]["img_src"])
                 embed.set_footer(text="Picture taken on" + images["photos"][i]["earth_date"])
                 await ctx.send(embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    """Are you sure all that glitter is gold?"""
-    bot.add_cog(Nasa(bot))

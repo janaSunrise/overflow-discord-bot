@@ -54,7 +54,3 @@ class Overflow(commands.Cog):
         )
 
         await ctx.send(embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Overflow(bot))

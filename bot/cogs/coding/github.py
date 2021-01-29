@@ -152,8 +152,3 @@ class Github(Cog):
             embed.set_thumbnail(url=response["avatar_url"])
 
             await ctx.send(embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    """Load the GitHub cog."""
-    bot.add_cog(Github(bot))

@@ -128,7 +128,3 @@ class Study(commands.Cog):
                     color=discord.Color.red()
                 )
             )
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Study(bot))
