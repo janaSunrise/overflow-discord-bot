@@ -38,6 +38,29 @@ class Lock(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
+    async def unlock(
+            self,
+            ctx: commands.Context,
+            channels: commands.Greedy[discord.TextChannel] = None,
+    ) -> None:
+        if not channels:
+            channels = [ctx.channel]
+
+        channel_count = 0
+        for channel in channels:
+            if channel.permissions_for(ctx.author).manage_channels:
+                await channel.set_permissions(channel.guild.default_role, send_messages=False)
+                channel_count += 1
+
+                await channel.send("🔓 Unocked down this channel.")
+            else:
+                continue
+
+        if channels != [ctx.channel]:
+            await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
+
+    @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def slowmode(
             self, ctx: commands.Context, duration: int = 0, channels: commands.Greedy[discord.TextChannel] = None
     ) -> None:
