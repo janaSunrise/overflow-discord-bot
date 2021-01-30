@@ -124,7 +124,8 @@ class Github(Cog):
                 """
             )
 
-            embed.title = f"[{repo} on GitHub]({response['html_url']})"
+            embed.title = f"{repo} on GitHub"
+            embed.url = response["html_url"]
             embed.description = description
             embed.set_thumbnail(url=response["owner"]["avatar_url"])
 
