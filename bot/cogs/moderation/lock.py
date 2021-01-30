@@ -53,7 +53,7 @@ class Lock(commands.Cog):
                 await channel.set_permissions(channel.guild.default_role, send_messages=False)
                 channel_count += 1
 
-                await channel.send("🔓 Unocked down this channel.")
+                await channel.send("🔓 Unlocked down this channel.")
             else:
                 continue
 
