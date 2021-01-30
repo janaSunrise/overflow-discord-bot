@@ -21,7 +21,20 @@ class Lock(commands.Cog):
             ctx: commands.Context,
             channels: commands.Greedy[discord.TextChannel] = None,
     ) -> None:
-        pass
+        if channels is None:
+            channels = [ctx.channel]
+
+        channel_count = 0
+        for channel in channels:
+            if channel.permissions_for(ctx.author).manage_channels:
+                await channel.set_permissions(channel.guild.default_role, send_messages=False)
+                channel_count += 1
+            else:
+                continue
+            await channel.send("🔒 Locked down this channel.")
+
+        if channels != [ctx.channel]:
+            await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
