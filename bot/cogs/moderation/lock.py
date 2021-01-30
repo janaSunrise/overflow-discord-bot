@@ -16,6 +16,15 @@ class Lock(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
+    async def lock(
+            self,
+            ctx: commands.Context,
+            channels: commands.Greedy[discord.TextChannel] = None,
+    ) -> None:
+        pass
+
+    @commands.command()
+    @commands.has_permissions(manage_channels=True)
     async def slowmode(
             self, ctx: commands.Context, duration: int = 0, channels: commands.Greedy[discord.TextChannel] = None
     ) -> None:
