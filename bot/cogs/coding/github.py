@@ -1,4 +1,5 @@
 import textwrap
+from datetime import datetime
 
 from discord import Color, Embed
 from discord.ext.commands import (
@@ -73,15 +74,25 @@ class Github(Cog):
 
     @command()
     @cooldown(1, 5, type=BucketType.user)
-    async def ghrepo(self, ctx: Context, repo: str, user: str) -> None:
+    async def ghrepo(self, ctx: Context, user: str, repo: str) -> None:
         """Show info about a given GitHub repository."""
+        URL = f"https://api.github.com/repos/{user}/{repo}"
+
         embed = Embed(color=Color.blue())
+
+        # Fetching the data
+
         async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
             response = await resp.json()
+
+        async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}/languages") as resp:
+            json = await resp.json()
+            languages = len(json)
 
         if resp.status in BAD_RESPONSES:
             await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
+
         try:
             if response["message"]:
                 await ctx.send(f"ERROR: {response['message']}")
@@ -94,20 +105,26 @@ class Github(Cog):
 
             description = textwrap.dedent(
                 f"""
-                Description: **{desc}**
+                📄 **Description:**
+                ```
+                {desc}
+                ```
 
-                Stars: **{response["stargazers_count"]}**
-                Forks: **{response["forks_count"]}**
+                🧿 **Info:**
+                • Created on {datetime.strptime(response["created_at"],"%Y-%m-%dT%H:%M:%SZ")}
 
-                Language: **{response["language"]}**
-                License: **{response["license"]["name"]}**
-
-                Command: `git clone {response["clone_url"]}`
-                Link: [here]({response["html_url"]})
+                • Has been starred {response["stargazers_count"]} times.
+                • Has been forked {response["forks_count"]} times.
+                
+                • Written in {response["language"]} among {languages} languages.
+                • Uses {response["license"]["name"]}.
+                
+                • Use this command to fork:
+                **`git clone {response["clone_url"]}`**
                 """
             )
 
-            embed.title = f"{repo} on GitHub"
+            embed.title = f"[{repo} on GitHub]({response['html_url']})"
             embed.description = description
             embed.set_thumbnail(url=response["owner"]["avatar_url"])
 
@@ -131,23 +148,34 @@ class Github(Cog):
         except KeyError:
             description = textwrap.dedent(
                 f"""
-                Name: {"No Name!" if not response["name"] else response["name"]}
-                Bio: {"No Bio!" if not response["bio"] else response["bio"]}
-                
-                Followers: **{response["followers"]}**
-                Following: **{response["following"]}**
+                📄 **Description:**
+                • He/She is {"No Name!" if not response["name"] else response["name"]}
+                ```
+                {"No Bio!" if not response["bio"] else response["bio"]}
+                ```
 
-                Company: **{response["company"]}**
-                Site / Blog: {"No website given!" if response["blog"] == "" else response["blog"]}
-                
-                Twitter: {"No twitter handles!" if not response["twitter_username"] else response["twitter_username"]}
-                Location: **{"No location given!" if not response["location"] else response["location"]}**
+                🧿 **Info:**
+                • Created on {datetime.strptime(response["created_at"],"%Y-%m-%dT%H:%M:%SZ")}
 
-                Link: [here]({response["html_url"]})
+                • Owns {response["public_repos"]} repositories.
+
+                • Has been followed by {response["followers"]} developers.
+                • Loves to follow {response["following"]} developers
+                
+                {"" if not response["location"] else f"• Located in {response['location']}"}
+
+                {"" if not response["company"] else f"• Works at {response['company']}"}
+
+                🔗 **Links:**
+                {"" if response["blog"] == "" else f"• Has a site or blog at {response['blog']}"}
+                {
+                "" if not response["twitter_username"] 
+                   else f"• Twitter handle is https://twitter.com/{response['twitter_username']}"
+                }
                 """
             )
 
-            embed.title = f"{user} on Github"
+            embed.title = f"[{user} on Github]({response['html_url']})"
             embed.description = description
             embed.set_thumbnail(url=response["avatar_url"])
 
