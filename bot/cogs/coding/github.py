@@ -28,10 +28,10 @@ class Github(Cog):
 
     @command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
-    async def issue(self, ctx: Context, issue_num: int, repository: str, user: str) -> None:
+    async def issue(self, ctx: Context, user: str, repository: str, issue_num: int) -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
         url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
-        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}/merge"
+        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}"
 
         async with self.bot.session.get(url) as resp:
             json_data = await resp.json()
@@ -40,13 +40,36 @@ class Github(Cog):
             await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
 
+        labels = [f"`{json_data['labels'][i]['name']}`" for i in range(len(json_data["labels"]))]
+        assignees = len(json_data["assignees"])
+
         if "issues" in json_data.get("html_url"):
+            issue_type = "issue"
             if json_data.get("state") == "open":
                 title = "Issue Opened"
             else:
                 title = "Issue Closed"
+
+            description = textwrap.dedent(
+                f"""
+                🧿 **Info:**
+                • Repository located at **{user}/{repository}**
+
+                • {issue_type} state is {title}
+
+                • Created by {json_data["user"]["login"]}
+
+                • Has {json_data["comments"]} comments
+                • Has {assignees} assignees.
+                • {assignees} developers participated.
+
+                🏷️ **Labels:**
+                {"No labels" if len(labels) == 0 else " ".join(labels)}
+                """
+            )
         else:
             async with self.bot.session.get(merge_url) as merge:
+                issue_type = "PR"
                 if json_data.get("state") == "open":
                     title = "PR Opened"
                 elif merge.status == 204:
@@ -54,20 +77,33 @@ class Github(Cog):
                 else:
                     title = "PR Closed"
 
+                merge = await merge.json()
+
+                description = textwrap.dedent(
+                    f"""
+                    🧿 **Info:**
+                    • Repository located at **{user}/{repository}**
+
+                    • {issue_type} state is {title}
+
+                    • Created by {merge["user"]["login"]}
+
+                    • Has {merge["comments"]} comments 
+                    • Has {"no" if not merge["review_comments"] else merge["review_comments"]} reviews
+                    • {merge["changed_files"]} Files changes, with {merge["commits"]} commits done.
+                    • Changes contain {merge["additions"]} additions and {merge["deletions"]} deletions
+
+                    🏷️ **Labels:**
+                    {"No labels" if len(labels) == 0 else " ".join(labels)}
+                    """
+                )
+
         issue_url = json_data.get("html_url")
         resp = Embed(
-            title=f"{title}",
+            title=f"{json_data.get('title')} [#{issue_num}]",
             colour=Color.gold(),
-            description=textwrap.dedent(
-                f"""
-                Repository : **{user}/{repository}**
-
-                Title : **{json_data.get('title')}**
-                ID : **`{issue_num}`**
-
-                Link :  [Here]({issue_url})
-                """
-            )
+            description=description,
+            url=issue_url
         )
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
