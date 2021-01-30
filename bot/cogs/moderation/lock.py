@@ -21,7 +21,7 @@ class Lock(commands.Cog):
             ctx: commands.Context,
             channels: commands.Greedy[discord.TextChannel] = None,
     ) -> None:
-        if channels is None:
+        if not channels:
             channels = [ctx.channel]
 
         channel_count = 0
