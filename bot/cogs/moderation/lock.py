@@ -29,9 +29,10 @@ class Lock(commands.Cog):
             if channel.permissions_for(ctx.author).manage_channels:
                 await channel.set_permissions(channel.guild.default_role, send_messages=False)
                 channel_count += 1
+
+                await channel.send("🔒 Locked down this channel.")
             else:
                 continue
-            await channel.send("🔒 Locked down this channel.")
 
         if channels != [ctx.channel]:
             await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
