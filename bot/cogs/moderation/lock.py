@@ -20,14 +20,43 @@ class Lock(commands.Cog):
             self,
             ctx: commands.Context,
             channels: commands.Greedy[discord.TextChannel] = None,
+            override_roles: commands.Greedy[discord.Role] = None
     ) -> None:
+        """
+        Lock a channel to stop people from talking and make the server under maintenance.
+
+        Specify the override roles so that the specified roles can talk.
+        """
+        guild = ctx.guild
+
         if not channels:
             channels = [ctx.channel]
+
+        overwrites = {
+            guild.default_role:
+                discord.PermissionOverwrite(send_messages=False),
+
+            guild.me:
+                discord.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=True,
+                    manage_messages=True,
+                    add_reactions=True,
+                    manage_channels=True
+                ),
+        }
+
+        if override_roles is not None:
+            for role in override_roles:
+                role = discord.utils.get(guild.roles, id=role.id)
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=True,
+                )
 
         channel_count = 0
         for channel in channels:
             if channel.permissions_for(ctx.author).manage_channels:
-                await channel.set_permissions(channel.guild.default_role, send_messages=False)
+                await channel.edit(overwrites=overwrites)
                 channel_count += 1
 
                 await channel.send("🔒 Locked down this channel.")
@@ -43,14 +72,43 @@ class Lock(commands.Cog):
             self,
             ctx: commands.Context,
             channels: commands.Greedy[discord.TextChannel] = None,
+            override_roles: commands.Greedy[discord.Role] = None
     ) -> None:
+        """
+        Unlock a locked channel to continue traffic.
+
+        Specify the override roles so that the specified roles cannot talk.
+        """
+        guild = ctx.guild
+
         if not channels:
             channels = [ctx.channel]
+
+        overwrites = {
+            guild.default_role:
+                discord.PermissionOverwrite(send_messages=True),
+
+            guild.me:
+                discord.PermissionOverwrite(
+                    read_messages=True,
+                    send_messages=True,
+                    manage_messages=True,
+                    add_reactions=True,
+                    manage_channels=True
+                ),
+        }
+
+        if override_roles is not None:
+            for role in override_roles:
+                role = discord.utils.get(guild.roles, id=role.id)
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=False,
+                )
 
         channel_count = 0
         for channel in channels:
             if channel.permissions_for(ctx.author).manage_channels:
-                await channel.set_permissions(channel.guild.default_role, send_messages=False)
+                await channel.edit(overwrites=overwrites)
                 channel_count += 1
 
                 await channel.send("🔓 Unlocked down this channel.")
