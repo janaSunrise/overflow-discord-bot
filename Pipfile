@@ -14,6 +14,7 @@ python-dateutil = "*"
 beautifulsoup4 = "*"
 psutil = "*"
 humanize = "*"
+yarl = "*"
 
 [dev-packages]
 

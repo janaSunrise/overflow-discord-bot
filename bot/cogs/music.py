@@ -11,6 +11,7 @@ import async_timeout
 import discord
 from discord.ext import commands, menus
 import wavelink
+import yarl
 
 from bot import config
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
@@ -446,10 +447,13 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not player.is_connected:
             await ctx.invoke(self.connect)
 
-        query = query.strip("<>")
+        url = yarl.URL(query)
 
-        if not URL_REG.match(query):
-            query = f"ytsearch:{query}"
+        if not url.scheme or not url.host:
+            if "soundcloud" in query:
+                query = f'scsearch:{query}'
+            else:
+                query = f'ytsearch:{query}'
 
         tracks = await self.bot.wavelink.get_tracks(query)
         if not tracks:
