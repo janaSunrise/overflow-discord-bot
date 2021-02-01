@@ -15,6 +15,7 @@ beautifulsoup4 = "*"
 psutil = "*"
 humanize = "*"
 yarl = "*"
+spotify = "*"
 
 [dev-packages]
 

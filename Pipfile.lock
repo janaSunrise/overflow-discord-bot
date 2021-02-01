@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "aca8e7472bf11c78f601f4a33de0dbd7551ee2a1696faf6470d229a505f6e234"
+            "sha256": "4747521d9347948b1aeffb31fd84a46f1de2d5558c25da1ae49a70cebab01355"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -56,6 +56,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==20.3.0"
+        },
+        "backoff": {
+            "hashes": [
+                "sha256:5e73e2cbe780e1915a204799dba0a01896f45f4385e636bcca7a0614d879d0cd",
+                "sha256:b8fba021fac74055ac05eb7c7bfce4723aedde6cd0a504e5326bcb0bdd6d19a4"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==1.10.0"
         },
         "beautifulsoup4": {
             "hashes": [
@@ -272,6 +280,14 @@
             ],
             "markers": "python_version >= '3.0'",
             "version": "==2.1"
+        },
+        "spotify": {
+            "hashes": [
+                "sha256:be9d05d6f419f1fba0c02b8123d716082597d4a1fa505b1b2f543d351afb1e30",
+                "sha256:f8e64eefac3f5cbd6718a2b7d43d244707d6974fbc30664fa0c653c56f3941ca"
+            ],
+            "index": "pypi",
+            "version": "==0.10.2"
         },
         "typing-extensions": {
             "hashes": [

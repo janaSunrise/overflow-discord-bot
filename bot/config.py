@@ -20,6 +20,10 @@ nodes = {
     },
 }
 
+# -- Spotify --
+spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
+spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+
 # -- Search --
 basic_search_categories = [
     "web",

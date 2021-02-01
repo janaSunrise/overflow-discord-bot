@@ -4,6 +4,9 @@ from datetime import datetime
 import aiohttp
 import aiosqlite
 from discord.ext.commands import AutoShardedBot
+import spotify
+
+from bot import config
 
 
 class Bot(AutoShardedBot):
@@ -16,6 +19,15 @@ class Bot(AutoShardedBot):
 
         self.extension_list = extensions
         self.initial_call = True
+
+        self.spotify = spotify.Client(
+            client_id=config.spotify_client_id,
+            client_secret=config.spotify_client_secret
+        )
+        self.spotify_http = spotify.HTTPClient(
+            client_id=config.spotify_client_id,
+            client_secret=config.spotify_client_secret
+        )
 
         self.db = None
 
