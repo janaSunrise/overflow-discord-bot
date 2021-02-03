@@ -523,15 +523,16 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     info={
                         'title': track.name or 'Unknown',
                         'author': ', '.join(artist.name for artist in track.artists) or 'Unknown',
-                        'length': track.duration or 0, 'identifier': track.id or 'Unknown',
+                        'length': track.duration or 0,
+                        'identifier': track.id or 'Unknown',
                         'uri': track.url or 'spotify',
-                        'isStream': False, 'isSeekable': False, 'position': 0,
+                        'isStream': False,
+                        'isSeekable': False,
+                        'position': 0,
                         'thumbnail': track.images[0].url if track.images else None
                     },
                 ) for track in search_tracks
             ]
-
-
 
         if not player.is_playing:
             await player.do_next()
