@@ -463,35 +463,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             tracks = await self.bot.wavelink.get_tracks(query)
             if not tracks:
                 return await ctx.send('No songs were found with that query. Please try again.', delete_after=15)
-
-            if isinstance(tracks, wavelink.TrackPlaylist):
-                for track in tracks.tracks:
-                    track = Track(track.id, track.info, requester=ctx.author)
-                    await player.queue.put(track)
-
-                print(tracks)
-                await ctx.send(
-                    embed=discord.Embed(
-                        description=textwrap.dedent(f"""
-                        ```ini
-                        Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the 
-                        queue.
-                        ```
-                        """),
-                        color=discord.Color.blurple()
-                    ),
-                    delete_after=15
-                )
-            else:
-                track = Track(tracks[0].id, tracks[0].info, requester=ctx.author)
-                await ctx.send(
-                    embed=discord.Embed(
-                        description=f'```ini\nAdded {track.title} to the Queue\n```',
-                        color=discord.Color.blurple()
-                    ),
-                    delete_after=15
-                )
-                await player.queue.put(track)
         else:
             search_tracks = None
 
@@ -512,27 +483,46 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     search_result = await self.bot.spotify.get_track(spotify_id=spotify_id)
                     search_tracks = [search_result]
             except spotify.NotFound or discord.HTTPException:
-                return await ctx.send(f'No results were found for your Spotify link.', delete_after=15)
+                return await ctx.send(f'No results were found for your spotify link.', delete_after=15)
 
             if not search_tracks:
                 return await ctx.send('No songs were found with that query. Please try again.', delete_after=15)
+            else:
+                tracks = []
+                for track in search_tracks:
+                    result = await self.bot.wavelink.get_tracks(
+                        f"ytsearch:{track.name} - {', '.join(artist.name for artist in track.artists)}"
+                    )
+                    if result:
+                        tracks.append(result[0])
 
-            tracks = [
-                wavelink.Track(
-                    id_='',
-                    info={
-                        'title': track.name or 'Unknown',
-                        'author': ', '.join(artist.name for artist in track.artists) or 'Unknown',
-                        'length': track.duration or 0,
-                        'identifier': track.id or 'Unknown',
-                        'uri': track.url or 'spotify',
-                        'isStream': False,
-                        'isSeekable': False,
-                        'position': 0,
-                        'thumbnail': track.images[0].url if track.images else None
-                    },
-                ) for track in search_tracks
-            ]
+        if isinstance(tracks, wavelink.TrackPlaylist):
+            for track in tracks.tracks:
+                track = Track(track.id, track.info, requester=ctx.author)
+                await player.queue.put(track)
+
+            await ctx.send(
+                embed=discord.Embed(
+                    description=textwrap.dedent(f"""
+                    ```ini
+                    Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the 
+                    queue.
+                    ```
+                    """),
+                    color=discord.Color.blurple()
+                ),
+                delete_after=15
+            )
+        else:
+            track = Track(tracks[0].id, tracks[0].info, requester=ctx.author)
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'```ini\nAdded {track.title} to the Queue\n```',
+                    color=discord.Color.blurple()
+                ),
+                delete_after=15
+            )
+            await player.queue.put(track)
 
         if not player.is_playing:
             await player.do_next()
