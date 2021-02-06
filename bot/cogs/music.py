@@ -52,6 +52,7 @@ class Player(wavelink.Player):
         self.clear_votes = set()
         self.pause_votes = set()
         self.resume_votes = set()
+        self.repeat_votes = set()
         self.skip_votes = set()
         self.shuffle_votes = set()
         self.stop_votes = set()
@@ -64,6 +65,7 @@ class Player(wavelink.Player):
         self.clear_votes.clear()
         self.pause_votes.clear()
         self.resume_votes.clear()
+        self.repeat_votes.clear()
         self.skip_votes.clear()
         self.shuffle_votes.clear()
         self.stop_votes.clear()
@@ -668,12 +670,64 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise InvalidRepeatMode
 
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
-        player.queue.set_repeat_mode(mode)
 
         await ctx.send(
             embed=discord.Embed(
                 description=f"The repeat mode has been set to {mode}.",
                 color=discord.Color.green()
+            )
+        )
+
+        if not player.is_connected:
+            return
+
+        if not player.queue and not player.current:
+            return
+
+        if self.is_privileged(ctx):
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'{ctx.author.mention} has repeated the song as an Admin or DJ.',
+                    color=discord.Color.green()
+                ),
+                delete_after=10
+            )
+            player.queue.set_repeat_mode(mode)
+
+            if not player.is_playing:
+                await player.do_next()
+
+            return
+
+        if ctx.author in player.repeat_votes:
+            return await ctx.send(
+                embed=discord.Embed(
+                    description=f'{ctx.author.mention} you have already voted to repeat the song.',
+                    color=discord.Color.red()
+                ),
+                delete_after=10
+            )
+
+        player.repeat_votes.add(ctx.author)
+
+        if len(player.repeat_votes) >= self.required(ctx):
+            await ctx.send(
+                embed=discord.Embed(
+                    description='Vote to repeat the song passed. Now repeating the song.',
+                    color=discord.Color.green()
+                ),
+                delete_after=10
+            )
+            player.queue.set_repeat_mode(mode)
+
+            if not player.is_playing:
+                await player.do_next()
+            return
+
+        await ctx.send(
+            embed=discord.Embed(
+                description=f'{ctx.author.mention} Your vote to repeat the song was received.',
+                color=discord.Color.gold()
             )
         )
 
