@@ -118,10 +118,10 @@ class Player(wavelink.Player):
         channel = self.bot.get_channel(int(self.channel_id))
         qsize = self.queue.qsize()
 
-        embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 | {channel.name}', colour=discord.Color.blurple())
+        embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 ┃ {channel.name}', colour=discord.Color.blurple())
         embed.description = f'Now Playing:\n**`{track.title}`**\n\n'
-        embed.set_thumbnail(url=track.thumb)
 
+        embed.set_thumbnail(url=track.thumb)
         embed.add_field(name='Duration', value=str(datetime.timedelta(milliseconds=int(track.length))))
         embed.add_field(name='Queue Length', value=str(qsize))
         embed.add_field(name='Volume', value=f'**`{self.volume}%`**')
