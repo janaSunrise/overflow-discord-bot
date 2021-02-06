@@ -310,6 +310,14 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         for node in config.nodes.values():
             await self.bot.wavelink.initiate_node(**node)
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
+
+        if not member.bot and after.channel is None:
+            if not [m for m in before.channel.members if not m.bot]:
+                await player.teardown()
+
     @wavelink.WavelinkMixin.listener()
     async def on_node_ready(self, node: wavelink.Node):
         print(f'Node {node.identifier} is ready!')
@@ -660,8 +668,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise InvalidRepeatMode
 
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
-
         player.queue.set_repeat_mode(mode)
+
         await ctx.send(
             embed=discord.Embed(
                 description=f"The repeat mode has been set to {mode}.",
