@@ -900,7 +900,15 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command(aliases=['eq'])
     async def equalizer(self, ctx: commands.Context, *, equalizer: str):
-        """Change the players equalizer."""
+        """
+        Change the players equalizer.
+
+        **Valid Equalizers:**
+        - Flat
+        - Boost
+        - Metal
+        - Piano
+        """
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
