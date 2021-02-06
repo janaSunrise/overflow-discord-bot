@@ -373,7 +373,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             if player.context.channel != ctx.channel:
                 await ctx.send(
                     embed=discord.Embed(
-                        description=f'{ctx.author.mention}, you must be in {player.context.channel.mention} for this session.',
+                        description=f'{ctx.author.mention}, you must be in {player.context.channel.mention} '
+                                    f'for this session.',
                         color=discord.Color.red()
                     )
                 )
