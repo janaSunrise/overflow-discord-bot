@@ -125,3 +125,40 @@ class Fun(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def history(self, ctx: commands.Context):
+        async with self.bot.session.get('http://numbersapi.com/random/date?json') as resp:
+            res = await resp.json()
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random History Date!",
+                description=f"• Fact: {res['text']}"
+                            f"\n• Year: {res['year']}"
+            )
+
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def math(self, ctx: commands.Context) -> None:
+        async with self.bot.session.get('http://numbersapi.com/random/math?json') as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random Math Fact!",
+                description=f"• Fact: {res['text']}"
+                            f"\n• Number: {res['number']}"
+            )
+            await ctx.send(embed=embed)
+
+    @commands.command()
+    async def advice(self, ctx: commands.Context) -> None:
+        async with self.bot.session.get('https://api.adviceslip.com/advice') as r:
+            res = await r.json(content_type="text/html")
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random Advice!",
+                description=f"• Advice: {res['slip']['advice']}"
+            )
+
+            await ctx.send(embed=embed)
