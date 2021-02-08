@@ -85,4 +85,43 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
+    @commands.command()
+    async def why(self, ctx: commands.Context) -> None:
+        """Getting to know a random `Why?` question"""
+        async with self.bot.session.get("https://nekos.life/api/why", headers=self.user_agent) as resp:
+            if resp.status == 200:
+                json = await resp.json()
+                embed = discord.Embed(
+                    title=f"{ctx.author.name} wonders...",
+                    description=json["why"],
+                    colour=0x690E8
+                )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"Something went Boom! [CODE : {resp.status}]")
 
+    @commands.command(aliases=["shitjoke", "badjoke"])
+    async def dadjoke(self, ctx: commands.Context) -> None:
+        """A simple shitty dad joke generator."""
+        async with self.bot.session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as joke:
+            if joke.status == 200:
+                res = await joke.text()
+                res = res.encode("utf-8").decode("utf-8")
+                await ctx.send(res)
+            else:
+                await ctx.send(f"No dad joke. [STATUS : {joke.status}]")
+
+    @commands.command(aliases=["bofh", "techproblem"])
+    async def excuse(self, ctx: commands.Context) -> None:
+        """Bastard Operator from Hell excuses."""
+        async with self.bot.session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as resp:
+            data = await resp.text()
+
+        lines = data.split("\n")
+        embed = discord.Embed(
+            title="Excuses",
+            description=random.choice(lines),
+            color=discord.Color.blurple()
+        )
+
+        await ctx.send(embed=embed)
