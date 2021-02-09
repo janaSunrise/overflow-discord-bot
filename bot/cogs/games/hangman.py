@@ -12,10 +12,10 @@ from bot import Bot
 
 
 class HangmanGame:
-    with open(path.join("assets/hangman_stages.txt"), "r") as f:
+    with open(path.join("bot/assets/hangman_stages.txt"), "r") as f:
         stages = f.read().split("\n\n")
 
-    with open(path.join("assets/hangman_words.txt"), "r") as f:
+    with open(path.join("bot/assets/hangman_words.txt"), "r") as f:
         word_list = []
         for line in f:
             word_list.append(line.replace("\n", ""))
