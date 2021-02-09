@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from bot import Bot, config
+from .connect4 import Connect4
 from .hangman import HangmanGame
 from .tic_tac_toe import TTT_Game
 
@@ -41,3 +42,12 @@ class Games(commands.Cog):
         """Play game of Hangman."""
         hangman_game = HangmanGame.random(ctx)
         await hangman_game.play()
+
+    @commands.command(aliases=["c4"])
+    async def connect4(self, ctx: commands.Context, member: discord.Member) -> None:
+        """Play connect 4 with a friend"""
+        winner = await Connect4(ctx.author, member, clear_reactions_after=True).prompt(ctx)
+        if winner:
+            await ctx.send(f"{winner.mention} won !")
+        else:
+            await ctx.send("Game cancelled")
