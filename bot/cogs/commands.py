@@ -69,6 +69,27 @@ class Commands(commands.Cog):
 
         return code
 
+    @commands.cooldown(1, 10, commands.BucketType.member)
+    async def shorten(self, ctx: commands.Context, *, link: str) -> None:
+        """Make a link shorter using the tinyurl api."""
+        if not link.startswith("https://"):
+            await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")
+            return
+
+        url = link.strip("<>")
+        url = f"http://tinyurl.com/api-create.php?url={url}"
+
+        async with self.bot.session.get(url) as resp:
+            if resp.status != 200:
+                await ctx.send("Error retrieving shortened URL, please try again in a minute.")
+                return
+            shortened_link = await resp.text()
+
+        embed = discord.Embed(color=discord.Color.blurple())
+        embed.add_field(name="Original Link", value=link, inline=False)
+        embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
+        await ctx.send(embed=embed)
+
 
 def setup(bot: Bot) -> None:
     bot.add_cog(Commands(bot))
