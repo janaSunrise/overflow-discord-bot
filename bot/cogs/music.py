@@ -484,15 +484,19 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 if search_type == 'album':
                     search_result = await self.bot.spotify.get_album(spotify_id=spotify_id)
                     search_tracks = await search_result.get_all_tracks()
+                    print(search_tracks)
+
                 elif search_type == 'playlist':
                     search_result = spotify.Playlist(
                         client=self.bot.spotify_client,
-                        data=await self.bot.spotify_http.get_playlist(spotify_id)
+                        data=await self.bot.spotify_http.get_playlist(spotify_id=spotify_id)
                     )
                     search_tracks = await search_result.get_all_tracks()
+
                 elif search_type == 'track':
                     search_result = await self.bot.spotify.get_track(spotify_id=spotify_id)
                     search_tracks = [search_result]
+
             except spotify.NotFound or discord.HTTPException:
                 return await ctx.send(f'No results were found for your spotify link.', delete_after=15)
 
@@ -505,7 +509,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                         f"ytsearch:{track.name} - {', '.join(artist.name for artist in track.artists)}"
                     )
                     if result:
-                        tracks.append(result[0])
+                        tracks.append(Track(result[0].id, result[0].info, requester=ctx.author))
 
         if isinstance(tracks, wavelink.TrackPlaylist):
             for track in tracks.tracks:
