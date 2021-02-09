@@ -217,3 +217,16 @@ class Comics(Cog):
             embed.set_image(url="attachment://sarahscribbles.png")
             file = File(img, "sarahscribbles.png")
             await ctx.send(file=file, embed=embed)
+
+    @command()
+    async def garfield(self, ctx: Context) -> None:
+        """Send a random 'garfield' comic."""
+        url = "https://many-api.vercel.app/garfield/random"
+
+        async with ctx.typing():
+            async with self.bot.session.get(url) as response:
+                img_url = (await response.json())["url"]
+
+            embed = Embed(title="Garfield", color=Color.blurple())
+            embed.set_image(url=img_url)
+            await ctx.send(embed=embed)
