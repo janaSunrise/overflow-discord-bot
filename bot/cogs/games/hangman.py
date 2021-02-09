@@ -32,6 +32,7 @@ class HangmanGame:
         self.word = word.upper()
         self.guesses = []
         self.tries = 6
+        self.message = None
 
     async def get_guess(self) -> str:
         """Accept a guess from the user"""
@@ -117,7 +118,7 @@ class HangmanGame:
             )
             await self.channel.send(embed=guess_embed, delete_after=5)
         embed.set_footer(
-            text=f"{config.COMMAND_PREFIX}hangexit to exit the game! | Powered By HotWired."
+            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!"
         )
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)
