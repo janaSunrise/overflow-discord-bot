@@ -16,7 +16,7 @@ import yarl
 
 from bot import config
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
-from bot.utils.utils import format_time
+from bot.utils.utils import format_time, progress_bar
 
 # URL matching REGEX.
 TIME_REG = re.compile("[0-9]+")
@@ -120,8 +120,12 @@ class Player(wavelink.Player):
         channel = self.bot.get_channel(int(self.channel_id))
         qsize = self.queue.qsize()
 
+        prefix = "⏸" if self.paused else "▶"
+        suffix = f'`[{format_time(self.position)} / {format_time(track.duration)}]`'
+
         embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 ┃ {channel.name}', colour=discord.Color.blurple())
-        embed.description = f'Now Playing:\n**`{track.title}`**\n\n'
+        embed.description = f'Now Playing:\n**`{track.title}`**\n\n' \
+                            f'{prefix} {progress_bar(int(self.position / 1000), int(track.duration / 1000   ))} {suffix}'
 
         embed.set_thumbnail(url=track.thumb)
         embed.add_field(name='Duration', value=str(datetime.timedelta(milliseconds=int(track.length))))

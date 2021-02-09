@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4747521d9347948b1aeffb31fd84a46f1de2d5558c25da1ae49a70cebab01355"
+            "sha256": "5465998717c5b528562dcc359377af09c83c91cd55ac8a2964b275994c0b50a1"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -92,6 +92,7 @@
                 "sha256:6bc25fc545a6b3d57b5f8618e59fc13d3a3a68431e8ca5fd4c13241cd70d0009",
                 "sha256:798caa2a2384b1cbe8a2a139d80734c9db54f9cc155c99d7cc92441a23871c03",
                 "sha256:7c6b1dece89874d9541fc974917b631406233ea0440d0bdfbb8e03bf39a49b3b",
+                "sha256:7ef7d4ced6b325e92eb4d3502946c78c5367bc416398d387b39591532536734e",
                 "sha256:840793c68105fe031f34d6a086eaea153a0cd5c491cde82a74b420edd0a2b909",
                 "sha256:8d6603078baf4e11edc4168a514c5ce5b3ba6e3e9c374298cb88437957960a53",
                 "sha256:9cc46bc107224ff5b6d04369e7c595acb700c3613ad7bcf2e2012f62ece80c35",
@@ -282,12 +283,8 @@
             "version": "==2.1"
         },
         "spotify": {
-            "hashes": [
-                "sha256:be9d05d6f419f1fba0c02b8123d716082597d4a1fa505b1b2f543d351afb1e30",
-                "sha256:f8e64eefac3f5cbd6718a2b7d43d244707d6974fbc30664fa0c653c56f3941ca"
-            ],
-            "index": "pypi",
-            "version": "==0.10.2"
+            "git": "https://github.com/Axelancerr/spotify.py",
+            "ref": "2b5e75e562deda01327adcbfe8ce7cede14d8cf2"
         },
         "typing-extensions": {
             "hashes": [

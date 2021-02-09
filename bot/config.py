@@ -23,7 +23,7 @@ nodes = {
         "port": 2444,
         "rest_uri": "http://144.172.71.88:2444",
         "password": "youshallnotpass",
-        "identifier": "MAIN",
+        "identifier": "SUBNODE",
         "region": "us_central",
     }
 }

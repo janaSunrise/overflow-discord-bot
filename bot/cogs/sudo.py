@@ -1,6 +1,7 @@
 import io
 import os
 import platform
+import subprocess
 import textwrap
 import time
 import traceback
@@ -192,6 +193,22 @@ class Sudo(Cog):
                 else:
                     self._last_result = ret
                     await ctx.send(f'```py\n{value}{ret}\n```')
+
+    @sudo.command(description="Execute code in bash.", usage="bash <command>", hidden=True)
+    async def bash(self, ctx, *, command_to_run: str):
+        try:
+            output = subprocess.check_output(
+                self.cleanup_code(command_to_run).split(), stderr=subprocess.STDOUT
+            ).decode("utf-8")
+            await ctx.send(embed=Embed(description=f"```py\n{output}\n```", colour=Color.blue()))
+        except Exception as error:
+            await ctx.send(
+                embed=Embed(
+                    title="⚠ Error",
+                    description=f"```py\n{error.__class__.__name__}: {error}\n```",
+                    colour=Color.red(),
+                )
+            )
 
     async def cog_check(self, ctx: Context) -> t.Optional[bool]:
         """Only the bot owners can use this."""

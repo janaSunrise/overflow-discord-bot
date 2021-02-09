@@ -11,6 +11,12 @@ def format_time(time):
     return '%02d:%02d:%02d' % (hours, minutes, seconds)
 
 
+def progress_bar(current, total):
+    barsize = 12
+    num = int(current / total * barsize)
+    return "▬" * num + "▭" + "―" * (barsize - num)
+
+
 async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     BRACKETED = re.compile(r"(\[(.+?)\])")
     embeds_list = []

@@ -9,7 +9,6 @@ from discord.ext import menus
 
 class TTT_Game(menus.Menu):
     """Tic-tac-Toe menu."""
-
     emojis = [
         ":black_large_square:",
         ":o:",
