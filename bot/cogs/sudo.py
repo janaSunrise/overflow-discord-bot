@@ -215,7 +215,7 @@ class Sudo(Cog):
         if ctx.author.id in config.devs:
             return True
 
-        return False
+        raise NotOwner
 
 
 def setup(bot: Bot) -> None:

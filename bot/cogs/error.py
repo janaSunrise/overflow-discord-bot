@@ -78,6 +78,7 @@ class ErrorHandler(Cog):
                 msg = "❌ This command is only available to bot owners."
             else:
                 msg = "❌ You don't have permission to run this command."
+
             await self.error_embed(
                 ctx,
                 description=msg
