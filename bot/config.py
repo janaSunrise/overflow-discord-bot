@@ -18,6 +18,14 @@ nodes = {
         'identifier': 'MAIN',
         'region': 'us_central'
     },
+    "SUBNODE": {
+        "host": "144.172.71.88",
+        "port": 2444,
+        "rest_uri": "http://144.172.71.88:2444",
+        "password": "youshallnotpass",
+        "identifier": "MAIN",
+        "region": "us_central",
+    }
 }
 
 # -- Spotify --
