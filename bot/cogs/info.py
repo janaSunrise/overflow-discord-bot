@@ -61,19 +61,6 @@ class Info(commands.Cog):
         )
         await pages.start(ctx)
 
-        # embed = discord.Embed(colour=discord.Colour.blurple())
-        # embed.add_field(
-        #     name=f"{self.bot.user.name}'s structure",
-        #     value="\n".join(sorted(list_of_files)),
-        # )
-        # embed.set_footer(
-        #     text=(
-        #         f"I am made of {total} lines of Python, spread across "
-        #         f"{file_amount} files !"
-        #     ),
-        # )
-        # await ctx.send(embed=embed)
-
     @commands.command(aliases=["sauce"])
     async def source(self, ctx: commands.Context, *, command_name: str) -> None:
         """Get the source code of a command."""
