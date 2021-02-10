@@ -146,8 +146,8 @@ class HelpCommand(BaseHelpCommand):
         """
         Describe command in a meaningful syntax which can than be showed to
         users to provide details about given command.
-        Returns a tuple of these variabels:
-        1. `command_name`: the exact syntex (without prefix) used to call the command
+        Returns a tuple of these variables:
+        1. `command_name`: the exact syntax (without prefix) used to call the command
         2. `command_syntax`: contains the command name with prefix and the values command takes
         3. `command_help`: the help docstring from given command
         4. `aliases`: all aliases the command has, separated by comma
@@ -166,7 +166,7 @@ class HelpCommand(BaseHelpCommand):
 
         return command_name, command_syntax, command_help, aliases
 
-    async def _fromat_command(self, command: Command) -> Embed:
+    async def _format_command(self, command: Command) -> Embed:
         """Format a help embed message for given `command`."""
 
         command_name, command_syntax, command_help, aliases = await self._describe_command(command)
@@ -183,7 +183,7 @@ class HelpCommand(BaseHelpCommand):
         )
         embed.add_field(
             name="Command description",
-            value=f"*{command_help}*",
+            value=f"{command_help}",
             inline=False
         )
         if aliases:
@@ -201,7 +201,7 @@ class HelpCommand(BaseHelpCommand):
 
         subcommands = await self.filter_commands(subcommands, sort=True)
 
-        embed = await self._fromat_command(group)
+        embed = await self._format_command(group)
 
         messages = []
         for subcommand in subcommands:
@@ -209,7 +209,7 @@ class HelpCommand(BaseHelpCommand):
             messages.append(textwrap.dedent(
                 f"""
                 `{command_syntax}`
-                *{command_help}*
+                {command_help}
                 """
             ))
 
@@ -250,7 +250,7 @@ class HelpCommand(BaseHelpCommand):
                 {cog_description}
                 """
             ),
-            color=Color.blue()
+            color=Color.blurple()
         )
 
         if commands is None:
@@ -331,7 +331,7 @@ class HelpCommand(BaseHelpCommand):
 
     async def send_command_help(self, command: Command) -> None:
         """Send help for specific command."""
-        embed = await self._fromat_command(command)
+        embed = await self._format_command(command)
         await self.context.send(embed=embed)
 
 
