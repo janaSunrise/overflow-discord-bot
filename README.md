@@ -31,14 +31,16 @@ Add a .env file based on .env.example file. And add the following things:
 
 ### Running bot
 
-1. Clone the repository (or fork it if you want to make changes)
-2. Install **pipenv** `pip install pipenv`
-3. Build the virtual enviroment from Pipfile.lock `pipenv sync`
+1. Clone the repository or fork it, if you're developing or doing some personal changes.
+2. Install `pipenv` by using `pip install pipenv`
+3. Build the virtual env from Pipfile.lock by using `pipenv update`
 4. Add a .env file based on .env.example file.
-6. Run the bot `pipenv run start`
+6. Run the bot by using `pipenv run start`
 
 ### Docker support
 
 Docker support for easily running, self hosting or deploying this is coming soon, please have patience till then.
 
+<div align="center">
 Made by Sunrit Jana with <3
+</div>
