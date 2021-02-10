@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext import menus
 
 from bot import Bot
-from bot.utils.pages import SauceSource
+from bot.utils.pages import CodeInfoSource, SauceSource
 
 ZWS = "\u200b"
 
@@ -43,18 +43,36 @@ class Info(commands.Cog):
                     final_path = filepath + os.path.sep + name
                     list_of_files.append(final_path.split('.' + os.path.sep)[-1] + f" : {file_lines} lines")
 
-        embed = discord.Embed(colour=discord.Colour.blurple())
-        embed.add_field(
-            name=f"{self.bot.user.name}'s structure",
-            value="\n".join(sorted(list_of_files)),
+        paginator = commands.Paginator(
+            max_size=2048,
         )
-        embed.set_footer(
-            text=(
-                f"I am made of {total} lines of Python, spread across "
-                f"{file_amount} files !"
+
+        for line in list_of_files:
+            paginator.add_line(line)
+
+        pages = menus.MenuPages(
+            source=CodeInfoSource(
+                f"{self.bot.user.name}'s structure",
+                f"I am made of {total} lines of Python, spread across {file_amount} files !",
+                paginator.pages,
+                per_page=1,
             ),
+            clear_reactions_after=True,
         )
-        await ctx.send(embed=embed)
+        await pages.start(ctx)
+
+        # embed = discord.Embed(colour=discord.Colour.blurple())
+        # embed.add_field(
+        #     name=f"{self.bot.user.name}'s structure",
+        #     value="\n".join(sorted(list_of_files)),
+        # )
+        # embed.set_footer(
+        #     text=(
+        #         f"I am made of {total} lines of Python, spread across "
+        #         f"{file_amount} files !"
+        #     ),
+        # )
+        # await ctx.send(embed=embed)
 
     @commands.command(aliases=["sauce"])
     async def source(self, ctx: commands.Context, *, command_name: str) -> None:

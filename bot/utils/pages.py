@@ -34,3 +34,26 @@ class SauceSource(ListPageSource):
         if max_pages > 1:
             embed.set_footer(text=f"Page {menu.current_page + 1}/{max_pages}")
         return embed
+
+
+class CodeInfoSource(ListPageSource):
+    """Source for the sauce command."""
+    def __init__(self, title: str, footer: str, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.title = title
+        self.footer = footer
+
+    async def format_page(self, menu: Menu, page: str):
+        """Format the page of code."""
+        max_pages = self.get_max_pages()
+
+        embed = Embed(
+            title=self.title,
+            description=page,
+            colour=Color.gold()
+        )
+        embed.set_footer(text=self.footer)
+
+        if max_pages > 1:
+            embed.set_footer(text=f"Page {menu.current_page + 1}/{max_pages}")
+        return embed
