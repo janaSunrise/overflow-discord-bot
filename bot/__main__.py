@@ -17,6 +17,7 @@ extensions = [
     # Cogs
     "bot.cogs.commands",
     "bot.cogs.conversion",
+    "bot.cogs.error",
     "bot.cogs.help",
     "bot.cogs.info",
     "bot.cogs.music",

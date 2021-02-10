@@ -75,9 +75,9 @@ class ErrorHandler(Cog):
 
         elif isinstance(error, errors.CheckFailure):
             if isinstance(error, NotOwner):
-                msg = "❌ This command is only available to bot owners."
+                msg = "❌ This command is only for the bot owners."
             else:
-                msg = "❌ You don't have permission to run this command."
+                msg = "❌ You don't have enough permission to run this command."
 
             await self.error_embed(
                 ctx,
