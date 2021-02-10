@@ -83,6 +83,7 @@ class ErrorHandler(Cog):
                 ctx,
                 description=msg
             )
+            return
 
         elif isinstance(error, CommandOnCooldown):
             cooldowns = {

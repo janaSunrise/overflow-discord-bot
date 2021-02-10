@@ -9,18 +9,19 @@ import typing as t
 from contextlib import redirect_stdout
 from datetime import datetime
 
-from discord import Color, DiscordException, Embed
-from discord import __version__ as discord_version
-from discord.ext.commands import Cog, Context, NotOwner, group
 import humanize
 import psutil
+from discord import Color, DiscordException, Embed
+from discord import __version__ as discord_version
+from discord.ext.commands import Cog, Context, group, is_owner
+from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
 
 from bot import Bot, config
 
 
-class Sudo(Cog):
+class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     def __init__(self, bot: Bot) -> None:
-        self.bot = bot
+        super().__init__(bot=bot)
         self._last_eval_result = None
 
     def get_uptime(self) -> str:
@@ -39,6 +40,7 @@ class Sudo(Cog):
         return formatted
 
     @group(hidden=True)
+    @is_owner()
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
         pass
@@ -193,29 +195,6 @@ class Sudo(Cog):
                 else:
                     self._last_result = ret
                     await ctx.send(f'```py\n{value}{ret}\n```')
-
-    @sudo.command(description="Execute code in bash.", usage="bash <command>", hidden=True)
-    async def bash(self, ctx, *, command_to_run: str):
-        try:
-            output = subprocess.check_output(
-                self.cleanup_code(command_to_run).split(), stderr=subprocess.STDOUT
-            ).decode("utf-8")
-            await ctx.send(embed=Embed(description=f"```py\n{output}\n```", colour=Color.blue()))
-        except Exception as error:
-            await ctx.send(
-                embed=Embed(
-                    title="⚠ Error",
-                    description=f"```py\n{error.__class__.__name__}: {error}\n```",
-                    colour=Color.red(),
-                )
-            )
-
-    async def cog_check(self, ctx: Context) -> t.Optional[bool]:
-        """Only the bot owners can use this."""
-        if ctx.author.id in config.devs:
-            return True
-
-        raise NotOwner
 
 
 def setup(bot: Bot) -> None:

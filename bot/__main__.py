@@ -34,6 +34,7 @@ bot = Bot(
     intents=intents,
     activity=discord.Game(name=f"{PREFIX}help | Listening to coders!"),
     case_insensitive=True,
+    owner_ids=config.devs
 )
 
 if __name__ == "__main__":

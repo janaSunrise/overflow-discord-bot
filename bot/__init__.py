@@ -3,6 +3,7 @@ from datetime import datetime
 
 import aiohttp
 import aiosqlite
+import discord
 from discord.ext.commands import AutoShardedBot
 import spotify
 
@@ -30,6 +31,12 @@ class Bot(AutoShardedBot):
         )
 
         self.db = None
+
+    async def is_owner(self, user: discord.User):
+        if user.id in config.devs:
+            return True
+
+        return await super().is_owner(user)
 
     async def init_db(self) -> None:
         """Initialize the database."""

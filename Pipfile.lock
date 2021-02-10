@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5465998717c5b528562dcc359377af09c83c91cd55ac8a2964b275994c0b50a1"
+            "sha256": "ca3ba8489252e83cdea7a32883dc7fdb79ae09ca0806ec604b23992d567ffaeb"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -41,6 +41,13 @@
             "index": "pypi",
             "version": "==0.16.1"
         },
+        "astunparse": {
+            "hashes": [
+                "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872",
+                "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"
+            ],
+            "version": "==1.6.3"
+        },
         "async-timeout": {
             "hashes": [
                 "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f",
@@ -73,6 +80,13 @@
             ],
             "index": "pypi",
             "version": "==4.9.3"
+        },
+        "braceexpand": {
+            "hashes": [
+                "sha256:c1bf4fdc1713e46feacac0f1acbbb12239bdda7c7c4183fc8fb22bf6f285f854",
+                "sha256:c37571ad130213247fac9921f3fd1032c81057490b9ca29be6884fd6d9dc1013"
+            ],
+            "version": "==0.1.6"
         },
         "cffi": {
             "hashes": [
@@ -162,6 +176,18 @@
             ],
             "markers": "python_version >= '3.4'",
             "version": "==3.1"
+        },
+        "import-expression": {
+            "hashes": [
+                "sha256:06086a6ab3bfa528b1c478e633d6adf2b3a990e31440f6401b0f3ea12b0659a9",
+                "sha256:292099910a4dcc65ba562377cd2265487ba573dd63d73bdee5deec36ca49555b"
+            ],
+            "version": "==1.1.4"
+        },
+        "jishaku": {
+            "editable": true,
+            "git": "https://github.com/Gorialis/jishaku",
+            "ref": "25fbb67017bc99ae0eca7f7c43a48f130133f8fa"
         },
         "multidict": {
             "hashes": [
@@ -276,11 +302,11 @@
         },
         "soupsieve": {
             "hashes": [
-                "sha256:4bb21a6ee4707bf43b61230e80740e71bfe56e55d1f1f50924b087bb2975c851",
-                "sha256:6dc52924dc0bc710a5d16794e6b3480b2c7c08b07729505feab2b2c16661ff6e"
+                "sha256:407fa1e8eb3458d1b5614df51d9651a1180ea5fedf07feb46e45d7e25e6d6cdd",
+                "sha256:d3a5ea5b350423f47d07639f74475afedad48cf41c0ad7a82ca13a3928af34f6"
             ],
             "markers": "python_version >= '3.0'",
-            "version": "==2.1"
+            "version": "==2.2"
         },
         "spotify": {
             "git": "https://github.com/Axelancerr/spotify.py",
@@ -301,6 +327,14 @@
             ],
             "index": "pypi",
             "version": "==0.9.6"
+        },
+        "wheel": {
+            "hashes": [
+                "sha256:78b5b185f0e5763c26ca1e324373aadd49182ca90e825f7853f4b2509215dc0e",
+                "sha256:e11eefd162658ea59a60a0f6c7d493a7190ea4b9a85e335b33489d9f17e0245e"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==0.36.2"
         },
         "yarl": {
             "hashes": [
