@@ -15,7 +15,9 @@ Add a .env file based on .env.example file. And add the following things:
 
 - Grab your StackExchange key from http://stackapps.com/
 - A lavalink node for the music cog
-- And, Openweathermap API Key for the weather stuff.
+- Openweathermap API Key for the weather stuff.
+- Get the nasa get at https://api.nasa.gov/
+- And, the spotify credentials at https://developer.spotify.com/dashboard/
 
 ### Creating the bot on Discord
 
@@ -32,16 +34,11 @@ Add a .env file based on .env.example file. And add the following things:
 1. Clone the repository (or fork it if you want to make changes)
 2. Install **pipenv** `pip install pipenv`
 3. Build the virtual enviroment from Pipfile.lock `pipenv sync`
-4. Add a .env file based on .env.example file. Grab your StackExchange key from http://stackapps.com/
+4. Add a .env file based on .env.example file.
 6. Run the bot `pipenv run start`
 
-### Features planned:
+### Docker support
 
-- [x] Stackoverflow search.
-- [x] Music.
-- [ ] Hacker news.
-- [ ] Scheduled hacker news on guild basis.
-- [x] Searching.
-- [ ] Code evaluation.
+Docker support for easily running, self hosting or deploying this is coming soon, please have patience till then.
 
 Made by Sunrit Jana with <3
