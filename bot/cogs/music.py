@@ -499,14 +499,16 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 if search_type == 'album':
                     search_result = await self.bot.spotify.get_album(spotify_id=spotify_id)
                     search_tracks = await search_result.get_all_tracks()
-                    print(search_tracks)
 
                 elif search_type == 'playlist':
                     search_result = spotify.Playlist(
-                        client=self.bot.spotify_client,
-                        data=await self.bot.spotify_http.get_playlist(spotify_id=spotify_id)
+                        client=self.bot.spotify,
+                        data=await self.bot.spotify_http.get_playlist(spotify_id)
                     )
-                    search_tracks = await search_result.get_all_tracks()
+                    search_tracks = list(await search_result.get_all_tracks())
+
+                    if len(search_tracks) > 500:
+                        search_tracks = search_tracks[:500]
 
                 elif search_type == 'track':
                     search_result = await self.bot.spotify.get_track(spotify_id=spotify_id)
@@ -538,6 +540,20 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the 
                     queue.
                     ```
+                    """),
+                    color=discord.Color.blurple()
+                ),
+                delete_after=15
+            )
+        elif isinstance(tracks, list):
+            for track in tracks:
+                track = Track(track.id, track.info, requester=ctx.author)
+                await player.queue.put(track)
+
+            await ctx.send(
+                embed=discord.Embed(
+                    description=textwrap.dedent(f"""
+                    ```ini Added the Spotify playlist with {len(tracks)} songs to the queue.```
                     """),
                     color=discord.Color.blurple()
                 ),
