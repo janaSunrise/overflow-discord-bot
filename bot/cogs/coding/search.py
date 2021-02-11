@@ -43,8 +43,7 @@ class Search(Cog):
         self.tomd.ignore_emphasis = True
         self.tomd.body_width = 0
 
-    @staticmethod
-    async def _search_logic(query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
+    async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
         """Use scrapestack and the Qwant API to find search results."""
         if not is_nsfw:
             if filter_words.search(query):
@@ -58,17 +57,18 @@ class Search(Cog):
             safesearch = "2"
 
         # Search URL Building
-        search_url = f"{base}/search/{category}?count={count}&q={query}&safesearch={safesearch}" \
+        search_url = f"{base}/search/{category}" \
+                     f"?count={count}" \
+                     f"&q={query.replace(' ', '+')}" \
+                     f"&safesearch={safesearch}" \
                      f"&t=web&locale=en_US&uiv=4"
 
         # Searching
         headers = {"User-Agent": "Overflow bot"}
-        async with aiohttp.ClientSession() as session:
-            async with session.get(search_url, headers=headers) as resp:
-                to_parse = await resp.json()
+        async with self.bot.session.get(search_url, headers=headers) as resp:
+            to_parse = await resp.json()
 
-                # Sends results
-                return to_parse["data"]["result"]["items"]
+            return to_parse["data"]["result"]["items"]
 
     async def _basic_search(self, ctx, query: str, category: str) -> None:
         """Basic search formatting."""
@@ -101,7 +101,7 @@ class Search(Cog):
             # Builds the substring for each of the other result.
             other_results: List[str] = []
 
-            for result in results[1:count]:
+            for result in results[1: count]:
                 title = self.tomd.handle(result["title"]).rstrip("\n")
                 url = result["url"]
                 other_results.append(f"**{title}**\n{url}")
@@ -133,9 +133,14 @@ class Search(Cog):
             await ctx.send(embed=embed)
 
     @command()
-    async def search(self, ctx: Context, category: str, *, query: str) -> None:
+    async def search(self, ctx: Context, *, query: str) -> None:
+        """Search the web for results."""
+        await self._basic_search(ctx, query, category="web")
+
+    @command(aliases=["sc-category", "search-cat"])
+    async def search_category(self, ctx: Context, category: str, *, query: str) -> None:
         """
-        Search online for general results.
+        Search online for general results with categories specified.
         **Valid Categories:**
         - web
         - videos
