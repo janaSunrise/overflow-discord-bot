@@ -124,18 +124,24 @@ class Player(wavelink.Player):
         suffix = f'`[{format_time(self.position)} / {format_time(track.duration)}]`'
 
         embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 ┃ {channel.name}', colour=discord.Color.blurple())
-        embed.description = f'Now Playing:\n**`{track.title}`**\n\n {prefix} ' \
-                            f'{progress_bar(int(self.position / 1000), int(track.duration / 1000))} {suffix}'
+        embed.description = f'Now Playing:\n**`{track.title}`**\n\n'
 
-        if track.thumb is not None:
-            embed.set_thumbnail(url=track.thumb)
+        if track.is_stream:
+            value = "🔴 LIVE"
+        else:
+            value = str(datetime.timedelta(milliseconds=int(track.length)))
+            embed.description += f"{prefix} {progress_bar(int(self.position / 1000), int(track.duration / 1000))} " \
+                                 f"{suffix}"
 
-        embed.add_field(name='Duration', value=str(datetime.timedelta(milliseconds=int(track.length))))
+        embed.add_field(name='Duration', value=value)
         embed.add_field(name='Queue Length', value=str(qsize))
         embed.add_field(name='Volume', value=f'**`{self.volume}%`**')
         embed.add_field(name='Requested By', value=track.requester.mention)
         embed.add_field(name='DJ', value=self.dj.mention)
         embed.add_field(name='Video URL', value=f'[Click Here!]({track.uri})')
+
+        if track.thumb is not None:
+            embed.set_thumbnail(url=track.thumb)
 
         return embed
 
