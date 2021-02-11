@@ -9,10 +9,11 @@ import typing as t
 
 import async_timeout
 import discord
-from discord.ext import commands, menus
+import humanize
 import spotify
 import wavelink
 import yarl
+from discord.ext import commands, menus
 
 from bot import config
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
@@ -1202,6 +1203,35 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     delete_after=15
                 )
                 return
+
+    @commands.command(aliases=["wavelink-info", "wv-info"])
+    async def wavelink_info(self, ctx: commands.Context):
+        """Retrieve various Node/Server/Player information."""
+        player = self.bot.wavelink.get_player(ctx.guild.id)
+        node = player.node
+
+        used = humanize.naturalsize(node.stats.memory_used)
+        total = humanize.naturalsize(node.stats.memory_allocated)
+        free = humanize.naturalsize(node.stats.memory_free)
+        cpu = node.stats.cpu_cores
+
+        fmt = f'**WaveLink:** `{wavelink.__version__}`\n\n' \
+              f'Connected to `{len(self.bot.wavelink.nodes)}` nodes.\n' \
+              f'Best available Node `{self.bot.wavelink.get_best_node().__repr__()}`\n' \
+              f'`{len(self.bot.wavelink.players)}` players are distributed on nodes.\n' \
+              f'`{node.stats.players}` players are distributed on server.\n' \
+              f'`{node.stats.playing_players}` players are playing on server.\n\n' \
+              f'Server Memory: `{used}/{total}` | `({free} free)`\n' \
+              f'Server CPU: `{cpu}`\n\n' \
+              f'Server Uptime: `{datetime.timedelta(milliseconds=node.stats.uptime)}`'
+
+        await ctx.send(
+            embed=discord.Embed(
+                title="Wavelink Info",
+                description=fmt,
+                color=discord.Color.blue()
+            )
+        )
 
 
 def setup(bot: commands.Bot):
