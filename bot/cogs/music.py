@@ -124,10 +124,12 @@ class Player(wavelink.Player):
         suffix = f'`[{format_time(self.position)} / {format_time(track.duration)}]`'
 
         embed = discord.Embed(title=f'Let\'s Listen to Music 🎵 ┃ {channel.name}', colour=discord.Color.blurple())
-        embed.description = f'Now Playing:\n**`{track.title}`**\n\n' \
-                            f'{prefix} {progress_bar(int(self.position / 1000), int(track.duration / 1000   ))} {suffix}'
+        embed.description = f'Now Playing:\n**`{track.title}`**\n\n {prefix} ' \
+                            f'{progress_bar(int(self.position / 1000), int(track.duration / 1000))} {suffix}'
 
-        embed.set_thumbnail(url=track.thumb)
+        if track.thumb is not None:
+            embed.set_thumbnail(url=track.thumb)
+
         embed.add_field(name='Duration', value=str(datetime.timedelta(milliseconds=int(track.length))))
         embed.add_field(name='Queue Length', value=str(qsize))
         embed.add_field(name='Volume', value=f'**`{self.volume}%`**')
@@ -470,10 +472,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             url = yarl.URL(query)
 
             if not url.scheme or not url.host:
-                if "soundcloud" in query:
+                query = f'ytsearch:{query}'
+            else:
+                if url.host == "soundcloud.com":
                     query = f'scsearch:{query}'
-                else:
-                    query = f'ytsearch:{query}'
+                elif url.host in ["twitch.tv", "vimeo.com"]:
+                    query = query
 
             tracks = await self.bot.wavelink.get_tracks(query)
             if not tracks:
