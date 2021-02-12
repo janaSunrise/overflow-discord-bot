@@ -17,6 +17,7 @@ humanize = "*"
 yarl = "*"
 spotify = {git = "https://github.com/Axelancerr/spotify.py"}
 jishaku = {editable = true, git = "https://github.com/Gorialis/jishaku"}
+aiohttp = "*"
 
 [dev-packages]
 

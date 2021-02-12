@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  lavalink:
+    image: fredboat/lavalink:master-v3
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+    ports:
+    - 2333
+    networks:
+      - common-shared-network
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/bot:ro
+    tty: true
+    depends_on:
+      - lavalink
+    environment:
+      LAVALINK_HOST: lavalink
+      LAVALINK_PORT: 2333
+      LAVALINK_PASSWORD: youshallnotpass
+    env_file:
+      - .env
+    networks:
+      - common-shared-network
+
+networks:
+  common-shared-network:
