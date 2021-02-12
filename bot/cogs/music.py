@@ -18,6 +18,7 @@ from discord.ext import commands, menus
 from bot import config
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot.utils.utils import format_time, progress_bar
+from bot.utils.spotify_parse import SpotifyTrack, play
 
 # URL matching REGEX.
 TIME_REG = re.compile("[0-9]+")
@@ -78,6 +79,15 @@ class Player(wavelink.Player):
         except asyncio.TimeoutError:
             # No music has been played for 5 minutes, cleanup and disconnect.
             return await self.teardown()
+
+        if isinstance(track, SpotifyTrack):
+            results = await self.node.get_tracks(f'ytsearch:{track.description}')
+
+            if not results:
+                return await self.do_next()
+
+            yt_track = results[0]
+            track = Track(yt_track.id, yt_track.info, requester=track.requester)
 
         await self.play(track)
         self.waiting = False
@@ -481,52 +491,17 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             if not url.scheme or not url.host:
                 query = f'ytsearch:{query}'
             else:
-                if url.host == "soundcloud.com":
-                    query = f'scsearch:{query}'
-                elif url.host in ["twitch.tv", "vimeo.com"]:
+                if url.host in ["twitch.tv", "vimeo.com", "soundcloud.com"]:
                     query = query
 
             tracks = await self.bot.wavelink.get_tracks(query)
             if not tracks:
                 return await ctx.send('No songs were found with that query. Please try again.', delete_after=15)
         else:
-            search_tracks = None
-
             search_type = spotify_url_check.group('type')
             spotify_id = spotify_url_check.group('id')
 
-            try:
-                if search_type == 'album':
-                    search_result = await self.bot.spotify.get_album(spotify_id=spotify_id)
-                    search_tracks = await search_result.get_all_tracks()
-
-                elif search_type == 'playlist':
-                    search_result = spotify.Playlist(
-                        client=self.bot.spotify,
-                        data=await self.bot.spotify_http.get_playlist(spotify_id)
-                    )
-                    search_tracks = list(await search_result.get_all_tracks())
-
-                    if len(search_tracks) > 500:
-                        search_tracks = search_tracks[:500]
-
-                elif search_type == 'track':
-                    search_result = await self.bot.spotify.get_track(spotify_id=spotify_id)
-                    search_tracks = [search_result]
-
-            except spotify.NotFound or discord.HTTPException:
-                return await ctx.send(f'No results were found for your spotify link.', delete_after=15)
-
-            if not search_tracks:
-                return await ctx.send('No songs were found with that query. Please try again.', delete_after=15)
-            else:
-                tracks = []
-                for track in search_tracks:
-                    result = await self.bot.wavelink.get_tracks(
-                        f"ytsearch:{track.name} - {', '.join(artist.name for artist in track.artists)}"
-                    )
-                    if result:
-                        tracks.append(Track(result[0].id, result[0].info, requester=ctx.author))
+            return await play(ctx, player, search_type, spotify_id, self.bot.spotify, self.bot.spotify_http)
 
         if isinstance(tracks, wavelink.TrackPlaylist):
             for track in tracks.tracks:
@@ -540,20 +515,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the 
                     queue.
                     ```
-                    """),
-                    color=discord.Color.blurple()
-                ),
-                delete_after=15
-            )
-        elif isinstance(tracks, list):
-            for track in tracks:
-                track = Track(track.id, track.info, requester=ctx.author)
-                await player.queue.put(track)
-
-            await ctx.send(
-                embed=discord.Embed(
-                    description=textwrap.dedent(f"""
-                    ```ini Added the Spotify playlist with {len(tracks)} songs to the queue.```
                     """),
                     color=discord.Color.blurple()
                 ),
