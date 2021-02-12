@@ -1,11 +1,9 @@
 import os
 from html import unescape
 from urllib.parse import quote_plus
-from textwrap import dedent
 
 import discord
 from discord.ext import commands
-from stackexchange import Site, StackOverflow, Sort, DESC
 
 from bot import Bot
 
@@ -19,7 +17,6 @@ class Overflow(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.MAX_QUESTIONS = 6
-        self.so = Site(StackOverflow, SE_KEY)
 
     @commands.command(aliases=["overflow", "stack", "stacksearch"])
     @commands.cooldown(1, 15, commands.BucketType.user)

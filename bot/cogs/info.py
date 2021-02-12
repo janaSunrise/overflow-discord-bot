@@ -4,7 +4,6 @@ import os
 import pathlib
 import textwrap
 
-import discord
 from discord.ext import commands
 from discord.ext import menus
 
