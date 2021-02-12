@@ -1,4 +1,7 @@
 import os
+from html import unescape
+from urllib.parse import quote_plus
+from textwrap import dedent
 
 import discord
 from discord.ext import commands
@@ -8,6 +11,9 @@ from bot import Bot
 
 SE_KEY = os.getenv("SE_KEY")
 
+BASE_URL = "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=activity&site=stackoverflow&q={query}"
+SEARCH_URL = "https://stackoverflow.com/search?q={query}"
+
 
 class Overflow(commands.Cog):
     def __init__(self, bot: Bot) -> None:
@@ -15,42 +21,29 @@ class Overflow(commands.Cog):
         self.MAX_QUESTIONS = 6
         self.so = Site(StackOverflow, SE_KEY)
 
-    @staticmethod
-    async def get_response_string(query) -> str:
-        query_data = query.json
-        check = ' :white_check_mark:' if query.json['is_answered'] else ''
-        return f"|{query_data['score']}|{check} [{query.title}]({query.url}) ({query_data['answer_count']} answers)"\
-            .replace("&amp;", "&").replace("&lt;", ">").replace("&gt;", ">")
-
     @commands.command(aliases=["overflow", "stack", "stacksearch"])
+    @commands.cooldown(1, 15, commands.BucketType.user)
     async def stackoverflow(self, ctx, *, query: str) -> None:
-        """
-        Search stackoverflow for a query.
-        """
-        try:
-            qs = self.so.search(intitle=query, sort=Sort.Votes, order=DESC)
-        except UnicodeEncodeError:
-            await ctx.send(f"Only English language is supported. '{query}' is not valid input.")
+        """Search stackoverflow for a query."""
+        async with self.bot.session.get(BASE_URL.format(query=quote_plus(query))) as response:
+            data = await response.json()
 
-        resp_qs = [f'Stack Overflow Top Questions for "{query}"\n']
-
-        for question in qs[:self.MAX_QUESTIONS]:
-            resp_qs.append(
-                await self.get_response_string(question)
-            )
-
-        if len(resp_qs) == 1:
-            resp_qs.append((
-                'No questions found. Please try a broader search or search directly on '
-                '[Stack Overflow](https://stackoverflow.com)'
-            ))
-
-        description = '\n'.join(resp_qs)
-
+        top = data["items"][:self.MAX_QUESTIONS]
         embed = discord.Embed(
-            title="Stack overflow search",
-            description=description,
-            colour=discord.Color.blurple()
+            title=f"Stack Overflow Top Questions for {query!r}",
+            url=SEARCH_URL.format(query=quote_plus(query)),
+            description=f"Here are the top {len(top)} results:",
+            color=discord.Color.blurple()
         )
+        for item in top:
+            embed.add_field(
+                name=f"{unescape(item['title'])}",
+                value=(
+                    f"{item['score']} upvote{'s' if item['score'] != 1 else ''} ┃ "
+                    f"{item['answer_count']} answer{'s' if item['answer_count'] != 1 else ''} ┃ "
+                    f"Tags: {', '.join(item['tags'])} ┃ "
+                    f"[LINK here]({item['link']})"
+                ),
+                inline=False)
 
         await ctx.send(embed=embed)
