@@ -29,14 +29,6 @@ Add a .env file based on .env.example file. And add the following things:
 6. Go to **OAuth2** and click bot, than add **Administrator** permissions
 7. You can follow the link that will appear to add the bot to your discord server
 
-### Running bot
-
-1. Clone the repository or fork it, if you're developing or doing some personal changes.
-2. Install `pipenv` by using `pip install pipenv`
-3. Build the virtual env from Pipfile.lock by using `pipenv update`
-4. Add a .env file based on .env.example file.
-6. Run the bot by using `pipenv run start`
-
 
 ## Installation
 
@@ -44,6 +36,9 @@ This is a guide to help you self host the Bot, and use it privately which simpli
 a bot for yourself.
 
 ## Docker
+
+**NOTE**: The docker is being tested and being made to worked properly. It hasn't been working perfectly yet. I advise
+to use non docker steps until the docker works perfectly when deploying / running. Sorry for this inconvenience.
 
 Docker is an easy way of containerizing and delivering your applications quickly and easily, in an 
 convenient way. It's really simple to get started with this, with docker handling all the installation
