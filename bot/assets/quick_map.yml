@@ -1,6 +1,8 @@
 asm : "assembly"
 c# : "cs"
 c++ : "cpp-clang"
+cpp : "cpp-clang"
+cpp-gcc : "cpp-clang"
 csharp : "cs"
 f# : "fs"
 fsharp : "fs"
