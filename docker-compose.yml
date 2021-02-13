@@ -7,6 +7,11 @@ services:
       - ./lavalink/application.yml:/opt/Lavalink/application.yml
     ports:
     - 2333
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:2333"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
     networks:
       - common-shared-network
 
@@ -19,10 +24,13 @@ services:
     tty: true
     depends_on:
       - lavalink
+    links: 
+      - lavalink
     environment:
       LAVALINK_HOST: lavalink
       LAVALINK_PORT: 2333
       LAVALINK_PASSWORD: youshallnotpass
+    restart: on-failure
     env_file:
       - .env
     networks:
