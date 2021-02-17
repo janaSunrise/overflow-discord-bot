@@ -19,7 +19,7 @@ class Embeds(commands.Cog):
 
     @embed.command()
     async def show(self, ctx: commands.Context) -> None:
-        await ctx.send(embed=self.embeds[ctx.author.id].embed)
+        await ctx.send(self.embeds[ctx.author.id].content, embed=self.embeds[ctx.author.id].embed)
 
     @embed.command()
     async def title(self, ctx: commands.Context, *, title: str) -> None:
