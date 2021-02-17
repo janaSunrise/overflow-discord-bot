@@ -18,6 +18,10 @@ class Embeds(commands.Cog):
         await ctx.send_help(ctx.command)
 
     @embed.command()
+    async def show(self, ctx: commands.Context) -> None:
+        await ctx.send(embed=self.embeds[ctx.author.id].embed)
+
+    @embed.command()
     async def title(self, ctx: commands.Context, *, title: str) -> None:
         self.embeds[ctx.author.id].embed.title = title
         await ctx.send(f"Set title to `{title}`.")
@@ -58,5 +62,6 @@ class Embeds(commands.Cog):
         await ctx.send("Successfully set the image.")
 
     @embed.command()
-    async def show(self, ctx: commands.Context) -> None:
-        await ctx.send(embed=self.embeds[ctx.author.id].embed)
+    async def message(self, ctx: commands.Context, *, message: str) -> None:
+        self.embeds[ctx.author.id] = EmbedInfo(message, self.embeds[ctx.author.id].embed)
+        await ctx.send("Successfully set the message content for embed.")
