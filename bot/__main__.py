@@ -12,6 +12,7 @@ extensions = [
     "bot.cogs.fun",
     "bot.cogs.games",
     "bot.cogs.moderation",
+    "bot.cogs.utility",
     "bot.cogs.study",
     
     # Cogs
