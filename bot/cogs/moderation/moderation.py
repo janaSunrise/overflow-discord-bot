@@ -1,4 +1,6 @@
 import asyncio
+import typing as t
+from contextlib import suppress
 from textwrap import dedent
 
 import discord
@@ -10,6 +12,11 @@ from bot import Bot
 class Moderation(commands.Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @property
+    def embeds_cog(self) -> discord.Embed:
+        """Get currently loaded Embed cog instance."""
+        return self.bot.get_cog("Embeds")
 
     def cog_check(self, ctx: commands.Context):
         if ctx.guild:
@@ -43,3 +50,36 @@ class Moderation(commands.Cog):
         )
         await asyncio.sleep(4)
         await message.delete()
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def dm(
+            self,
+            ctx: commands.Context,
+            members: commands.Greedy[t.Union[discord.Member, discord.Role]],
+            *,
+            text: str = None
+    ) -> None:
+        """Dm a List of Specified User from Your Guild."""
+        embed_data = self.embeds_cog.embeds[ctx.author.id]
+
+        if embed_data.embed.description is None and embed_data.embed.title is None:
+            await ctx.send(":x: You need to create an embed using our embed maker before sending it!")
+            return
+
+        if text is not None:
+            embed_data.embed.description = text
+
+        if not embed_data.embed.footer:
+            embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+
+        for member in members:
+            if isinstance(member, discord.Role):
+                for mem in member.members:
+                    with suppress(discord.Forbidden, discord.HTTPException):
+                        await mem.send(embed=embed_data.embed)
+            else:
+                with suppress(discord.Forbidden, discord.HTTPException):
+                    await member.send(embed=embed_data.embed)
+
+            await ctx.message.add_reaction("✅")
