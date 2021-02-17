@@ -3,15 +3,13 @@ version: '3'
 services:
   lavalink:
     image: fredboat/lavalink:master-v3
+    restart: always
     volumes:
-      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+      - ./lavalink.yml:/opt/Lavalink/application.yml
+      - ./lavalink_logs:/opt/Lavalink/logs
     ports:
-    - 2333
-    healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:2333"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
+    - 2333:2333
+    entrypoint: java -Xmx128m -jar Lavalink.jar
     networks:
       - common-shared-network
 
@@ -23,8 +21,6 @@ services:
       - .:/bot:ro
     tty: true
     depends_on:
-      - lavalink
-    links: 
       - lavalink
     environment:
       LAVALINK_HOST: lavalink
