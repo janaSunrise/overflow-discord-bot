@@ -28,6 +28,12 @@ class Embeds(Cog):
         await ctx.send(self.embeds[ctx.author.id].message, embed=self.embeds[ctx.author.id].embed)
 
     @embed.command()
+    async def reset(self, ctx: Context) -> None:
+        """Reset your created embed."""
+        self.embeds[ctx.author.id] = EmbedInfo("", discord.Embed())
+        await ctx.send("Your embed was successfully reset.")
+
+    @embed.command()
     async def title(self, ctx: Context, *, title: str) -> None:
         """Set the title field for your embed."""
         self.embeds[ctx.author.id].embed.title = title
