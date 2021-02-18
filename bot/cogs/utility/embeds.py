@@ -61,11 +61,12 @@ class Embeds(Cog):
     async def image(self, ctx: Context, image_url: str = None) -> None:
         """Set the image for your embed. It can be an attachment or an URL."""
         clean_image_extension = ["jpg", "jpeg", "png", "bmp"]
-        attachment = ctx.message.attachments[0]
 
         if image_url is not None:
             self.embeds[ctx.author.id].embed.set_image(url=image_url)
         elif ctx.message.attachments:
+            attachment = ctx.message.attachments[0]
+
             extension = attachment.filename.lower().split(".")[1]
             if extension not in clean_image_extension:
                 await ctx.send("Invalid image extension to parse.")
