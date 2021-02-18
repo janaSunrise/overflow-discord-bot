@@ -1179,6 +1179,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command()
     async def remove(self, ctx: commands.Context, index: int) -> None:
+        """Remove the song from the specified index."""
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
@@ -1208,9 +1209,17 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             index -= 1
 
             del player.queue._queue[index]
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"Successfully removed the song from position `{index}`",
+                    color=discord.Color.green()
+                ),
+                delete_after=10
+            )
 
     @commands.command()
     async def shift(self, ctx: commands.Context, source_idx: int, target_idx: int) -> None:
+        """Move a song from the source index to the target index."""
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
@@ -1245,6 +1254,14 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         temp = player.queue._queue[source_idx]
         del player.queue._queue[source_idx]
         player.queue._queue.insert(target_idx, temp)
+
+        await ctx.send(
+            embed=discord.Embed(
+                description=f"Successfully shifted the song from position `{source_idx}` to `{target_idx}`!",
+                color=discord.Color.green()
+            ),
+            delete_after=10
+        )
 
     @commands.command(aliases=["wavelink-info", "wv-info"])
     async def wavelink_info(self, ctx: commands.Context):
