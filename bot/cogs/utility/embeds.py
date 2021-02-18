@@ -43,7 +43,7 @@ class Embeds(commands.Cog):
     @embed.command()
     async def footer(self, ctx: commands.Context, *, footer_text: str) -> None:
         """Set the footer message for your embed."""
-        self.embeds[ctx.author.id].embed.color = footer_text
+        self.embeds[ctx.author.id].embed.set_footer(text=footer_text)
         await ctx.send("Successfully set the footer.")
 
     @embed.command()

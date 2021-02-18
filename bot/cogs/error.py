@@ -54,7 +54,8 @@ class ErrorHandler(Cog):
             title="Invalid command syntax",
             description=textwrap.dedent(
                 f"""
-                The command syntax you used is incorrect. **{error}**
+                The command syntax you used is incorrect. 
+                **`{error}`**
 
                 **Command Description**
                 {command_help}
@@ -62,7 +63,7 @@ class ErrorHandler(Cog):
                 **Command syntax**
                 {command_syntax}
 
-                {f"Aliases: {aliases}" if aliases else None}
+                Aliases: {aliases if aliases else None}
                 """
             )
         )
