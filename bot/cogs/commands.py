@@ -1,9 +1,14 @@
+import asyncio
 import textwrap
 import time
+import typing as t
 import re
+from datetime import datetime
 
 import discord
+from dateutil.relativedelta import relativedelta
 from discord.ext.commands import (
+    BadArgument,
     BucketType,
     Cog,
     Context,
@@ -12,6 +17,8 @@ from discord.ext.commands import (
 )
 
 from bot import Bot
+from bot.core.converters import TimeConverter
+from bot.utils.time import humanize_time
 
 
 class Commands(Cog):
@@ -97,6 +104,55 @@ class Commands(Cog):
         embed.add_field(name="Original Link", value=link, inline=False)
         embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
         await ctx.send(embed=embed)
+
+    @command(aliases=("poll",))
+    async def vote(self, ctx: Context, title: str, *options: str) -> None:
+        """
+        Build a quick voting poll with matching reactions with the provided options.
+        A maximum of 20 options can be provided, as Discord supports a max of 20
+        reactions on a single message.
+
+        Syntax: vote "Option 1" "Option 2" ... "Option n"
+        """
+        codepoint_start = 127462
+
+        if len(options) < 2:
+            raise BadArgument("Please provide at least 2 options.")
+
+        if len(options) > 20:
+            raise BadArgument("I can only handle 20 options!")
+
+        options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
+
+        embed = discord.Embed(title=title, description="\n".join(options.values()), color=discord.Color.blurple())
+        message = await ctx.send(embed=embed)
+
+        for reaction in options:
+            await message.add_reaction(reaction)
+
+    @command()
+    @cooldown(1, 10, BucketType.member)
+    async def countdown(
+            self, ctx: Context, duration: TimeConverter, *, description: t.Optional[str] = "Countdown!"
+    ) -> None:
+        """A countdown timer that counts down for the specific duration."""
+        embed = discord.Embed(title="Timer", description=description, color=discord.Color.blurple())
+        embed.add_field(name="**Countdown**", value=humanize_time(duration))
+        message = await ctx.send(embed=embed)
+
+        final_time = datetime.utcnow() + duration
+        while True:
+            if final_time <= datetime.utcnow():
+                break
+            duration = relativedelta(final_time, datetime.utcnow())
+
+            embed.set_field_at(0, name="**Countdown**", value=humanize_time(duration))
+            await message.edit(embed=embed)
+
+            await asyncio.sleep(1)
+
+        embed.set_field_at(0, name="**Countdown**", value="Time's Up!")
+        await message.edit(embed=embed)
 
 
 def setup(bot: Bot) -> None:
