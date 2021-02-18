@@ -21,6 +21,7 @@ from bot import Bot, config
 class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot=bot)
+        self.bot = bot
         self._last_eval_result = None
 
     def get_uptime(self) -> str:
@@ -110,10 +111,16 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
             • discord.py: **`{discord_version}`**
             """
         )
-
+        shard_info = textwrap.dedent(
+            f"""
+            • Shard count: **`{self.bot.shard_count}`**
+            • Current shard: **`{ctx.guild.shard_id}`**
+            """
+        )
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
-        embed.add_field(name="**❯ General**", value=general, inline=True)
-        embed.add_field(name="**❯ System**", value=system, inline=True)
+        embed.add_field(name="**❯ General**", value=general, inline=False)
+        embed.add_field(name="**❯ System**", value=system, inline=False)
+        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
