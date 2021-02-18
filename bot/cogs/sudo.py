@@ -100,8 +100,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         general = textwrap.dedent(
             f"""
             • Servers: **`{len(self.bot.guilds)}`**
-            • Commands: **`{len(self.bot.commands)}`**
             • Members: **`{len(set(self.bot.get_all_members()))}`**
+            • Commands: **`{len(self.bot.commands)}`**
             • Uptime: **`{self.get_uptime()}`**
             """
         )
