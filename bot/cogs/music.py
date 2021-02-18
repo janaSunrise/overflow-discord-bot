@@ -1051,8 +1051,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx) or ctx.author == player.current.requester:
             if player.is_playing:
-                while player.is_playing:
-                    await player.stop()
+                player.queue._queue.clear()
 
                 return await ctx.send(
                     embed=discord.Embed(
@@ -1075,8 +1074,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if len(player.clear_votes) >= required:
             if player.is_playing:
-                while player.is_playing:
-                    await player.stop()
+                player.queue._queue.clear()
 
                 return await ctx.send(
                     embed=discord.Embed(
@@ -1095,7 +1093,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 )
 
             player.clear_votes.clear()
-            return await player.stop()
         else:
             return await ctx.send(
                 embed=discord.Embed(
@@ -1202,7 +1199,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 await ctx.send(
                     embed=discord.Embed(
                         description=f'The song number must be between 1 and the max song count '
-                                    f'[{player.queue.qsize()}]',
+                                    f'[`{player.queue.qsize()}`]',
                         color=discord.Color.red()
                     ),
                     delete_after=15
@@ -1211,6 +1208,43 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             index -= 1
 
             del player.queue._queue[index]
+
+    @commands.command()
+    async def shift(self, ctx: commands.Context, source_idx: int, target_idx: int) -> None:
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
+        if not player.is_connected:
+            return
+
+        if not self.is_privileged(ctx):
+            await ctx.send(
+                embed=discord.Embed(
+                    description='Only admins and the DJ may use this command.',
+                    color=discord.Color.red()
+                ),
+                delete_after=15
+            )
+            return
+
+        if isinstance(source_idx, int) and isinstance(target_idx, int):
+            if (1 > source_idx > player.queue.qsize()) and \
+                    (1 > target_idx > player.queue.qsize()):
+                await ctx.send(
+                    embed=discord.Embed(
+                        description=f'The song number must be between 1 and the max song count '
+                                    f'[`{player.queue.qsize()}`]',
+                        color=discord.Color.red()
+                    ),
+                    delete_after=15
+                )
+                return
+
+            source_idx -= 1
+            target_idx -= 1
+
+        temp = player.queue._queue[source_idx]
+        del player.queue._queue[source_idx]
+        player.queue._queue.insert(target_idx, temp)
 
     @commands.command(aliases=["wavelink-info", "wv-info"])
     async def wavelink_info(self, ctx: commands.Context):
