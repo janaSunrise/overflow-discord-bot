@@ -3,7 +3,13 @@ from html import unescape
 from urllib.parse import quote_plus
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+)
 
 from bot import Bot
 
@@ -13,14 +19,14 @@ BASE_URL = "https://api.stackexchange.com/2.2/search/advanced?order=desc&sort=ac
 SEARCH_URL = "https://stackoverflow.com/search?q={query}"
 
 
-class Overflow(commands.Cog):
+class Overflow(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.MAX_QUESTIONS = 6
 
-    @commands.command(aliases=["overflow", "stack", "stacksearch"])
-    @commands.cooldown(1, 15, commands.BucketType.user)
-    async def stackoverflow(self, ctx, *, query: str) -> None:
+    @command(aliases=["overflow", "stack", "stacksearch"])
+    @cooldown(1, 15, BucketType.user)
+    async def stackoverflow(self, ctx: Context, *, query: str) -> None:
         """Search stackoverflow for a query."""
         async with self.bot.session.get(BASE_URL.format(query=quote_plus(query))) as response:
             data = await response.json()
@@ -32,6 +38,7 @@ class Overflow(commands.Cog):
             description=f"Here are the top {len(top)} results:",
             color=discord.Color.blurple()
         )
+
         for item in top:
             embed.add_field(
                 name=f"{unescape(item['title'])}",

@@ -2,14 +2,18 @@ import textwrap
 
 import aiohttp
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+    Context,
+    command
+)
 
 from bot import Bot, config
 from bot.utils.pages import EmbedPages
 from bot.utils.utils import create_urban_embed_list
 
 
-class Study(commands.Cog):
+class Study(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.base_url = "https://en.wikipedia.org/w/api.php"
@@ -19,8 +23,8 @@ class Study(commands.Cog):
             "/600px-Wikimedia-logo.png"
         )
 
-    @commands.command()
-    async def urban(self, ctx: commands.Context, *, word: str) -> None:
+    @command()
+    async def urban(self, ctx: Context, *, word: str) -> None:
         """Search the urban dictionary for a term."""
         url = "http://api.urbandictionary.com/v0/define"
         async with self.bot.session.get(url, params={"term": word}) as resp:
@@ -49,8 +53,8 @@ class Study(commands.Cog):
             (await create_urban_embed_list(data))
         ).start(ctx)
 
-    @commands.command()
-    async def calc(self, ctx: commands.Context, *, equation: str) -> None:
+    @command()
+    async def calc(self, ctx: Context, *, equation: str) -> None:
         """Calculate an equation."""
         params = {"expr": equation}
         url = "http://api.mathjs.org/v4/"
@@ -75,8 +79,8 @@ class Study(commands.Cog):
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
             await ctx.send(embed=embed)
 
-    @commands.command(aliases=["wiki"])
-    async def wikipedia(self, ctx: commands.Context, *, query: str) -> None:
+    @command(aliases=["wiki"])
+    async def wikipedia(self, ctx: Context, *, query: str) -> None:
         """Get information from Wikipedia."""
         payload = {
             "action": "query",

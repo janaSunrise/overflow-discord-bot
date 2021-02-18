@@ -1,20 +1,24 @@
 import random
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+    Context,
+    command,
+)
 
 from bot import Bot
 
 
-class Fun(commands.Cog):
+class Fun(Cog):
     """A cog designed for fun based commands."""
     def __init__(self, bot: Bot):
         self.bot = bot
         self.user_agent = {"user-agent": "overflow discord bot"}
         self.all_facts = None
 
-    @commands.command()
-    async def catfact(self, ctx: commands.Context) -> None:
+    @command()
+    async def catfact(self, ctx: Context) -> None:
         """Get to know an interesting fact about cats."""
         async with self.bot.session.get("https://cat-fact.herokuapp.com/facts") as response:
             self.all_facts = await response.json()
@@ -28,8 +32,8 @@ class Fun(commands.Cog):
             )
         )
 
-    @commands.command()
-    async def chuck(self, ctx: commands.Context) -> None:
+    @command()
+    async def chuck(self, ctx: Context) -> None:
         """Get a random Chuck Norris joke."""
         if random.randint(0, 1):
             async with self.bot.session.get("https://api.chucknorris.io/jokes/random") as r:
@@ -41,8 +45,8 @@ class Fun(commands.Cog):
             joke = await response.json()
             await ctx.send(joke["value"]["joke"].replace("&quote", '"'))
 
-    @commands.command()
-    async def cat(self, ctx: commands.Context) -> None:
+    @command()
+    async def cat(self, ctx: Context) -> None:
         """Get to see random cute cat images."""
         async with self.bot.session.get("https://some-random-api.ml/img/cat") as response:
             if response.status == 200:
@@ -56,8 +60,8 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(f"Couldn't Fetch cute cats. [CODE: {response.status}]")
 
-    @commands.command()
-    async def dog(self, ctx: commands.Context) -> None:
+    @command()
+    async def dog(self, ctx: Context) -> None:
         """Get cute images of random dogs."""
 
         def decide_source() -> str:
@@ -85,8 +89,8 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(f"Couldn't Fetch cute doggos :( [status : {shibe_get.status}]")
 
-    @commands.command()
-    async def why(self, ctx: commands.Context) -> None:
+    @command()
+    async def why(self, ctx: Context) -> None:
         """Getting to know a random `Why?` question"""
         async with self.bot.session.get("https://nekos.life/api/why", headers=self.user_agent) as resp:
             if resp.status == 200:
@@ -100,8 +104,8 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(f"Something went Boom! [CODE : {resp.status}]")
 
-    @commands.command(aliases=["shitjoke", "badjoke"])
-    async def dadjoke(self, ctx: commands.Context) -> None:
+    @command(aliases=["shitjoke", "badjoke"])
+    async def dadjoke(self, ctx: Context) -> None:
         """A simple shitty dad joke generator."""
         async with self.bot.session.get("https://icanhazdadjoke.com", headers=self.dadjoke) as joke:
             if joke.status == 200:
@@ -111,8 +115,8 @@ class Fun(commands.Cog):
             else:
                 await ctx.send(f"No dad joke. [STATUS : {joke.status}]")
 
-    @commands.command(aliases=["bofh", "techproblem"])
-    async def excuse(self, ctx: commands.Context) -> None:
+    @command(aliases=["techproblem"])
+    async def excuse(self, ctx: Context) -> None:
         """Bastard Operator from Hell excuses."""
         async with self.bot.session.get("http://pages.cs.wisc.edu/~ballard/bofh/excuses") as resp:
             data = await resp.text()
@@ -126,8 +130,8 @@ class Fun(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def history(self, ctx: commands.Context):
+    @command()
+    async def history(self, ctx: Context):
         async with self.bot.session.get('http://numbersapi.com/random/date?json') as resp:
             res = await resp.json()
             embed = discord.Embed(
@@ -139,8 +143,8 @@ class Fun(commands.Cog):
 
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def math(self, ctx: commands.Context) -> None:
+    @command()
+    async def math(self, ctx: Context) -> None:
         async with self.bot.session.get('http://numbersapi.com/random/math?json') as r:
             res = await r.json()
             embed = discord.Embed(
@@ -151,8 +155,8 @@ class Fun(commands.Cog):
             )
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def advice(self, ctx: commands.Context) -> None:
+    @command()
+    async def advice(self, ctx: Context) -> None:
         async with self.bot.session.get('https://api.adviceslip.com/advice') as r:
             res = await r.json(content_type="text/html")
             embed = discord.Embed(

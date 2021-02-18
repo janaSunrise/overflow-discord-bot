@@ -3,21 +3,29 @@ import time
 import re
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown
+)
 
 from bot import Bot
 
 
-class Commands(commands.Cog):
+class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @commands.command()
-    async def ping(self, ctx: commands.Context) -> None:
+    @command()
+    async def ping(self, ctx: Context) -> None:
         """Show bot ping."""
         start = time.perf_counter()
+
         embed = discord.Embed(title="Info", description="Pong!", color=discord.Color.blurple())
         message = await ctx.send(embed=embed)
+
         end = time.perf_counter()
         duration = round((end - start) * 1000, 2)
 
@@ -31,18 +39,18 @@ class Commands(commands.Cog):
 
         desc = textwrap.dedent(
             f"""
-                :ping_pong: Pong!
-                Bot ping: **{duration}ms**
-                Discord Server Ping: **{discord_ms}**
-                Speed Ping: **{round(self.bot.latency * 1000)}ms**
-                """
+            :ping_pong: Pong!
+            Bot ping: **{duration}ms**
+            Discord Server Ping: **{discord_ms}**
+            Speed Ping: **{round(self.bot.latency * 1000)}ms**
+            """
         )
 
         embed = discord.Embed(title="Info", description=desc, color=discord.Color.blurple())
         await message.edit(embed=embed)
 
-    @commands.command()
-    async def paste(self, ctx: commands.Context, *, text: str) -> None:
+    @command()
+    async def paste(self, ctx: Context, *, text: str) -> None:
         """Creates a Paste out of the text specified."""
         async with self.bot.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
             key = (await resp.json())['key']
@@ -54,7 +62,7 @@ class Commands(commands.Cog):
 
     @staticmethod
     def _clean_code(code: str) -> str:
-        codeblock_match = re.fullmatch(r"\`\`\`(.*\n)?((?:[^\`]*\n*)+)\`\`\`", code)
+        codeblock_match = re.fullmatch(r"```(.*\n)?((?:[^`]*\n*)+)```", code)
         if codeblock_match:
             lang = codeblock_match.group(1)
             code = codeblock_match.group(2)
@@ -63,14 +71,14 @@ class Commands(commands.Cog):
                 ret = ret[:-1]
             return ret
 
-        simple_match = re.fullmatch(r"\`(.*\n*)\`", code)
+        simple_match = re.fullmatch(r"`(.*\n*)`", code)
         if simple_match:
             return simple_match.group(1)
 
         return code
 
-    @commands.cooldown(1, 10, commands.BucketType.member)
-    async def shorten(self, ctx: commands.Context, *, link: str) -> None:
+    @cooldown(1, 10, BucketType.member)
+    async def shorten(self, ctx: Context, *, link: str) -> None:
         """Make a link shorter using the tinyurl api."""
         if not link.startswith("https://"):
             await ctx.send(f"Invalid link: `{link}`. Enter a valid URL.")

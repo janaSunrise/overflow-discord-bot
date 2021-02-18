@@ -3,7 +3,12 @@ from textwrap import dedent
 import typing as t
 
 import discord
-from discord.ext import commands, tasks
+from discord.ext import tasks
+from discord.ext.commands import (
+    Cog,
+    Context,
+    command
+)
 
 from bot import Bot
 from bot.utils.pages import EmbedPages
@@ -11,7 +16,7 @@ from bot.utils.pages import EmbedPages
 NEWS_URL = "https://hacker-news.firebaseio.com/v0/"
 
 
-class HackerNews(commands.Cog):
+class HackerNews(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.send_feed.start()
@@ -65,8 +70,8 @@ class HackerNews(commands.Cog):
         )
         return embed
 
-    @commands.command(name="new-stories")
-    async def new_stories(self, ctx: commands.Context, count: int = 5) -> None:
+    @command(name="new-stories")
+    async def new_stories(self, ctx: Context, count: int = 5) -> None:
         """
         Get all the newest and fresh hacker news.
         """
@@ -81,8 +86,8 @@ class HackerNews(commands.Cog):
 
         await EmbedPages(article_embeds).start(ctx)
 
-    @commands.command(name="top-stories")
-    async def top_stories(self, ctx: commands.Context, count: int = 5) -> None:
+    @command(name="top-stories")
+    async def top_stories(self, ctx: Context, count: int = 5) -> None:
         """Get all the trending hacker news."""
         if not 1 < count < 20:
             await ctx.send(":x: You cannot view more than 20 Stories or less than 2!")
@@ -95,8 +100,8 @@ class HackerNews(commands.Cog):
 
         await EmbedPages(article_embeds).start(ctx)
 
-    @commands.command(manage_channels=True)
-    async def subscribe(self, ctx: commands.Context, channel: t.Optional[discord.TextChannel] = None) -> None:
+    @command(manage_channels=True)
+    async def subscribe(self, ctx: Context, channel: t.Optional[discord.TextChannel] = None) -> None:
         """Subscribe to the scheduled hacker news feed."""
         if not channel:
             await ctx.send("Please specify a channel to send the feed!")
@@ -113,8 +118,8 @@ class HackerNews(commands.Cog):
         else:
             await ctx.send(":x: You're already subscribed to the feed!")
 
-    @commands.command(manage_channels=True)
-    async def unsubscribe(self, ctx: commands.Context) -> None:
+    @command(manage_channels=True)
+    async def unsubscribe(self, ctx: Context) -> None:
         """Unsubscribe from the scheduled hacker news feed."""
         async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
             row = await cursor.fetchone()

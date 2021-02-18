@@ -180,8 +180,12 @@ class Search(Cog):
             url = f"https://kitsu.io/anime/{anime_id}"
             thing = "" if not anime["attributes"]["endDate"] else f' to {anime["attributes"]["endDate"]}'
 
-            embed = Embed(title=f"{title}", color=ctx.author.color, rl=url)
-            embed.description = anime["attributes"]["synopsis"][0:425] + "..."
+            embed = Embed(
+                title=f"{title}",
+                description=anime["attributes"]["synopsis"][0:425] + "...",
+                color=ctx.author.color,
+                rl=url
+            )
             embed.add_field(name="Average Rating", value=anime["attributes"]["averageRating"])
             embed.add_field(name="Popularity Rank", value=anime["attributes"]["popularityRank"])
             embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
@@ -237,21 +241,28 @@ class Search(Cog):
             manga_id = manga["id"]
             url = f"https://kitsu.io/manga/{manga_id}"
 
-            embed = Embed(title=title, color=ctx.author.color, url=url)
-            embed.description = manga["attributes"]["synopsis"][0:425] + "..."
+            embed = Embed(
+                title=title,
+                description=manga["attributes"]["synopsis"][0:425] + "...",
+                color=ctx.author.color,
+                url=url
+            )
 
             if manga["attributes"]["averageRating"]:
                 embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
+
             embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
 
             if manga["attributes"]["ageRating"]:
                 embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
+
             embed.add_field(name="Status", value=manga["attributes"]["status"])
             thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
             embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
 
             if manga["attributes"]["chapterCount"]:
                 embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
+
             embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
             embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
 
@@ -277,10 +288,7 @@ class Search(Cog):
 
     @command()
     async def weather(self, ctx: Context, *, city: str = None) -> None:
-        """
-        Sends current weather in the given city name.
-        eg. `weather london`
-        """
+        """Sends current weather in the given city name. eg. `weather london`"""
         try:
             url_formatted_city = city.replace(" ", "-")
         except CommandInvokeError:
@@ -294,6 +302,7 @@ class Search(Cog):
 
         weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}" \
                              f"&appid={WEATHER_API_KEY}"
+
         async with self.bot.session.get(weather_lookup_url) as resp:
             data = await resp.json()
 
@@ -312,6 +321,7 @@ class Search(Cog):
 
         longtitude = data["coord"]["lon"]
         lattitude = data["coord"]["lat"]
+
         weather_embed.add_field(
             name="❯❯ Coordinates",
             value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"

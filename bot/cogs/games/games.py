@@ -1,7 +1,11 @@
 import random
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+    Context,
+    command
+)
 
 from bot import Bot, config
 from .connect4 import Connect4
@@ -9,12 +13,12 @@ from .hangman import HangmanGame
 from .tic_tac_toe import TTT_Game
 
 
-class Games(commands.Cog):
+class Games(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.command(aliases=["8ball"])
-    async def ball8(self, ctx: commands.Context, *, question: str) -> None:
+    @command(aliases=["8ball"])
+    async def ball8(self, ctx: Context, *, question: str) -> None:
         """Ask the all-knowing 8ball your burning questions."""
         reply_type = random.randint(1, 3)
 
@@ -31,20 +35,20 @@ class Games(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["ttt", "tictactoe"])
-    async def tic_tac_toe(self, ctx: commands.Context, opponent: discord.Member = None) -> None:
+    @command(aliases=["ttt", "tictactoe"])
+    async def tic_tac_toe(self, ctx: Context, opponent: discord.Member = None) -> None:
         """Play a game of Tic-Tac-Toe."""
         game = TTT_Game(ctx.author, opponent, clear_reactions_after=True)
         await game.start(ctx)
 
-    @commands.command()
-    async def hangman(self, ctx: commands.Context) -> None:
+    @command()
+    async def hangman(self, ctx: Context) -> None:
         """Play game of Hangman."""
         hangman_game = HangmanGame.random(ctx)
         await hangman_game.play()
 
-    @commands.command(aliases=["c4"])
-    async def connect4(self, ctx: commands.Context, member: discord.Member) -> None:
+    @command(aliases=["c4"])
+    async def connect4(self, ctx: Context, member: discord.Member) -> None:
         """Play connect 4 with a friend"""
         winner = await Connect4(ctx.author, member, clear_reactions_after=True).prompt(ctx)
         if winner:

@@ -4,7 +4,12 @@ import os
 import pathlib
 import textwrap
 
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+    Context,
+    Paginator,
+    command
+)
 from discord.ext import menus
 
 from bot import Bot
@@ -13,13 +18,13 @@ from bot.utils.pages import CodeInfoSource, SauceSource
 ZWS = "\u200b"
 
 
-class Info(commands.Cog):
+class Info(Cog):
     """Get info about the bot."""
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.command(ignore_extra=True)
-    async def code(self, ctx: commands.Context) -> None:
+    @command(ignore_extra=True)
+    async def code(self, ctx: Context) -> None:
         """Return stats about the bot's code."""
         total = 0
         file_amount = 0
@@ -42,7 +47,7 @@ class Info(commands.Cog):
                     final_path = filepath + os.path.sep + name
                     list_of_files.append(final_path.split('.' + os.path.sep)[-1] + f" : {file_lines} lines")
 
-        paginator = commands.Paginator(
+        paginator = Paginator(
             max_size=2048,
         )
 
@@ -60,8 +65,8 @@ class Info(commands.Cog):
         )
         await pages.start(ctx)
 
-    @commands.command(aliases=["sauce"])
-    async def source(self, ctx: commands.Context, *, command_name: str) -> None:
+    @command(aliases=["sauce"])
+    async def source(self, ctx: Context, *, command_name: str) -> None:
         """Get the source code of a command."""
         command = self.bot.get_command(command_name)
 
@@ -78,7 +83,7 @@ class Info(commands.Cog):
             return
 
         source_lines = textwrap.dedent("".join(source_lines).replace("```", f"`{ZWS}`{ZWS}`")).split("\n")
-        paginator = commands.Paginator(
+        paginator = Paginator(
             prefix="```py",
             suffix="```",
             max_size=2048,

@@ -4,12 +4,19 @@ from contextlib import suppress
 from textwrap import dedent
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import (
+    Cog,
+    Context,
+    Greedy,
+    NoPrivateMessage,
+    command,
+    has_permissions
+)
 
 from bot import Bot
 
 
-class Moderation(commands.Cog):
+class Moderation(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -18,15 +25,15 @@ class Moderation(commands.Cog):
         """Get currently loaded Embed cog instance."""
         return self.bot.get_cog("Embeds")
 
-    def cog_check(self, ctx: commands.Context):
+    def cog_check(self, ctx: Context):
         if ctx.guild:
             return True
 
-        raise commands.NoPrivateMessage
+        raise NoPrivateMessage
 
-    @commands.command()
-    @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx: commands.Context, amount: int, member: discord.Member = None) -> None:
+    @command()
+    @has_permissions(manage_messages=True)
+    async def clear(self, ctx: Context, amount: int, member: discord.Member = None) -> None:
         """Clear messages from a specific channel. Specify a member to clear his messages only."""
         if not member:
             await ctx.message.channel.purge(limit=amount)
@@ -51,12 +58,12 @@ class Moderation(commands.Cog):
         await asyncio.sleep(4)
         await message.delete()
 
-    @commands.command()
-    @commands.has_permissions(administrator=True)
+    @command()
+    @has_permissions(administrator=True)
     async def dm(
             self,
-            ctx: commands.Context,
-            members: commands.Greedy[t.Union[discord.Member, discord.Role]],
+            ctx: Context,
+            members: Greedy[t.Union[discord.Member, discord.Role]],
             *,
             text: str = None
     ) -> None:

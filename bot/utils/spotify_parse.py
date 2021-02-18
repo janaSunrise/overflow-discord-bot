@@ -3,7 +3,7 @@ import typing as t
 import discord
 import spotify
 import wavelink
-from discord.ext import commands
+from discord.ext.commands import Context
 
 
 class SpotifyTrack:
@@ -53,7 +53,7 @@ async def get_spotify_tracks(
     return name, search_tracks
 
 
-async def play_tracks(ctx: commands.Context, player: wavelink.Player, tracks: list, requester):
+async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, requester):
     for track in tracks:
         if not track:
             continue
@@ -64,7 +64,7 @@ async def play_tracks(ctx: commands.Context, player: wavelink.Player, tracks: li
 
 
 async def play(
-        ctx: commands.Context, player: wavelink.Player, search_type: str, spotify_id: str, spotify_client, spotify_http
+        ctx: Context, player: wavelink.Player, search_type: str, spotify_id: str, spotify_client, spotify_http
 ):
     requester = ctx.author
     name, tracks = await get_spotify_tracks(ctx, search_type, spotify_id, spotify_client, spotify_http)

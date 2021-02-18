@@ -2,11 +2,11 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext import commands
+from discord.ext.commands import Context
 
 
 def moderation_embed(
-        ctx: commands.Context,
+        ctx: Context,
         action: str,
         user: discord.Member,
         reason: str,

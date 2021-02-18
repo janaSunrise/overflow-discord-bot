@@ -10,7 +10,6 @@ import typing as t
 import async_timeout
 import discord
 import humanize
-import spotify
 import wavelink
 import yarl
 from discord.ext import commands, menus

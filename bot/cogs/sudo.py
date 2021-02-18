@@ -1,7 +1,6 @@
 import io
 import os
 import platform
-import subprocess
 import textwrap
 import time
 import traceback
