@@ -126,8 +126,3 @@ class Conversion(Cog):
         embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
 
         await ctx.send(embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    """Load the Conversion cog"""
-    bot.add_cog(Conversion(bot))

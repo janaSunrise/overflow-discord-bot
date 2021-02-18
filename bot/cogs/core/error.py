@@ -158,7 +158,3 @@ class ErrorHandler(Cog):
                 """
             )
         )
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(ErrorHandler(bot))

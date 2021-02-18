@@ -1031,8 +1031,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         await paginator.start(ctx)
 
-    @commands.command(aliases=['np', 'now_playing', 'current'])
-    async def nowplaying(self, ctx: commands.Context):
+    @commands.command(aliases=['np', 'nowplaying', 'current'])
+    async def now_playing(self, ctx: commands.Context):
         """Update the player controller."""
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
@@ -1179,6 +1179,38 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     delete_after=15
                 )
                 return
+
+    @commands.command()
+    async def remove(self, ctx: commands.Context, index: int) -> None:
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+
+        if not player.is_connected:
+            return
+
+        if not self.is_privileged(ctx):
+            await ctx.send(
+                embed=discord.Embed(
+                    description='Only admins and the DJ may use this command.',
+                    color=discord.Color.red()
+                ),
+                delete_after=15
+            )
+            return
+
+        if isinstance(index, int):
+            if index < 1 or index > player.queue.qsize():
+                await ctx.send(
+                    embed=discord.Embed(
+                        description=f'The song number must be between 1 and the max song count '
+                                    f'[{player.queue.qsize()}]',
+                        color=discord.Color.red()
+                    ),
+                    delete_after=15
+                )
+                return
+            index -= 1
+
+            del player.queue._queue[index]
 
     @commands.command(aliases=["wavelink-info", "wv-info"])
     async def wavelink_info(self, ctx: commands.Context):

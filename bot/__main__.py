@@ -8,6 +8,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 PREFIX = config.COMMAND_PREFIX
 extensions = [
     # Cog packages
+    "bot.cogs.core",
     "bot.cogs.coding",
     "bot.cogs.fun",
     "bot.cogs.games",
@@ -17,12 +18,8 @@ extensions = [
     
     # Cogs
     "bot.cogs.commands",
-    "bot.cogs.conversion",
-    "bot.cogs.error",
-    "bot.cogs.help",
     "bot.cogs.info",
     "bot.cogs.music",
-    "bot.cogs.sudo",
 ]
 
 intents = discord.Intents.all()

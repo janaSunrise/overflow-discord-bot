@@ -201,7 +201,3 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 else:
                     self._last_result = ret
                     await ctx.send(f'```py\n{value}{ret}\n```')
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Sudo(bot))

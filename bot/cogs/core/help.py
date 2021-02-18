@@ -343,7 +343,3 @@ class Help(Cog):
 
     def cog_unload(self) -> None:
         self.bot.help_command = self.old_help_command
-
-
-def setup(bot: Bot) -> None:
-    bot.add_cog(Help(bot))
