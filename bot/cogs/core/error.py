@@ -85,6 +85,13 @@ class ErrorHandler(Cog):
                 description=msg
             )
             return
+        
+        elif isinstance(error, NoPrivateMessage):
+            await self.error_embed(
+                ctx,
+                description=f"❌ The command `{ctx.command}` can not be used in private messages."
+            )
+            return
 
         elif isinstance(error, CommandOnCooldown):
             cooldowns = {
@@ -128,7 +135,6 @@ class ErrorHandler(Cog):
             return
 
         error_messages = {
-            NoPrivateMessage: f'The command `{ctx.command}` can not be used in private messages.',
             NSFWChannelRequired: f'The command `{ctx.command}` can only be ran in a NSFW channel.',
             DisabledCommand: f'The command `{ctx.command}` has been disabled.',
             ExpectedClosingQuoteError: f'You missed a closing quote in the parameters passed to the `{ctx.command}` '

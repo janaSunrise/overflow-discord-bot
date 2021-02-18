@@ -387,11 +387,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     async def cog_check(self, ctx: commands.Context):
         """Cog wide check, which disallows commands in DMs."""
-        if not ctx.guild:
-            await ctx.send('Music commands are not available in Private Messages.')
-            return False
+        if ctx.guild:
+            return True
 
-        return True
+        raise commands.NoPrivateMessage
 
     async def cog_before_invoke(self, ctx: commands.Context):
         """
