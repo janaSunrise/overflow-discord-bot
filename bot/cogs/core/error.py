@@ -73,18 +73,6 @@ class ErrorHandler(Cog):
         """Handle all the errors occurring when running the bot."""
         if isinstance(error, errors.CommandNotFound):
             return
-
-        elif isinstance(error, errors.CheckFailure):
-            if isinstance(error, NotOwner):
-                msg = "❌ This command is only for the bot owners."
-            else:
-                msg = "❌ You don't have enough permission to run this command."
-
-            await self.error_embed(
-                ctx,
-                description=msg
-            )
-            return
         
         elif isinstance(error, NoPrivateMessage):
             await self.error_embed(
@@ -114,6 +102,18 @@ class ErrorHandler(Cog):
 
         elif isinstance(error, errors.UserInputError):
             await self.command_syntax_error(ctx, error)
+            return
+
+        elif isinstance(error, errors.CheckFailure):
+            if isinstance(error, NotOwner):
+                msg = "❌ This command is only for the bot owners."
+            else:
+                msg = "❌ You don't have enough permission to run this command."
+
+            await self.error_embed(
+                ctx,
+                description=msg
+            )
             return
 
         elif isinstance(error, errors.CommandInvokeError):
