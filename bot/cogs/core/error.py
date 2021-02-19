@@ -4,11 +4,13 @@ import typing as t
 from discord import Color, Embed
 from discord.ext.commands import (
     BucketType,
+    BotMissingPermissions,
     Cog,
     Context,
     CommandOnCooldown,
     DisabledCommand,
     ExpectedClosingQuoteError,
+    MissingPermissions,
     NotOwner,
     NoPrivateMessage,
     NSFWChannelRequired,
@@ -68,18 +70,32 @@ class ErrorHandler(Cog):
             )
         )
 
+    @classmethod
+    def _get_missing_permission(cls, error) -> str:
+        missing_perms = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
+
+        if len(missing_perms) > 2:
+            message = f"{'**, **'.join(missing_perms[:-1])}, and {missing_perms[-1]}"
+        else:
+            message = " and ".join(missing_perms)
+
+        return message
+
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: errors.CommandError) -> None:
         """Handle all the errors occurring when running the bot."""
         if isinstance(error, errors.CommandNotFound):
             return
-        
-        elif isinstance(error, NoPrivateMessage):
-            await self.error_embed(
-                ctx,
-                description=f"❌ The command `{ctx.command}` can not be used in private messages."
-            )
-            return
+
+        elif isinstance(error, BotMissingPermissions):
+            missing_perms = self._get_missing_permission(error)
+            message = f"I need the **{missing_perms}** permission(s) to run this command."
+            await self.error_embed(ctx, message)
+
+        elif isinstance(error, MissingPermissions):
+            missing_perms = self._get_missing_permission(error)
+            message = f"You need the **{missing_perms}** permission(s) to use this command."
+            await self.error_embed(ctx, message)
 
         elif isinstance(error, CommandOnCooldown):
             cooldowns = {
@@ -102,6 +118,12 @@ class ErrorHandler(Cog):
 
         elif isinstance(error, errors.UserInputError):
             await self.command_syntax_error(ctx, error)
+            return
+
+        elif isinstance(error, NoPrivateMessage):
+            await self.error_embed(
+                ctx, description=f"❌ The command `{ctx.command}` can not be used in private messages."
+            )
             return
 
         elif isinstance(error, errors.CheckFailure):

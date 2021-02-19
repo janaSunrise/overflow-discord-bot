@@ -114,9 +114,11 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         shard_info = textwrap.dedent(
             f"""
             • Shard count: **`{self.bot.shard_count}`**
-            • Current shard: **`{"Not a guild" if not ctx.guild.shard_id else ctx.guild.shard_id}`**
             """
         )
+        if ctx.guild:
+            shard_info += "\n• Current shard: **`{ctx.guild.shard_id}`**"
+
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
