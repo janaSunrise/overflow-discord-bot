@@ -5,6 +5,7 @@ from discord.ext.commands import (
     Cog,
     Context,
     ColorConverter,
+    MessageConverter,
     group,
 )
 
@@ -32,6 +33,12 @@ class Embeds(Cog):
         """Reset your created embed."""
         self.embeds[ctx.author.id] = EmbedInfo("", discord.Embed())
         await ctx.send("Your embed was successfully reset.")
+
+    @embed.command(name="import", aliases=["import-embed"])
+    async def import_(self, ctx: Context, message: MessageConverter) -> None:
+        self.embeds[ctx.author.id] = EmbedInfo("", message.embeds[0])
+
+        await ctx.send("Successfully import the specified embed / message.")
 
     @embed.command()
     async def title(self, ctx: Context, *, title: str) -> None:
