@@ -1,3 +1,4 @@
+import typing as t
 from collections import defaultdict, namedtuple
 
 import discord
@@ -91,3 +92,32 @@ class Embeds(Cog):
         """Add the external message for your embed."""
         self.embeds[ctx.author.id] = EmbedInfo(message, self.embeds[ctx.author.id].embed)
         await ctx.send("Successfully set the message content for embed.")
+
+    @embed.group(invoke_without_command=True)
+    async def author(self, ctx: Context) -> None:
+        """Commands for configuring the author and options on the embed."""
+        await ctx.send_help(ctx.command)
+
+    @author.command()
+    async def name(self, ctx: Context, *, name: t.Union[str, discord.Member]) -> None:
+        """Set the name for the author on the embed."""
+        embed = self.embeds[ctx.author.id].embed
+
+        if isinstance(name, discord.Member):
+            name = name.name
+
+        embed.set_author(name=name, url=embed.author.url, icon_url=embed.author.icon_url)
+
+        await ctx.send("Successfully set the embed author.")
+
+    @author.command()
+    async def icon(self, ctx: Context, icon: t.Union[str, discord.Member]) -> None:
+        """Set the author's icon in the embed."""
+        embed = self.embeds[ctx.author.id].embed
+
+        if isinstance(icon, discord.Member):
+            icon = icon.avatar_url_as(format="png")
+
+        embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=icon)
+        await ctx.send("Embeds author icon updated.")
+
