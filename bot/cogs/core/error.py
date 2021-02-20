@@ -19,6 +19,7 @@ from discord.ext.commands import (
 )
 
 from bot import Bot
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot.utils.utils import format_time
 
 
@@ -86,16 +87,25 @@ class ErrorHandler(Cog):
         """Handle all the errors occurring when running the bot."""
         if isinstance(error, errors.CommandNotFound):
             return
+        
+        elif isinstance(error, IncorrectChannelError):
+            return
+
+        elif isinstance(error, NoChannelProvided):
+            await self.error_embed(ctx, 'You must be in a voice channel or provide one to connect to.')
+            return
 
         elif isinstance(error, BotMissingPermissions):
             missing_perms = self._get_missing_permission(error)
             message = f"I need the **{missing_perms}** permission(s) to run this command."
             await self.error_embed(ctx, message)
+            return
 
         elif isinstance(error, MissingPermissions):
             missing_perms = self._get_missing_permission(error)
             message = f"You need the **{missing_perms}** permission(s) to use this command."
             await self.error_embed(ctx, message)
+            return
 
         elif isinstance(error, CommandOnCooldown):
             cooldowns = {

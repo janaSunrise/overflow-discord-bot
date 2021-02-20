@@ -377,14 +377,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         elif after.channel == channel and player.dj not in channel.members:
             player.dj = member
 
-    async def cog_command_error(self, ctx: commands.Context, error: Exception):
-        """Cog wide error handler."""
-        if isinstance(error, IncorrectChannelError):
-            return
-
-        if isinstance(error, NoChannelProvided):
-            return await ctx.send('You must be in a voice channel or provide one to connect to.')
-
     async def cog_check(self, ctx: commands.Context):
         """Cog wide check, which disallows commands in DMs."""
         if ctx.guild:
@@ -464,7 +456,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         await player.connect(channel.id)
 
-    @commands.command(aliases=["leave"])
+    @commands.command(aliases=["leave", "dc"])
     async def disconnect(self, ctx: commands.Context):
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
@@ -473,7 +465,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             embed=discord.Embed(description="Successfully disconnected.", color=discord.Color.green())
         )
 
-    @commands.command()
+    @commands.command(aliases=["p"])
     async def play(self, ctx: commands.Context, *, query: str):
         """Play or queue a song with the given query."""
         player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
