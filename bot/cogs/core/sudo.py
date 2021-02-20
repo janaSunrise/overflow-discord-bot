@@ -117,7 +117,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
             """
         )
         if ctx.guild:
-            shard_info += "\n• Current shard: **`{ctx.guild.shard_id}`**"
+            shard_info += f"• Current shard: **`{ctx.guild.shard_id}`**"
 
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
