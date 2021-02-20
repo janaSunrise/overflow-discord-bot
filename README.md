@@ -1,7 +1,7 @@
 ## Overflow bot
 
 A small bot designed to help you with coding and finding and solving 
-issues faster by integrating stack overflow workflow into discord.
+issues faster by integrating stack overflow workflow into discord and more.
 
 ### Usage
 
@@ -63,7 +63,7 @@ be able to do it, this is the perfect method to get started with the self-hostin
 - Configure the environmental variables by renaming the `.env.example` file to `.env` with the respective 
   values for it. If you're using heroku or other platforms that have option for external environmental
   variables, use that instead of `.env`
-- Configure the options and settings available in `config.py` inside the BOt module, according to your
+- Configure the options and settings available in `config.py` inside the Bot module, according to your
   preferences.
 - Run the server using `pipenv run start`
 
