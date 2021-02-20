@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cfc4a2488d51278a170f0957d4dce1ef0d2a7387dc17d7116af4390fb70a6307"
+            "sha256": "439f067d026428e3333ab9ccad463e16659fb7feb29c3be135446f382a355244"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -138,7 +138,6 @@
             "version": "==3.0.4"
         },
         "discord-ext-menus": {
-            "editable": true,
             "git": "https://github.com/Rapptz/discord-ext-menus",
             "ref": "6f2b873bf0d28903eb752aa1166b3aac26dc9007"
         },
@@ -185,9 +184,8 @@
             "version": "==1.1.4"
         },
         "jishaku": {
-            "editable": true,
             "git": "https://github.com/Gorialis/jishaku",
-            "ref": "25fbb67017bc99ae0eca7f7c43a48f130133f8fa"
+            "ref": "dacc534a2519b7c2298622396058f047400a1d8e"
         },
         "multidict": {
             "hashes": [

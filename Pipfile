@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord-ext-menus = {editable = true, git = "https://github.com/Rapptz/discord-ext-menus"}
+discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
 wavelink = "*"
 "discord.py" = {extras = ["voice"], version = "*"}
 html2text = "*"
@@ -15,7 +15,7 @@ psutil = "*"
 humanize = "*"
 yarl = "*"
 spotify = {git = "https://github.com/Axelancerr/spotify.py"}
-jishaku = {editable = true, git = "https://github.com/Gorialis/jishaku"}
+jishaku = {git = "https://github.com/Gorialis/jishaku"}
 aiohttp = "*"
 pyyaml = "*"
 
