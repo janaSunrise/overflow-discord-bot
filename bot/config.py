@@ -7,6 +7,16 @@ creator = "Sunrit Jana"
 devs = [711194921683648523, 372063179557175297]
 
 # ---- Config settings section ----
+# -- Database config --
+DATABASE = {
+    "user": os.getenv("DB_USERNAME"),
+    "password": os.getenv("DB_PASSWORD"),
+    "hostname": os.getenv("DB_HOST"),
+    "database": os.getenv("DB_NAME")
+}
+# Syntax: "postgresql+asyncpg://<user>:<password>@<hostname>/<dbname>"
+DATABASE_CONN = f"postgresql+asyncpg://{DATABASE['user']}:{DATABASE['password']}@{DATABASE['hostname']}" \
+                f"/{DATABASE['database']}"
 
 # -- Logger configuration --
 log_file = "logs/bot.log"

@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  postgres:
+    image: postgres:12-alpine
+    restart: on-failure
+    ports:
+      - 5432:5432
+    networks:
+      - common-shared-network
+    environment:
+      POSTGRES_DB: overflow
+      POSTGRES_USER: overflow
+      POSTGRES_PASSWORD: overflow
+
   lavalink:
     image: fredboat/lavalink:master-v3
     restart: on-failure
@@ -22,6 +34,7 @@ services:
     tty: true
     depends_on:
       - lavalink
+      - postgres
     environment:
       LAVALINK_HOST: lavalink
       LAVALINK_PORT: 2333
