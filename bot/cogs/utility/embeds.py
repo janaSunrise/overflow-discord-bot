@@ -135,6 +135,6 @@ class Embeds(Cog):
     @author.command()
     async def url(self, ctx: Context, url: str) -> None:
         """Set the author's URL in the embed."""
-        embed = self.embeds[ctx.author].embed
+        embed = self.embeds[ctx.author.id].embed
         embed.set_author(name=embed.author.name, url=url, icon_url=embed.author.icon_url)
         await ctx.send("✅ Successfully set author's URL.")
