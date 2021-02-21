@@ -76,11 +76,11 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                     self.bot.unload_extension(ext)
                     self.bot.load_extension(ext)
                 else:
-                    await ctx.send("Invalid process for extensions")
+                    await ctx.send("❌ Invalid process for extensions")
             except DiscordException:
                 await ctx.send(f"```py\n{traceback.format_exc()}\n```")
             else:
-                await ctx.send("\N{SQUARED OK}")
+                await ctx.send("✅")
 
     @sudo.command()
     async def load(self, ctx: Context, extension: t.Optional[str]) -> None:
