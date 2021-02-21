@@ -1205,7 +1205,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             del player.queue._queue[index]
             await ctx.send(
                 embed=discord.Embed(
-                    description=f"Successfully removed the song from position `{index}`",
+                    description=f"Successfully removed the song from position `{index + 1}`",
                     color=discord.Color.green()
                 ),
                 delete_after=10
@@ -1251,7 +1251,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         await ctx.send(
             embed=discord.Embed(
-                description=f"Successfully shifted the song from position `{source_idx}` to `{target_idx}`!",
+                description=f"Successfully shifted the song from position `{source_idx + 1}` to `{target_idx + 1}`!",
                 color=discord.Color.green()
             ),
             delete_after=10
