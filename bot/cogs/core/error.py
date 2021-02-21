@@ -5,15 +5,20 @@ from discord import Color, Embed
 from discord.ext.commands import (
     BucketType,
     BotMissingPermissions,
+    BotMissingRole,
     Cog,
     Context,
     CommandOnCooldown,
     DisabledCommand,
     ExpectedClosingQuoteError,
+    InvalidEndOfQuotedStringError,
+    MaxConcurrencyReached,
     MissingPermissions,
+    MissingRole,
     NotOwner,
     NoPrivateMessage,
     NSFWChannelRequired,
+    PrivateMessageOnly,
     UnexpectedQuoteError,
     errors
 )
@@ -107,7 +112,17 @@ class ErrorHandler(Cog):
             await self.error_embed(ctx, message)
             return
 
-        elif isinstance(error, CommandOnCooldown):
+        elif isinstance(error, BotMissingRole):
+            message = f"I need the **{error.missing_role}** role to run this command."
+            await self.error_embed(ctx, message)
+            return
+
+        elif isinstance(error, MissingRole):
+            message = f"You need the **{error.missing_role}** permission(s) to use this command."
+            await self.error_embed(ctx, message)
+            return
+
+        elif isinstance(error, (CommandOnCooldown, MaxConcurrencyReached)):
             cooldowns = {
                 BucketType.default: 'for the whole bot.',
                 BucketType.user: 'for you.',
@@ -130,6 +145,12 @@ class ErrorHandler(Cog):
             await self.command_syntax_error(ctx, error)
             return
 
+        elif isinstance(error, PrivateMessageOnly):
+            await self.error_embed(
+                ctx, description=f"❌ The command `{ctx.command}` can be used only in in private messages."
+            )
+            return
+
         elif isinstance(error, NoPrivateMessage):
             await self.error_embed(
                 ctx, description=f"❌ The command `{ctx.command}` can not be used in private messages."
@@ -149,8 +170,9 @@ class ErrorHandler(Cog):
             return
 
         elif isinstance(error, errors.CommandInvokeError):
-            main_error = error.__cause__
-            if main_error is not None:
+            error_cause = error.__cause__
+
+            if error_cause is not None:
                 await self.error_embed(
                     ctx,
                     title="Unhandled Error",
@@ -159,11 +181,11 @@ class ErrorHandler(Cog):
                         An error has occurred which isn't properly handled.
 
                         **Error**
-                        ```{main_error.__class__.__name__}: {main_error}```
+                        ```{error_cause.__class__.__name__}: {error_cause}```
                         """
                     )
                 )
-                raise main_error
+                raise error_cause
             return
 
         error_messages = {
@@ -172,7 +194,9 @@ class ErrorHandler(Cog):
             ExpectedClosingQuoteError: f'You missed a closing quote in the parameters passed to the `{ctx.command}` '
                                        f'command.',
             UnexpectedQuoteError: f'There was an unexpected quote in the parameters passed to the `{ctx.command}` '
-                                  f'command.'
+                                  f'command.',
+            InvalidEndOfQuotedStringError: f"The quoted argument must be separated from the others with space in "
+                                           f"`{ctx.command}`"
         }
 
         error_message = error_messages.get(type(error), None)
