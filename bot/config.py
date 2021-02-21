@@ -1,7 +1,7 @@
 import os
 
 # ---- About bot section ----
-COMMAND_PREFIX = "="
+COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "=")
 
 creator = "Sunrit Jana"
 devs = [711194921683648523, 372063179557175297]
