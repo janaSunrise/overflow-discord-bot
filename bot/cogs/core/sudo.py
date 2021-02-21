@@ -1,3 +1,5 @@
+import asyncio
+import inspect
 import io
 import os
 import platform
@@ -10,7 +12,7 @@ from datetime import datetime
 
 import humanize
 import psutil
-from discord import Color, DiscordException, Embed
+from discord import Color, DiscordException, Embed, Forbidden, HTTPException
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
@@ -23,6 +25,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         super().__init__(bot=bot)
         self.bot = bot
         self._last_eval_result = None
+        self.sessions = set()
 
     def get_uptime(self) -> str:
         """Get formatted server uptime."""
@@ -38,6 +41,10 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         else:
             formatted = f"{hours} hr, {minutes} mins, and {seconds} secs"
         return formatted
+
+    @Cog.listener()
+    async def on_socket_response(self, msg):
+        self.bot.socket_stats[msg.get('t')] += 1
 
     @group(hidden=True)
     @is_owner()
@@ -95,6 +102,21 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         await self._manage_cog(ctx, "reload", extension)
 
     @sudo.command()
+    async def socketstats(self, ctx: Context) -> None:
+        delta = datetime.utcnow() - self.bot.start_time
+        minutes = delta.total_seconds() / 60
+
+        total = sum(self.bot.socket_stats.values())
+        cpm = total / minutes
+        await ctx.send(
+            embed=Embed(
+                title="Socket stats",
+                description=f'{total} socket events observed ({cpm:.2f}/minute):\n`{self.bot.socket_stats}`',
+                color=Color.blue()
+            )
+        )
+
+    @sudo.command()
     async def stats(self, ctx: Context) -> None:
         """Show full bot stats."""
         general = textwrap.dedent(
@@ -126,14 +148,21 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
         process = psutil.Process()
         with process.oneshot():
+            memory_usage = process.memory_full_info().uss / 1024 ** 2
+            cpu_usage = process.cpu_percent() / psutil.cpu_count()
+
             mem = process.memory_full_info()
             name = process.name()
             pid = process.pid
             threads = process.num_threads()
             value = textwrap.dedent(
                 f"""
+                • CPU usage: **`{cpu_usage:.2f}%`**
+                • Memory usage: **`{memory_usage:.2f} MB`**
+                
                 • Physical memory: **`{humanize.naturalsize(mem.rss)}`**
                 • Virtual memory: **`{humanize.naturalsize(mem.vms)}`**
+
                 • PID: `{pid}` (`{name}`)
                 • Threads: **`{threads}`**
                 • Core count: **`{psutil.cpu_count(logical=False)}`** / **`{psutil.cpu_count(logical=True)}`**
@@ -149,6 +178,26 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         embed.set_footer(text=f"Made by {config.creator}.")
 
         await ctx.send(embed=embed)
+
+    @sudo.command()
+    async def shards(self, ctx: Context) -> None:
+        shard_info = ""
+
+        for key, item in self.bot.shards.items():
+            shard_info += f"**`[{key}]`**:\n" \
+                          f"Latency: {round(item.latency * 1000)}\n" \
+                          f"Shard count: {item.shard_count}\n"
+
+        await ctx.send(
+            embed=Embed(
+                title="Cluster info",
+                description=textwrap.dedent(f"""
+                Clusters IDs: `{self.bot.shard_ids}`
+
+                """ + shard_info),
+                color=Color.blue()
+            )
+        )
 
     @staticmethod
     def cleanup_code(content: str) -> str:
