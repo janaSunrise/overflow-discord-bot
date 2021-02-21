@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "439f067d026428e3333ab9ccad463e16659fb7feb29c3be135446f382a355244"
+            "sha256": "f480620e0adc9768cb84e61db44a1a906d7baafe11bb32614b83d83ccab45f8a"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -186,6 +186,14 @@
         "jishaku": {
             "git": "https://github.com/Gorialis/jishaku",
             "ref": "dacc534a2519b7c2298622396058f047400a1d8e"
+        },
+        "loguru": {
+            "hashes": [
+                "sha256:b28e72ac7a98be3d28ad28570299a393dfcd32e5e3f6a353dec94675767b6319",
+                "sha256:f8087ac396b5ee5f67c963b495d615ebbceac2796379599820e324419d53667c"
+            ],
+            "index": "pypi",
+            "version": "==0.5.3"
         },
         "multidict": {
             "hashes": [

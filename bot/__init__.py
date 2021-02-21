@@ -1,14 +1,23 @@
 import asyncio
+import sys
 import typing as t
 from datetime import datetime
 
 import aiohttp
 import aiosqlite
 import discord
-from discord.ext.commands import AutoShardedBot
 import spotify
+from discord.ext.commands import AutoShardedBot
+from loguru import logger
 
 from bot import config
+
+logger.configure(
+    handlers=[
+        dict(sink=sys.stdout, format=config.log_format, level=config.log_level),
+        dict(sink=config.log_file, format=config.log_format, level=config.log_level, rotation="300 MB")
+    ]
+)
 
 
 class Bot(AutoShardedBot):
@@ -60,23 +69,23 @@ class Bot(AutoShardedBot):
         for extension in self.extension_list:
             try:
                 self.load_extension(extension)
-                print(f"Cog {extension} loaded.")
+                logger.info(f"Cog {extension} loaded.")
             except Exception as e:
-                print(f"Cog {extension} failed to load with {type(e)}: {e!r}")
+                logger.info(f"Cog {extension} failed to load with {type(e)}: {e!r}")
 
     async def on_ready(self) -> None:
         if self.initial_call:
             self.initial_call = False
             await self.load_extensions()
 
-            print("Bot is ready")
+            logger.info("Bot is ready")
         else:
-            print("Bot connection reinitialized")
+            logger.info("Bot connection reinitialized")
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
         if not token:
-            print("Missing Bot Token!")
+            logger.error("Missing Bot Token!")
         else:
             super().run(token)
 
@@ -88,7 +97,7 @@ class Bot(AutoShardedBot):
 
     async def close(self) -> None:
         """Close the bot and do some cleanup."""
-        print("Closing bot connection")
+        logger.debug("Closing bot connection")
         if hasattr(self, "session"):
             await self.session.close()
 

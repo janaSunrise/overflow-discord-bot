@@ -22,6 +22,7 @@ from discord.ext.commands import (
     UnexpectedQuoteError,
     errors
 )
+from loguru import logger
 
 from bot import Bot
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
@@ -185,7 +186,7 @@ class ErrorHandler(Cog):
                         """
                     )
                 )
-                raise error_cause
+                logger.error(error_cause)
             return
 
         error_messages = {
@@ -220,3 +221,5 @@ class ErrorHandler(Cog):
                 """
             )
         )
+
+        logger.error(error)

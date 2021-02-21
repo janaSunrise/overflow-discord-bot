@@ -5,6 +5,7 @@ import math
 import random
 import re
 import textwrap
+import time
 import typing as t
 
 import async_timeout
@@ -13,6 +14,7 @@ import humanize
 import wavelink
 import yarl
 from discord.ext import commands, menus
+from loguru import logger
 
 from bot import config
 from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
@@ -350,7 +352,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @wavelink.WavelinkMixin.listener()
     async def on_node_ready(self, node: wavelink.Node):
-        print(f'Node {node.identifier} is ready!')
+        logger.info(f'Node {node.identifier} is ready!')
 
     @wavelink.WavelinkMixin.listener('on_track_stuck')
     @wavelink.WavelinkMixin.listener('on_track_end')

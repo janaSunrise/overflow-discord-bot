@@ -18,6 +18,7 @@ spotify = {git = "https://github.com/Axelancerr/spotify.py"}
 jishaku = {git = "https://github.com/Gorialis/jishaku"}
 aiohttp = "*"
 pyyaml = "*"
+loguru = "*"
 
 [dev-packages]
 

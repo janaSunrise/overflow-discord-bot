@@ -8,6 +8,12 @@ devs = [711194921683648523, 372063179557175297]
 
 # ---- Config settings section ----
 
+# -- Logger configuration --
+log_file = "logs/bot.log"
+log_level = "INFO"
+log_format = "<green>{time:YYYY-MM-DD hh:mm:ss}</green> | <level>{level: <8}</level> | " \
+             "<cyan>{name: <18}</cyan> | <level>{message}</level>"
+
 # -- Music --
 nodes = {
     'MAIN': {
