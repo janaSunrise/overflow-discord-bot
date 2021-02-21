@@ -4,13 +4,15 @@ import typing as t
 from datetime import datetime
 
 import aiohttp
-import aiosqlite
 import discord
 import spotify
+from asyncpg.exceptions import InvalidPasswordError
 from discord.ext.commands import AutoShardedBot
 from loguru import logger
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from bot import config
+from bot.databases import bring_databases_into_scope, DatabaseBase
 
 logger.configure(
     handlers=[
@@ -48,21 +50,23 @@ class Bot(AutoShardedBot):
 
         return await super().is_owner(user)
 
-    async def init_db(self) -> None:
+    async def init_db(self) -> AsyncSession:
         """Initialize the database."""
-        commands = [
-            """
-            CREATE TABLE IF NOT EXISTS newsfeed (
-                guild_id INTEGER NOT NULL UNIQUE,
-                channel_id INTEGER NOT NULL UNIQUE
-            )
-            """
-        ]
-        self.db = await aiosqlite.connect("overflow-bot.db")
+        bring_databases_into_scope()
 
-        for command in commands:
-            await self.db.execute(command)
-            await self.db.commit()
+        engine = create_async_engine(config.DATABASE_CONN)
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(DatabaseBase.metadata.create_all)
+        except InvalidPasswordError as exc:
+            logger.error("The database password entered is invalid.")
+            raise exc
+        except ConnectionRefusedError:
+            logger.error("Database connection refused. Trying again.")
+            await asyncio.sleep(3)
+            return await self.init_db()
+
+        return AsyncSession(bind=engine)
 
     async def load_extensions(self) -> None:
         """Load all listed cogs."""
@@ -92,7 +96,8 @@ class Bot(AutoShardedBot):
     async def start(self, *args, **kwargs) -> None:
         """Starts the bot."""
         self.session = aiohttp.ClientSession()
-        await self.init_db()
+        self.database = await self.init_db()
+
         await super().start(*args, **kwargs)
 
     async def close(self) -> None:
@@ -100,6 +105,9 @@ class Bot(AutoShardedBot):
         logger.debug("Closing bot connection")
         if hasattr(self, "session"):
             await self.session.close()
+
+        if hasattr(self, "database"):
+            await self.database.close()
 
         await super().close()
 

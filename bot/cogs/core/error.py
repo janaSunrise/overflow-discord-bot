@@ -170,25 +170,6 @@ class ErrorHandler(Cog):
             )
             return
 
-        elif isinstance(error, errors.CommandInvokeError):
-            error_cause = error.__cause__
-
-            if error_cause is not None:
-                await self.error_embed(
-                    ctx,
-                    title="Unhandled Error",
-                    description=textwrap.dedent(
-                        f"""
-                        An error has occurred which isn't properly handled.
-
-                        **Error**
-                        ```{error_cause.__class__.__name__}: {error_cause}```
-                        """
-                    )
-                )
-                logger.error(error_cause)
-            return
-
         error_messages = {
             NSFWChannelRequired: f'The command `{ctx.command}` can only be ran in a NSFW channel.',
             DisabledCommand: f'The command `{ctx.command}` has been disabled.',
@@ -207,6 +188,25 @@ class ErrorHandler(Cog):
                 title="Error",
                 description=error_message
             )
+            return
+
+        elif isinstance(error, errors.CommandInvokeError):
+            error_cause = error.__cause__
+
+            if error_cause is not None:
+                await self.error_embed(
+                    ctx,
+                    title="Unhandled Error",
+                    description=textwrap.dedent(
+                        f"""
+                        An error has occurred which isn't properly handled.
+
+                        **Error**
+                        ```{error_cause.__class__.__name__}: {error_cause}```
+                        """
+                    )
+                )
+                logger.error(error_cause)
             return
 
         await self.error_embed(

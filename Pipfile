@@ -19,6 +19,8 @@ jishaku = {git = "https://github.com/Gorialis/jishaku"}
 aiohttp = "*"
 pyyaml = "*"
 loguru = "*"
+sqlalchemy = "==1.4.0b3"
+asyncpg = "*"
 
 [dev-packages]
 

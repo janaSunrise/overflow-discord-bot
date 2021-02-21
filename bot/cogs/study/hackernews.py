@@ -11,6 +11,7 @@ from discord.ext.commands import (
 )
 
 from bot import Bot
+from bot.databases.hackernews_feed import HackernewsFeed
 from bot.utils.pages import EmbedPages
 
 NEWS_URL = "https://hacker-news.firebaseio.com/v0/"
@@ -47,7 +48,7 @@ class HackerNews(Cog):
 
         return article_embeds
 
-    async def _generate_newsfeed_embed(self, article_numbers: list) -> list:
+    async def _generate_newsfeed_embed(self, article_numbers: list) -> discord.Embed:
         description = ""
 
         for item_id in article_numbers:
@@ -107,13 +108,10 @@ class HackerNews(Cog):
             await ctx.send("Please specify a channel to send the feed!")
             return
 
-        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
-            row = await cursor.fetchone()
+        row = await HackernewsFeed.get_feed_channel(self.bot.database, ctx.guild.id)
 
         if not row:
-            await self.bot.db.execute("INSERT INTO newsfeed VALUES (?, ?)", (ctx.guild.id, channel.id))
-            await self.bot.db.commit()
-
+            await HackernewsFeed.set_feed_channel(self.bot.database, ctx.guild.id, channel.id)
             await ctx.send("Congrats :tada: You're now subscribed to the feed!")
         else:
             await ctx.send(":x: You're already subscribed to the feed!")
@@ -121,14 +119,12 @@ class HackerNews(Cog):
     @command(manage_channels=True)
     async def unsubscribe(self, ctx: Context) -> None:
         """Unsubscribe from the scheduled hacker news feed."""
-        async with self.bot.db.execute("SELECT * FROM newsfeed WHERE guild_id=?", (ctx.guild.id,)) as cursor:
-            row = await cursor.fetchone()
+        row = await HackernewsFeed.get_feed_channel(self.bot.database, ctx.guild.id)
 
         if not row:
             await ctx.send(":x: You're already unsubscribed from the feed!")
         else:
-            await self.bot.db.execute("DELETE FROM newsfeed where guild_id=?", (ctx.guild.id,))
-            await self.bot.db.commit()
+            await HackernewsFeed.remove_feed_channel(self.bot.database, ctx.guild.id)
 
             await ctx.send("Aww :( We hate to see you unsubscribe from the feed!")
 
@@ -140,8 +136,9 @@ class HackerNews(Cog):
         article_numbers = random.sample(data, 6)
         article_embed = await self._generate_newsfeed_embed(article_numbers)
 
-        async with self.bot.db.execute("SELECT * FROM newsfeed") as cursor:
-            channels = [row[1] for row in (await cursor.fetchall())]
+        rows = await HackernewsFeed.get_feed_channels(self.bot.database)
+        if rows is not None:
+            channels = [row["channel_id"] for row in rows]
 
             for channel in channels:
                 channel = self.bot.get_channel(channel)
