@@ -119,5 +119,10 @@ class Embeds(Cog):
             icon = icon.avatar_url_as(format="png")
 
         embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=icon)
-        await ctx.send("Embeds author icon updated.")
+        await ctx.send("Succesfully set author's icon.")
 
+    @author.command()
+    async def url(self, ctx: Context, url: str) -> None:
+        embed = self.embeds[ctx.author].embed
+        embed.set_author(name=embed.author.name, url=url, icon_url=embed.author.icon_url)
+        await ctx.send("Successfully set author's URL.")
