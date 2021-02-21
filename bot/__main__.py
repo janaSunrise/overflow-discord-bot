@@ -24,7 +24,6 @@ extensions = [
 
 intents = discord.Intents.all()
 intents.presences = False
-intents.members = False
 
 bot = Bot(
     extensions,

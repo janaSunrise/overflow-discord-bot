@@ -1,14 +1,14 @@
-version: '3'
+version: '3.8'
 
 services:
   lavalink:
     image: fredboat/lavalink:master-v3
-    restart: always
+    restart: on-failure
     volumes:
       - ./lavalink.yml:/opt/Lavalink/application.yml
       - ./lavalink_logs:/opt/Lavalink/logs
     ports:
-    - 2333:2333
+      - 2333:2333
     networks:
       - common-shared-network
 
