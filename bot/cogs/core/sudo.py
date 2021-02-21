@@ -183,8 +183,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
         for key, item in self.bot.shards.items():
             shard_info += f"**`[{key}]`**:\n" \
-                          f"Latency: {round(item.latency * 1000)}\n" \
-                          f"Shard count: {item.shard_count}\n"
+                          f"Latency: **`{round(item.latency * 1000)}ms`**\n" \
+                          f"Shard count: `{item.shard_count}`\n"
 
         await ctx.send(
             embed=Embed(
