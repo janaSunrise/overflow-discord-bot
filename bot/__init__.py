@@ -71,7 +71,7 @@ class Bot(AutoShardedBot):
                 self.load_extension(extension)
                 logger.info(f"Cog {extension} loaded.")
             except Exception as e:
-                logger.info(f"Cog {extension} failed to load with {type(e)}: {e!r}")
+                logger.error(f"Cog {extension} failed to load with {type(e)}: {e!r}")
 
     async def on_ready(self) -> None:
         if self.initial_call:

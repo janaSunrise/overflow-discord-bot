@@ -1,11 +1,12 @@
 import asyncio
 import copy
 import datetime
+import itertools
+
 import math
 import random
 import re
 import textwrap
-import time
 import typing as t
 
 import async_timeout
@@ -37,6 +38,34 @@ class Track(wavelink.Track):
         self.requester = kwargs.get('requester')
 
 
+class SongQueue(asyncio.Queue):
+    def __getitem__(self, item) -> t.Union[list, str]:
+        if isinstance(item, slice):
+            return list(itertools.islice(self._queue, item.start, item.stop, item.step))
+        else:
+            return self._queue[item]
+
+    def __iter__(self) -> None:
+        return self._queue.__iter__()
+
+    def __len__(self) -> int:
+        return self.qsize()
+
+    def clear(self) -> None:
+        self._queue.clear()
+
+    def shuffle(self) -> None:
+        random.shuffle(self._queue)
+
+    def remove(self, index: int) -> None:
+        del self._queue[index]
+
+    def shift(self, source_idx: int, target_idx: int) -> None:
+        temp = self._queue[source_idx]
+        del self._queue[source_idx]
+        self._queue.insert(target_idx, temp)
+
+
 class Player(wavelink.Player):
     """Custom wavelink player class."""
     def __init__(self, *args, **kwargs):
@@ -46,7 +75,7 @@ class Player(wavelink.Player):
         if self.context:
             self.dj: discord.Member = self.context.author
 
-        self.queue = asyncio.Queue()
+        self.queue = SongQueue()
         self.controller = None
 
         self.waiting = False
@@ -867,7 +896,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not player.is_connected:
             return
 
-        if player.queue.qsize() < 3:
+        if len(player.queue) < 3:
             await ctx.send(
                 embed=discord.Embed(
                     description='Add more songs to the queue before shuffling.',
@@ -886,7 +915,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 delete_after=10
             )
             player.shuffle_votes.clear()
-            return random.shuffle(player.queue._queue)
+            return player.queue.shuffle()
 
         required = self.required(ctx)
         player.shuffle_votes.add(ctx.author)
@@ -900,7 +929,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 delete_after=10
             )
             player.shuffle_votes.clear()
-            random.shuffle(player.queue._queue)
+            player.queue.shuffle()
         else:
             await ctx.send(
                 embed=discord.Embed(
@@ -1014,7 +1043,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not player.is_connected:
             return
 
-        if player.queue.qsize() == 0:
+        if len(player.queue) == 0:
             await ctx.send(
                 embed=discord.Embed(
                     description='There are no more songs in the queue.',
@@ -1050,7 +1079,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if self.is_privileged(ctx) or ctx.author == player.current.requester:
             if player.is_playing:
-                player.queue._queue.clear()
+                player.queue.clear()
 
                 return await ctx.send(
                     embed=discord.Embed(
@@ -1073,7 +1102,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if len(player.clear_votes) >= required:
             if player.is_playing:
-                player.queue._queue.clear()
+                player.queue.clear()
 
                 return await ctx.send(
                     embed=discord.Embed(
@@ -1195,11 +1224,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             return
 
         if isinstance(index, int):
-            if index < 1 or index > player.queue.qsize():
+            if index < 1 or index > len(player.queue):
                 await ctx.send(
                     embed=discord.Embed(
                         description=f'The song number must be between 1 and the max song count '
-                                    f'[`{player.queue.qsize()}`]',
+                                    f'[`{len(player.queue)}`]',
                         color=discord.Color.red()
                     ),
                     delete_after=15
@@ -1207,7 +1236,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 return
             index -= 1
 
-            del player.queue._queue[index]
+            player.queue.remove(index)
             await ctx.send(
                 embed=discord.Embed(
                     description=f"Successfully removed the song from position `{index + 1}`",
@@ -1235,12 +1264,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             return
 
         if isinstance(source_idx, int) and isinstance(target_idx, int):
-            if (1 > source_idx > player.queue.qsize()) and \
-                    (1 > target_idx > player.queue.qsize()):
+            if (1 > source_idx > len(player.queue)) and \
+                    (1 > target_idx > len(player.queue)):
                 await ctx.send(
                     embed=discord.Embed(
                         description=f'The song number must be between 1 and the max song count '
-                                    f'[`{player.queue.qsize()}`]',
+                                    f'[`{len(player.queue)}`]',
                         color=discord.Color.red()
                     ),
                     delete_after=15
@@ -1250,9 +1279,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             source_idx -= 1
             target_idx -= 1
 
-        temp = player.queue._queue[source_idx]
-        del player.queue._queue[source_idx]
-        player.queue._queue.insert(target_idx, temp)
+        player.queue.shift(source_idx=source_idx, target_idx=target_idx)
 
         await ctx.send(
             embed=discord.Embed(
