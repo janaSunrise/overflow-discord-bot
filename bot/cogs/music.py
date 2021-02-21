@@ -217,9 +217,6 @@ class InteractiveController(menus.Menu):
         return payload.emoji in self.buttons
 
     async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel) -> discord.Message:
-        if self.player.queue.qsize() <= 0:
-            return await ctx.send("❌ No song playing!")
-
         return await channel.send(embed=self.embed)
 
     @menus.button(emoji='\u25B6')
