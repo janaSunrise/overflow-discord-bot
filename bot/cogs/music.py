@@ -303,8 +303,11 @@ class PaginatorSource(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
+        offset = menu.current_page * self.per_page
+
         embed = discord.Embed(title='Coming Up...', colour=0x4f0321)
-        embed.description = '\n'.join(f'`{index}. {title}`' for index, title in enumerate(page, 1))
+        embed.description = '\n'.join(f'**`{index}`** | `{title}`' for index, title in enumerate(page, start=offset))
+
         return embed
 
     def is_paginating(self) -> bool:
