@@ -24,7 +24,7 @@ logger.configure(
 
 
 class Bot(AutoShardedBot):
-    def __init__(self, extensions: t.List[str], *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         """Initialize the subclass."""
         super().__init__(*args, **kwargs)
 
@@ -32,7 +32,6 @@ class Bot(AutoShardedBot):
         self.session = None
         self.database = None
 
-        self.extension_list = extensions
         self.initial_call = True
 
         self.spotify = spotify.Client(
@@ -72,7 +71,9 @@ class Bot(AutoShardedBot):
 
     async def load_extensions(self) -> None:
         """Load all listed cogs."""
-        for extension in self.extension_list:
+        from bot.core import loader
+
+        for extension in loader.COGS:
             try:
                 self.load_extension(extension)
                 logger.info(f"Cog {extension} loaded.")

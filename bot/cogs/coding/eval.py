@@ -182,8 +182,3 @@ class Eval(Cog):
 
             embed = format_output.format_code_output(result)
             await ctx.send(content=f"{ctx.author.mention}", embed=embed)
-
-
-def setup(bot: Bot) -> None:
-    """Load the Eval cog."""
-    bot.add_cog(Eval(bot))

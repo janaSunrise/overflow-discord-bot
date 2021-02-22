@@ -57,12 +57,11 @@ else:
 
 # -- Get tables into scope --
 def bring_databases_into_scope() -> t.List:
-    DATABASE_MODULES = [
-        "bot.databases.hackernews_feed"
-    ]
+    from bot.core import loader
+
     loaded_tables = []
 
-    for table in DATABASE_MODULES:
+    for table in loader.DATABASES:
         imported_table = import_module(table)
         loaded_tables.append(imported_table)
 
