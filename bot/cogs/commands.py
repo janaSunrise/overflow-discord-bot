@@ -16,14 +16,40 @@ from discord.ext.commands import (
     cooldown
 )
 
-from bot import Bot
+from bot import Bot, config
 from bot.core.converters import TimeConverter
+from bot.databases.prefix import Prefix as Prefix
 from bot.utils.time import humanize_time
 
 
 class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @command(aliases=["change-prefix", "changeprefix"])
+    async def prefix(self, ctx: Context, prefix: t.Optional[str] = None) -> None:
+        if prefix is not None:
+            ctx_id = self.bot.get_id(ctx)
+
+            await Prefix.set_prefix(self.bot.database, context=ctx_id, prefix=prefix)
+            self.bot.prefix_dict[ctx_id] = prefix
+
+            await ctx.send(f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**")
+            return
+
+        old_prefix = discord.utils.escape_markdown(await self.bot.get_prefix(ctx.message, False))
+        await ctx.send(f"The prefix for this channel is **`{old_prefix}`**")
+
+    @command(aliases=["reset-prefix"])
+    async def reset_prefix(self, ctx: Context) -> None:
+        prefix = config.COMMAND_PREFIX
+        ctx_id = self.bot.get_id(ctx)
+
+        await Prefix.set_prefix(self.bot.database, context=ctx_id, prefix=prefix)
+        self.bot.prefix_dict[ctx_id] = prefix
+
+        await ctx.send(f"Prefix changed back to **`{discord.utils.escape_markdown(prefix)}`**")
+        return
 
     @command()
     async def ping(self, ctx: Context) -> None:

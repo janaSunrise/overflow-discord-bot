@@ -12,7 +12,7 @@ class Prefix(DatabaseBase):
     __tablename__ = "prefixes"
 
     context = Column(String, primary_key=True, nullable=False, unique=True)
-    channel = Column(String, nullable=False)
+    prefix = Column(String, nullable=False)
 
     @classmethod
     async def get_prefixes(cls, session: AsyncSession) -> t.Optional[list]:
@@ -23,9 +23,28 @@ class Prefix(DatabaseBase):
 
         return [row.dict() for row in rows]
 
+    @classmethod
+    async def set_prefix(
+            cls,
+            session: AsyncSession,
+            context: t.Union[int, str],
+            prefix: str
+    ) -> None:
+        context = get_datatype_str(context)
+
+        await on_conflict(
+            session, cls,
+            conflict_columns=["context"],
+            values={
+                "context": context,
+                "prefix": prefix
+            }
+        )
+        await session.commit()
+
     def dict(self) -> t.Dict[str, t.Any]:
         data = {
-            key: int(getattr(self, key)) for key in self.__table__.columns.keys()
+            key: getattr(self, key) for key in self.__table__.columns.keys()
         }
         return data
 

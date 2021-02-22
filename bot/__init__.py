@@ -86,11 +86,11 @@ class Bot(AutoShardedBot):
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Log message on guild join."""
-        logger.info(f"{guild.name} joined")
+        logger.info(f"[GUILD] Joined {guild.name}")
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         """Log message on guild remove."""
-        logger.info(f"{guild.name} left")
+        logger.info(f"[GUILD] Left {guild.name}")
 
     async def on_ready(self) -> None:
         if self.initial_call:
@@ -103,7 +103,7 @@ class Bot(AutoShardedBot):
 
         rows = await Prefix.get_prefixes(self.database)
         for row in rows:
-            self.prefix_dict[row["ctx_id"]] = row["prefix"]
+            self.prefix_dict[row["context"]] = row["prefix"]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
@@ -130,9 +130,9 @@ class Bot(AutoShardedBot):
 
         await super().close()
 
-    async def get_prefix(self, message: discord.Message) -> str:
+    async def get_prefix(self, message: discord.Message, not_print: bool = True) -> str:
         """Get the prefix from a message."""
-        if message.content.startswith(f"{self.command_prefix}help"):
+        if message.content.startswith(f"{self.default_prefix}help") and not not_print:
             return self.default_prefix
 
         return self.prefix_dict.get(
