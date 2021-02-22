@@ -1,6 +1,7 @@
 import typing as t
 from importlib import import_module
 
+import discord
 import sqlalchemy as alchemy
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,7 @@ from bot.utils.utils import camel_to_snake
 DatabaseBase = declarative_base()
 
 
+# -- Cutom database base --
 class CustomMeta(DeclarativeMeta):
     __table__: alchemy.Table
 
@@ -65,6 +67,19 @@ def bring_databases_into_scope() -> t.List:
         loaded_tables.append(imported_table)
 
     return loaded_tables
+
+
+# -- Utility methods --
+def get_datatype_str(
+        datatype: t.Union[int, str, discord.TextChannel, discord.Guild, discord.Role, discord.Member, discord.User]
+):
+    if isinstance(datatype, (discord.TextChannel, discord.Guild, discord.Role, discord.Member, discord.User)):
+        datatype = str(datatype.id)
+
+    if isinstance(datatype, int):
+        datatype = str(datatype)
+
+    return datatype
 
 
 async def on_conflict(session: AsyncSession, model: DatabaseBase, conflict_columns: list, values: dict) -> None:

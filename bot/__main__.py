@@ -26,7 +26,7 @@ intents = discord.Intents.all()
 intents.presences = False
 
 bot = Bot(
-    extensions,
+    extensions=extensions,
     command_prefix=PREFIX,
     intents=intents,
     activity=discord.Game(name=f"{PREFIX}help | Listening to coders!"),

@@ -108,13 +108,8 @@ class HackerNews(Cog):
             await ctx.send("Please specify a channel to send the feed!")
             return
 
-        row = await HackernewsFeed.get_feed_channel(self.bot.database, ctx.guild.id)
-
-        if not row:
-            await HackernewsFeed.set_feed_channel(self.bot.database, ctx.guild.id, channel.id)
-            await ctx.send("Congrats :tada: You're now subscribed to the feed!")
-        else:
-            await ctx.send(":x: You're already subscribed to the feed!")
+        await HackernewsFeed.set_feed_channel(self.bot.database, ctx.guild.id, channel.id)
+        await ctx.send(f"Congrats :tada: Set {channel.mention} as the feed channel!")
 
     @command(manage_channels=True)
     async def unsubscribe(self, ctx: Context) -> None:
@@ -125,7 +120,6 @@ class HackerNews(Cog):
             await ctx.send(":x: You're already unsubscribed from the feed!")
         else:
             await HackernewsFeed.remove_feed_channel(self.bot.database, ctx.guild.id)
-
             await ctx.send("Aww :( We hate to see you unsubscribe from the feed!")
 
     @tasks.loop(hours=24)
@@ -138,7 +132,7 @@ class HackerNews(Cog):
 
         rows = await HackernewsFeed.get_feed_channels(self.bot.database)
         if rows is not None:
-            channels = [row["channel_id"] for row in rows]
+            channels = [row["channel"] for row in rows]
 
             for channel in channels:
                 channel = self.bot.get_channel(channel)

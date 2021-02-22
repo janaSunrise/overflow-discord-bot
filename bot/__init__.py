@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from bot import config
 from bot.databases import bring_databases_into_scope, DatabaseBase
 
+# -- Logger configuration --
 logger.configure(
     handlers=[
         dict(sink=sys.stdout, format=config.log_format, level=config.log_level),
@@ -29,6 +30,7 @@ class Bot(AutoShardedBot):
 
         self.start_time = datetime.utcnow()
         self.session = None
+        self.database = None
 
         self.extension_list = extensions
         self.initial_call = True
