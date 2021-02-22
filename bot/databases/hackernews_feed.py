@@ -66,6 +66,6 @@ class HackernewsFeed(DatabaseBase):
 
     def dict(self) -> t.Dict[str, t.Any]:
         data = {
-            key: getattr(self, key) for key in self.__table__.columns.keys()
+            key: int(getattr(self, key)) for key in self.__table__.columns.keys()
         }
         return data
