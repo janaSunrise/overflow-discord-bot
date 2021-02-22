@@ -5,6 +5,7 @@ from datetime import datetime
 
 import aiohttp
 import discord
+from discord.ext.commands import Context
 import spotify
 from asyncpg.exceptions import InvalidPasswordError
 from discord.ext.commands import AutoShardedBot
@@ -13,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from bot import config
 from bot.databases import bring_databases_into_scope, DatabaseBase
+from bot.databases.prefix import Prefix
 
 # -- Logger configuration --
 logger.configure(
@@ -27,6 +29,8 @@ class Bot(AutoShardedBot):
     def __init__(self, *args, **kwargs) -> None:
         """Initialize the subclass."""
         super().__init__(*args, **kwargs)
+
+        self.default_prefix = config.COMMAND_PREFIX
 
         self.start_time = datetime.utcnow()
         self.session = None
@@ -43,7 +47,7 @@ class Bot(AutoShardedBot):
             client_secret=config.spotify_client_secret
         )
 
-        self.db = None
+        self.prefix_dict = {}
 
     async def is_owner(self, user: discord.User):
         if user.id in config.devs:
@@ -80,6 +84,14 @@ class Bot(AutoShardedBot):
             except Exception as e:
                 logger.error(f"Cog {extension} failed to load with {type(e)}: {e!r}")
 
+    async def on_guild_join(self, guild: discord.Guild) -> None:
+        """Log message on guild join."""
+        logger.info(f"{guild.name} joined")
+
+    async def on_guild_remove(self, guild: discord.Guild) -> None:
+        """Log message on guild remove."""
+        logger.info(f"{guild.name} left")
+
     async def on_ready(self) -> None:
         if self.initial_call:
             self.initial_call = False
@@ -88,6 +100,10 @@ class Bot(AutoShardedBot):
             logger.info("Bot is ready")
         else:
             logger.info("Bot connection reinitialized")
+
+        rows = await Prefix.get_prefixes(self.database)
+        for row in rows:
+            self.prefix_dict[row["ctx_id"]] = row["prefix"]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
@@ -113,6 +129,22 @@ class Bot(AutoShardedBot):
             await self.database.close()
 
         await super().close()
+
+    async def get_prefix(self, message: discord.Message) -> str:
+        """Get the prefix from a message."""
+        if message.content.startswith(f"{self.command_prefix}help"):
+            return self.default_prefix
+
+        return self.prefix_dict.get(
+            self.get_id(message),
+            self.default_prefix
+        )
+
+    def get_id(self, ctx: Context) -> int:
+        """Get a context's id."""
+        if ctx.guild:
+            return ctx.guild.id
+        return ctx.channel.id
 
     async def confirmation(
             self, ctx, description: str, title: str, color=discord.Color.blurple(), footer: t.Optional[str] = None
