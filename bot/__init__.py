@@ -5,10 +5,9 @@ from datetime import datetime
 
 import aiohttp
 import discord
-from discord.ext.commands import Context
 import spotify
 from asyncpg.exceptions import InvalidPasswordError
-from discord.ext.commands import AutoShardedBot
+from discord.ext.commands import AutoShardedBot, Context
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
@@ -140,11 +139,12 @@ class Bot(AutoShardedBot):
             self.default_prefix
         )
 
-    def get_id(self, ctx: Context) -> int:
+    def get_id(self, message: discord.Message) -> int:
         """Get a context's id."""
-        if ctx.guild:
-            return ctx.guild.id
-        return ctx.channel.id
+        if message.guild:
+            return message.guild.id
+
+        return message.channel.id
 
     async def confirmation(
             self, ctx, description: str, title: str, color=discord.Color.blurple(), footer: t.Optional[str] = None

@@ -13,7 +13,8 @@ from discord.ext.commands import (
     Cog,
     Context,
     command,
-    cooldown
+    cooldown,
+    group
 )
 
 from bot import Bot, config
@@ -26,9 +27,19 @@ class Commands(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @command(aliases=["change-prefix", "changeprefix"])
-    async def prefix(self, ctx: Context, prefix: t.Optional[str] = None) -> None:
+    @group(invoke_without_command=True)
+    async def prefix(self, ctx: Context) -> None:
+        """Set custom prefix for the bot."""
+        await ctx.send_help(ctx.command)
+
+    @prefix.command()
+    async def set(self, ctx: Context, prefix: t.Optional[str] = None) -> None:
+        """Set the custom prefix for the current guild / DM."""
         if prefix is not None:
+            if prefix.startswith(f"{self.bot.default_prefix}help"):
+                await ctx.send(f"You can't use {prefix} as a prefix.")
+                return
+
             ctx_id = self.bot.get_id(ctx)
 
             await Prefix.set_prefix(self.bot.database, context=ctx_id, prefix=prefix)
@@ -40,8 +51,9 @@ class Commands(Cog):
         old_prefix = discord.utils.escape_markdown(await self.bot.get_prefix(ctx.message, False))
         await ctx.send(f"The prefix for this channel is **`{old_prefix}`**")
 
-    @command(aliases=["reset-prefix"])
-    async def reset_prefix(self, ctx: Context) -> None:
+    @prefix.command()
+    async def reset(self, ctx: Context) -> None:
+        """Reset the prefix for the current guild / DM."""
         prefix = config.COMMAND_PREFIX
         ctx_id = self.bot.get_id(ctx)
 
