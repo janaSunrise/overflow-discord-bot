@@ -10,12 +10,13 @@ from datetime import datetime
 
 import humanize
 import psutil
-from discord import Color, DiscordException, Embed, Forbidden, HTTPException
+from discord import Color, DiscordException, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
 
 from bot import Bot, config
+from bot.core.loader import COGS
 
 
 class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
@@ -41,7 +42,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         return formatted
 
     @Cog.listener()
-    async def on_socket_response(self, msg):
+    async def on_socket_response(self, msg: t.Any) -> None:
+        """Cog listener for socket responses."""
         self.bot.socket_stats[msg.get('t')] += 1
 
     @group(hidden=True)
@@ -67,7 +69,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
     async def _manage_cog(self, ctx: Context, process: str, extension: t.Optional[str] = None) -> None:
         if not extension:
-            extensions = self.bot.extension_list
+            extensions = COGS
         else:
             extensions = [f"bot.cogs.{extension}"]
 
@@ -89,18 +91,22 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
     @sudo.command()
     async def load(self, ctx: Context, extension: t.Optional[str]) -> None:
+        """Load a cog."""
         await self._manage_cog(ctx, "load", extension)
 
     @sudo.command()
     async def unload(self, ctx: Context, extension: t.Optional[str]) -> None:
+        """Unload a cog."""
         await self._manage_cog(ctx, "unload", extension)
 
     @sudo.command()
     async def reload(self, ctx: Context, extension: t.Optional[str]) -> None:
+        """Unload and then load a cog."""
         await self._manage_cog(ctx, "reload", extension)
 
     @sudo.command()
     async def socketstats(self, ctx: Context) -> None:
+        """Get the bot's socket stats."""
         delta = datetime.utcnow() - self.bot.start_time
         minutes = delta.total_seconds() / 60
 
@@ -179,6 +185,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
     @sudo.command()
     async def shards(self, ctx: Context) -> None:
+        """Get the shard info about the bot."""
         shard_info = ""
 
         for key, item in self.bot.shards.items():

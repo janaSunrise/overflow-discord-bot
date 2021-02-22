@@ -59,7 +59,7 @@ class Moderation(Cog):
         await message.delete()
 
     @command()
-    @has_permissions(administrator=True)
+    @has_permissions(manage_roles=True)
     async def dm(
             self,
             ctx: Context,

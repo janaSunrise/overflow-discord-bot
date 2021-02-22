@@ -38,6 +38,7 @@ class ErrorHandler(Cog):
     async def error_embed(
             self, ctx: Context, title: t.Optional[str] = None, description: t.Optional[str] = None
     ) -> None:
+        """Utility method to send error embeds easily."""
         await ctx.send(
             embed=Embed(
                 title=title,
@@ -47,6 +48,7 @@ class ErrorHandler(Cog):
         )
 
     async def command_syntax_error(self, ctx: Context, error: errors.UserInputError) -> None:
+        """Handle invalid command syntax error."""
         command = ctx.command
         parent = command.full_parent_name
 
@@ -79,6 +81,7 @@ class ErrorHandler(Cog):
 
     @classmethod
     def _get_missing_permission(cls, error) -> str:
+        """Missing permissions utility handler."""
         missing_perms = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
 
         if len(missing_perms) > 2:
@@ -90,7 +93,7 @@ class ErrorHandler(Cog):
 
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: errors.CommandError) -> None:
-        """Handle all the errors occurring when running the bot."""
+        """Common error handler for the bot, so It doesnt interrupt and runs perfectly."""
         if isinstance(error, errors.CommandNotFound):
             return
         

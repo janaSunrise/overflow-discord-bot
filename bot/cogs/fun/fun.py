@@ -131,7 +131,8 @@ class Fun(Cog):
         await ctx.send(embed=embed)
 
     @command()
-    async def history(self, ctx: Context):
+    async def history(self, ctx: Context) -> None:
+        """Get a random interesting history fact."""
         async with self.bot.session.get('http://numbersapi.com/random/date?json') as resp:
             res = await resp.json()
             embed = discord.Embed(
@@ -145,6 +146,7 @@ class Fun(Cog):
 
     @command()
     async def math(self, ctx: Context) -> None:
+        """Get a random interesting math fact."""
         async with self.bot.session.get('http://numbersapi.com/random/math?json') as r:
             res = await r.json()
             embed = discord.Embed(
@@ -157,6 +159,7 @@ class Fun(Cog):
 
     @command()
     async def advice(self, ctx: Context) -> None:
+        """Get a random advice."""
         async with self.bot.session.get('https://api.adviceslip.com/advice') as r:
             res = await r.json(content_type="text/html")
             embed = discord.Embed(
