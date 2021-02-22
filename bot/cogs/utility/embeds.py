@@ -37,7 +37,9 @@ class Embeds(Cog):
 
     @embed.command(name="import", aliases=["import-embed"])
     async def import_(self, ctx: Context, message: MessageConverter) -> None:
-        self.embeds[ctx.author.id] = EmbedInfo("", message.embeds[0])
+        self.embeds[ctx.author.id] = EmbedInfo(
+            message.content if message.content is not None else "", message.embeds[0]
+        )
 
         await ctx.send("✅ Successfully import the specified embed / message.")
 
