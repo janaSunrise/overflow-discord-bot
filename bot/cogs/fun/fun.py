@@ -169,3 +169,16 @@ class Fun(Cog):
             )
 
             await ctx.send(embed=embed)
+
+    @command()
+    async def inspire(self, ctx: Context) -> None:
+        """Get inspired."""
+        async with self.bot.session.get('https://affirmations.dev/') as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Inspirational thought",
+                description=f"• Thought: {res['affirmation']}"
+            )
+
+            await ctx.send(embed=embed)
