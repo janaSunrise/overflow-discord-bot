@@ -1,6 +1,7 @@
 import asyncio
 import typing as t
 from contextlib import suppress
+from datetime import datetime
 from textwrap import dedent
 
 import discord
@@ -10,10 +11,13 @@ from discord.ext.commands import (
     Greedy,
     NoPrivateMessage,
     command,
-    has_permissions
+    has_permissions,
+    MemberConverter
 )
 
 from bot import Bot
+from bot.core.converters import ModerationReason
+from bot.utils.embeds import moderation_embed
 
 
 class Moderation(Cog):
@@ -30,6 +34,43 @@ class Moderation(Cog):
             return True
 
         raise NoPrivateMessage
+
+    @command()
+    @has_permissions(kick_members=True)
+    async def kick(
+            self, ctx: Context, member: MemberConverter, *, reason: ModerationReason = "No reason specified."
+    ) -> None:
+        """Kick a member from your server."""
+        if not isinstance(member, discord.Member):
+            await ctx.send(embed=discord.Embed(
+                description=dedent(f"""
+                You cannot kick this member! 
+                
+                {member.mention} [**`{member.id}`**] isn't a member of this server. You can only kick members in this
+                server.
+                """)
+            ))
+            return
+
+        embed = moderation_embed(ctx, action="kick", user=member, reason=reason, color=discord.Color.gold())
+        embed.timestamp = datetime.utcnow()
+        embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
+
+        await ctx.send(embed=embed)
+        await member.kick(reason=reason)
+
+    @command()
+    @has_permissions(ban_members=True)
+    async def ban(
+            self, ctx: Context, member: MemberConverter, *, reason: ModerationReason = "No reason specified."
+    ) -> None:
+        """Ban a member from your server."""
+        embed = moderation_embed(ctx, action="ban", user=member, reason=reason, color=discord.Color.gold())
+        embed.timestamp = datetime.utcnow()
+        embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
+
+        await ctx.send(embed=embed)
+        await member.ban(reason=reason)
 
     @command()
     @has_permissions(manage_messages=True)
@@ -67,7 +108,7 @@ class Moderation(Cog):
             *,
             text: str = None
     ) -> None:
-        """Dm a List of Specified User from Your Guild."""
+        """DM a list of specified users in your server."""
         embed_data = self.embeds_cog.embeds[ctx.author.id]
 
         if embed_data.embed.description is None and embed_data.embed.title is None:

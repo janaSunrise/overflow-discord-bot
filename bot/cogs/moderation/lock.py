@@ -136,13 +136,11 @@ class Lock(Cog):
         Specify the duration for slowmode, or just execute the command without adding anything to remove the slowmode.
         """
         if not 0 <= duration <= 21600:
-            await ctx.send(
-                embed=discord.Embed(
+            await ctx.send(embed=discord.Embed(
                     description=":x: The duration specified is out of bounds. Minimum 0 to remove slowmode "
                                 "or 21600 for 6 hours slowmode.",
                     color=discord.Color.red()
-                )
-            )
+            ))
 
         if channels is None:
             channels = [ctx.channel]
