@@ -7,7 +7,7 @@ from discord.ext import tasks
 from discord.ext.commands import (
     Cog,
     Context,
-    command
+    group
 )
 
 from bot import Bot
@@ -71,11 +71,14 @@ class HackerNews(Cog):
         )
         return embed
 
-    @command(name="new-stories")
+    @group(invoke_without_command=True)
+    async def hackernews(self, ctx: Context) -> None:
+        """Commands for hackernews and it's feeds."""
+        await ctx.send_help(ctx.command)
+
+    @hackernews.command(name="new-stories")
     async def new_stories(self, ctx: Context, count: int = 5) -> None:
-        """
-        Get all the newest and fresh hacker news.
-        """
+        """Get all the newest and fresh hacker news."""
         if not 1 < count < 20:
             await ctx.send(":x: You cannot view more than 20 Stories or less than 2!")
 
@@ -87,7 +90,7 @@ class HackerNews(Cog):
 
         await EmbedPages(article_embeds).start(ctx)
 
-    @command(name="top-stories")
+    @hackernews.command(name="top-stories")
     async def top_stories(self, ctx: Context, count: int = 5) -> None:
         """Get all the trending hacker news."""
         if not 1 < count < 20:
@@ -101,7 +104,7 @@ class HackerNews(Cog):
 
         await EmbedPages(article_embeds).start(ctx)
 
-    @command(manage_channels=True)
+    @hackernews.command(manage_channels=True)
     async def subscribe(self, ctx: Context, channel: t.Optional[discord.TextChannel] = None) -> None:
         """Subscribe to the scheduled hacker news feed."""
         if not channel:
@@ -111,7 +114,7 @@ class HackerNews(Cog):
         await HackernewsFeed.set_feed_channel(self.bot.database, ctx.guild.id, channel.id)
         await ctx.send(f"Congrats :tada: Set {channel.mention} as the feed channel!")
 
-    @command(manage_channels=True)
+    @hackernews.command(manage_channels=True)
     async def unsubscribe(self, ctx: Context) -> None:
         """Unsubscribe from the scheduled hacker news feed."""
         row = await HackernewsFeed.get_feed_channel(self.bot.database, ctx.guild.id)
@@ -132,7 +135,7 @@ class HackerNews(Cog):
 
         rows = await HackernewsFeed.get_feed_channels(self.bot.database)
         if rows is not None:
-            channels = [row["channel"] for row in rows]
+            channels = [row["channel_id"] for row in rows]
 
             for channel in channels:
                 channel = self.bot.get_channel(channel)

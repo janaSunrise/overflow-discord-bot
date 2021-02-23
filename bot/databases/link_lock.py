@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, BigInteger, Integer
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.databases import DatabaseBase, on_conflict, get_datatype_str
+from bot.databases import DatabaseBase, on_conflict, get_datatype_int
 
 
 class LinkLock(DatabaseBase):
@@ -17,7 +17,7 @@ class LinkLock(DatabaseBase):
     `2` - Link lock [excluding discord invite] enabled
     `3` - Link lock and discord invite lock enabled.
     """
-    __tablename__ = "mod_lock"
+    __tablename__ = "link_lock"
 
-    guild = Column(String, primary_key=True, nullable=False, unique=True)
+    guild = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     lock_code = Column(Integer, nullable=False)

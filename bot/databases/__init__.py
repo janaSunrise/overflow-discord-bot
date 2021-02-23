@@ -69,14 +69,14 @@ def bring_databases_into_scope() -> t.List:
 
 
 # -- Utility methods --
-def get_datatype_str(
+def get_datatype_int(
         datatype: t.Union[int, str, discord.TextChannel, discord.Guild, discord.Role, discord.Member, discord.User]
 ):
     if isinstance(datatype, (discord.TextChannel, discord.Guild, discord.Role, discord.Member, discord.User)):
-        datatype = str(datatype.id)
+        datatype = int(datatype.id)
 
-    if isinstance(datatype, int):
-        datatype = str(datatype)
+    if isinstance(datatype, str):
+        datatype = int(datatype)
 
     return datatype
 

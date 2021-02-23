@@ -4,7 +4,7 @@ import random
 import aiohttp
 from bs4 import BeautifulSoup
 from discord import Color, Embed, File
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, Context, group
 
 from bot import config
 from bot import Bot
@@ -16,7 +16,12 @@ class Comics(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @command()
+    @group(invoke_without_command=True)
+    async def comic(self, ctx: Context) -> None:
+        """Get interesting comics to read."""
+        await ctx.send_help(ctx.command)
+
+    @comic.command()
     async def ohno(self, ctx: Context) -> None:
         """Send a random 'Webcomic Name' comic."""
         url = "http://webcomicname.com/random"
@@ -35,7 +40,7 @@ class Comics(Cog):
             file = File(img, "ohno.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def smbc(self, ctx: Context) -> None:
         """Send a random 'Saturday Morning' comic."""
         url = "http://www.smbc-comics.com/comic/archive"
@@ -66,7 +71,7 @@ class Comics(Cog):
             file = File(img, "smbc.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def pbf(self, ctx: Context) -> None:
         """Send a random 'The Perry Bible' comic."""
         url = "http://pbfcomics.com/random"
@@ -85,7 +90,7 @@ class Comics(Cog):
             file = File(img, "pbf.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def cah(self, ctx: Context) -> None:
         """Send a random 'Cyanide and Happiness' comic."""
         url = "http://explosm.net/comics/random"
@@ -106,7 +111,7 @@ class Comics(Cog):
             file = File(img, "cah.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def xkcd(self, ctx: Context, comic_type: str = "latest") -> None:
         """See the latest/a random 'xkcd' comic."""
         comic_type = comic_type.lower()
@@ -159,7 +164,7 @@ class Comics(Cog):
                     )
                     await ctx.send(embed=help_embed)
 
-    @command()
+    @comic.command()
     async def mrls(self, ctx: Context) -> None:
         """Send a random 'Mr. Lovenstein' comic."""
         url = "http://www.mrlovenstein.com/shuffle"
@@ -178,7 +183,7 @@ class Comics(Cog):
             file = File(img, "mrls.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def chainsaw(self, ctx: Context) -> None:
         """Send a random 'Chainsawsuit' comic."""
         url = "http://chainsawsuit.com/comic/random/?random&nocache=1"
@@ -197,7 +202,7 @@ class Comics(Cog):
             file = File(img, "chainsawsuit.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def sarah(self, ctx: Context) -> None:
         """Send a random 'Sarah's Scribbles' comic."""
         url = "http://www.gocomics.com/random/sarahs-scribbles"
@@ -218,7 +223,7 @@ class Comics(Cog):
             file = File(img, "sarahscribbles.png")
             await ctx.send(file=file, embed=embed)
 
-    @command()
+    @comic.command()
     async def garfield(self, ctx: Context) -> None:
         """Send a random 'garfield' comic."""
         url = "https://many-api.vercel.app/garfield/random"

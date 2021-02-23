@@ -1,25 +1,27 @@
 import typing as t
 
 import discord
-from sqlalchemy import Column, String
+from sqlalchemy import Column, BigInteger
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.databases import DatabaseBase, on_conflict, get_datatype_str
+from bot.databases import DatabaseBase, on_conflict, get_datatype_int
 
 
 class HackernewsFeed(DatabaseBase):
     __tablename__ = "hackernews_feed"
 
-    guild = Column(String, primary_key=True, nullable=False, unique=True)
-    channel = Column(String, nullable=False)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    channel_id = Column(BigInteger, nullable=False)
 
     @classmethod
-    async def get_feed_channel(cls, session: AsyncSession, guild: t.Union[str, int, discord.Guild]) -> t.Optional[dict]:
-        guild = get_datatype_str(guild)
+    async def get_feed_channel(
+            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+    ) -> t.Optional[dict]:
+        guild_id = get_datatype_int(guild_id)
         
         try:
-            row = await session.run_sync(lambda session: session.query(cls).filter_by(guild=guild).first())
+            row = await session.run_sync(lambda session: session.query(cls).filter_by(guild_id=guild_id).first())
         except NoResultFound:
             return None
 
@@ -39,33 +41,31 @@ class HackernewsFeed(DatabaseBase):
     async def set_feed_channel(
             cls,
             session: AsyncSession,
-            guild: t.Union[str, int, discord.Guild],
-            channel: t.Union[str, int, discord.TextChannel]
+            guild_id: t.Union[str, int, discord.Guild],
+            channel_id: t.Union[str, int, discord.TextChannel]
     ) -> None:
-        guild = get_datatype_str(guild)
-        channel = get_datatype_str(channel)
+        guild_id = get_datatype_int(guild_id)
+        channel_id = get_datatype_int(channel_id)
 
         await on_conflict(
             session, cls,
-            conflict_columns=["guild"],
+            conflict_columns=["guild_id"],
             values={
-                "guild": guild,
-                "channel": channel
+                "guild_id": guild_id,
+                "channel_id": channel_id
             }
         )
         await session.commit()
 
     @classmethod
-    async def remove_feed_channel(cls, session: AsyncSession, guild: t.Union[str, int, discord.Guild]) -> None:
-        guild = get_datatype_str(guild)
+    async def remove_feed_channel(cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]) -> None:
+        guild_id = get_datatype_int(guild_id)
 
-        row = await session.run_sync(lambda session: session.query(cls).filter_by(guild=guild).first())
+        row = await session.run_sync(lambda session: session.query(cls).filter_by(guild_id=guild_id).first())
         await session.run_sync(lambda session: session.delete(row))
 
         await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: int(getattr(self, key)) for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key) for key in self.__table__.columns.keys()}
         return data

@@ -20,7 +20,7 @@ intents.presences = False
 bot = Bot(
     command_prefix=command_prefix,
     intents=intents,
-    activity=discord.Game(name=f"{PREFIX}help | Listening to coders!"),
+    activity=discord.Game(name=f"{PREFIX}help | Busy coding with developers!"),
     case_insensitive=True,
     owner_ids=config.devs,
     heartbeat_timeout=150.0,

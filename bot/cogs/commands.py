@@ -14,7 +14,8 @@ from discord.ext.commands import (
     Context,
     command,
     cooldown,
-    group
+    group,
+    has_permissions,
 )
 
 from bot import Bot, config
@@ -28,6 +29,7 @@ class Commands(Cog):
         self.bot = bot
 
     @group(invoke_without_command=True)
+    @has_permissions(manage_channels=True)
     async def prefix(self, ctx: Context) -> None:
         """Set custom prefix for the bot."""
         await ctx.send_help(ctx.command)
@@ -42,7 +44,7 @@ class Commands(Cog):
 
             ctx_id = self.bot.get_id(ctx)
 
-            await Prefix.set_prefix(self.bot.database, context=ctx_id, prefix=prefix)
+            await Prefix.set_prefix(self.bot.database, ctx_id, prefix=prefix)
             self.bot.prefix_dict[ctx_id] = prefix
 
             await ctx.send(f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**")
@@ -57,7 +59,7 @@ class Commands(Cog):
         prefix = config.COMMAND_PREFIX
         ctx_id = self.bot.get_id(ctx)
 
-        await Prefix.set_prefix(self.bot.database, context=ctx_id, prefix=prefix)
+        await Prefix.set_prefix(self.bot.database, ctx_id, prefix=prefix)
         self.bot.prefix_dict[ctx_id] = prefix
 
         await ctx.send(f"Prefix changed back to **`{discord.utils.escape_markdown(prefix)}`**")

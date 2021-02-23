@@ -102,7 +102,7 @@ class Bot(AutoShardedBot):
 
         rows = await Prefix.get_prefixes(self.database)
         for row in rows:
-            self.prefix_dict[row["context"]] = row["prefix"]
+            self.prefix_dict[row["context_id"]] = row["prefix"]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
@@ -134,12 +134,14 @@ class Bot(AutoShardedBot):
         if message.content.startswith(f"{self.default_prefix}help") and not not_print:
             return self.default_prefix
 
+        logger.warning(f"{self.prefix_dict} | {self.default_prefix}")
         return self.prefix_dict.get(
             self.get_id(message),
             self.default_prefix
         )
 
-    def get_id(self, message: discord.Message) -> int:
+    @staticmethod
+    def get_id(message: t.Union[discord.Message, Context]) -> int:
         """Get a context's id."""
         if message.guild:
             return message.guild.id

@@ -7,7 +7,7 @@ from discord.ext.commands import (
     BucketType,
     Cog,
     Context,
-    command,
+    group,
     cooldown
 )
 
@@ -26,7 +26,12 @@ class Github(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @command(aliases=["pullrequest", "pullrequests", "issues"])
+    @group(invoke_without_command=True)
+    async def github(self, ctx: Context) -> None:
+        """Commands to make github lookup really easy from discord."""
+        await ctx.send_help(ctx.command)
+
+    @github.command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
     async def issue(self, ctx: Context, user: str, repository: str, issue_num: int) -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
@@ -108,9 +113,9 @@ class Github(Cog):
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
 
-    @command()
+    @github.command(aliases=["repository"])
     @cooldown(1, 5, type=BucketType.user)
-    async def ghrepo(self, ctx: Context, user: str, repo: str) -> None:
+    async def repo(self, ctx: Context, user: str, repo: str) -> None:
         """Show info about a given GitHub repository."""
         URL = f"https://api.github.com/repos/{user}/{repo}"
 
@@ -167,9 +172,9 @@ class Github(Cog):
 
             await ctx.send(embed=embed)
 
-    @command()
+    @github.command(aliases=["userinfo"])
     @cooldown(1, 5, type=BucketType.user)
-    async def ghuser(self, ctx: Context, user: str) -> None:
+    async def user(self, ctx: Context, user: str) -> None:
         """Show info about a given GitHub user."""
         embed = Embed(color=Color.blue())
         async with await self.bot.session.get(f"https://api.github.com/users/{user}") as resp:

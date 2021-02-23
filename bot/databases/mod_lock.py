@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, BigInteger, Integer
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.databases import DatabaseBase, on_conflict, get_datatype_str
+from bot.databases import DatabaseBase, on_conflict, get_datatype_int
 
 
 class ModLock(DatabaseBase):
@@ -19,5 +19,5 @@ class ModLock(DatabaseBase):
     """
     __tablename__ = "mod_lock"
 
-    guild = Column(String, primary_key=True, nullable=False, unique=True)
+    guild = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     lock_code = Column(Integer, nullable=False)

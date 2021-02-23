@@ -22,6 +22,7 @@ class Embeds(Cog):
 
     @group(invoke_without_command=True)
     async def embed(self, ctx: Context) -> None:
+        """Commands to create amazing customizable embeds in an easy way."""
         await ctx.send_help(ctx.command)
 
     @embed.command()
