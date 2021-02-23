@@ -134,7 +134,6 @@ class Bot(AutoShardedBot):
         if message.content.startswith(f"{self.default_prefix}help") and not not_print:
             return self.default_prefix
 
-        logger.warning(f"{self.prefix_dict} | {self.default_prefix}")
         return self.prefix_dict.get(
             self.get_id(message),
             self.default_prefix
