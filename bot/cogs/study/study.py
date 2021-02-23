@@ -1,11 +1,15 @@
+import io
+import urllib
 import textwrap
 
 import aiohttp
 import discord
 from discord.ext.commands import (
+    BadArgument,
     Cog,
     Context,
-    command
+    command,
+    clean_content
 )
 
 from bot import Bot, config
@@ -132,3 +136,24 @@ class Study(Cog):
                     color=discord.Color.red()
                 )
             )
+
+    @command()
+    async def latex(self, ctx: Context, *, equation: str) -> None:
+        LATEX_URL = "https://latex.codecogs.com/gif.download?%5Cbg_white%20%5Clarge%20"
+
+        cleaned = await clean_content().convert(ctx, equation)
+        raw_eq = r"{}".format(cleaned)
+        url_eq = urllib.parse.quote(raw_eq)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(LATEX_URL + url_eq) as result:
+                img = await result.read()
+
+        if not 200 <= result.status < 300:
+            raise BadArgument(f"```{equation}``` is not a valid expression or equation")
+
+        output_img = discord.File(fp=io.BytesIO(img), filename="latex_eq.png")
+        embed = discord.Embed(color=discord.Color.blue())
+        embed.set_author(name=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.set_image(url="attachment://latex_eq.png")
+        return await ctx.channel.send(file=output_img, embed=embed)
