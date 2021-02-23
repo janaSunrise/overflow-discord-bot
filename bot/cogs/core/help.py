@@ -156,9 +156,10 @@ class HelpCommand(BaseHelpCommand):
             raise CheckFailure("You don't have permission to view help for this command.")
 
         parent = command.full_parent_name
+        command_prefix = await self.context.bot.get_msg_prefix(self.context.message, not_print=False)
 
         command_name = str(command) if not parent else f"{parent} {command.name}"
-        command_syntax = f"{self.context.prefix}{command_name} {command.signature}"
+        command_syntax = f"{command_prefix}{command_name} {command.signature}"
         command_help = f"{command.help or 'No description provided.'}"
 
         aliases = [f"`{alias}`" if not parent else f"`{parent} {alias}`" for alias in command.aliases]

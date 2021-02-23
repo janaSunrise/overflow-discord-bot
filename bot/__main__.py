@@ -8,7 +8,7 @@ from bot import Bot, config
 
 async def command_prefix(bot: Bot, message: discord.Message) -> str:
     """Define the prefix of the commands."""
-    return when_mentioned_or(await bot.get_prefix(message))
+    return when_mentioned_or(await bot.get_msg_prefix(message))(bot, message)
 
 
 TOKEN = os.getenv("BOT_TOKEN")

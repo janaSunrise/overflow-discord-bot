@@ -7,7 +7,7 @@ import aiohttp
 import discord
 import spotify
 from asyncpg.exceptions import InvalidPasswordError
-from discord.ext.commands import AutoShardedBot, Context
+from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
@@ -129,15 +129,12 @@ class Bot(AutoShardedBot):
 
         await super().close()
 
-    async def get_prefix(self, message: discord.Message, not_print: bool = True) -> str:
+    async def get_msg_prefix(self, message: discord.Message, not_print: bool = True) -> str:
         """Get the prefix from a message."""
-        if message.content.startswith(f"{self.default_prefix}help") and not not_print:
+        if message.content.startswith(f"{self.default_prefix}help") and not_print:
             return self.default_prefix
 
-        return self.prefix_dict.get(
-            self.get_id(message),
-            self.default_prefix
-        )
+        return self.prefix_dict.get(self.get_id(message), self.default_prefix)
 
     @staticmethod
     def get_id(message: t.Union[discord.Message, Context]) -> int:

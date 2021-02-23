@@ -50,7 +50,7 @@ class Commands(Cog):
             await ctx.send(f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**")
             return
 
-        old_prefix = discord.utils.escape_markdown(await self.bot.get_prefix(ctx.message, False))
+        old_prefix = discord.utils.escape_markdown(await self.bot.get_msg_prefix(ctx.message, False))
         await ctx.send(f"The prefix for this channel is **`{old_prefix}`**")
 
     @prefix.command()
