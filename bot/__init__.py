@@ -58,7 +58,7 @@ class Bot(AutoShardedBot):
         """Initialize the database."""
         bring_databases_into_scope()
 
-        engine = create_async_engine(config.DATABASE_CONN)
+        engine = create_async_engine(config.DATABASE_CONN, pool_size=20, max_overflow=0)
         try:
             async with engine.begin() as conn:
                 await conn.run_sync(DatabaseBase.metadata.create_all)
