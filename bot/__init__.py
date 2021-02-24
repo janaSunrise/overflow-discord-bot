@@ -59,14 +59,18 @@ class Bot(AutoShardedBot):
         bring_databases_into_scope()
 
         engine = create_async_engine(config.DATABASE_CONN, pool_size=20, max_overflow=0)
+
         try:
             async with engine.begin() as conn:
                 await conn.run_sync(DatabaseBase.metadata.create_all)
+
         except InvalidPasswordError as exc:
-            logger.error("The database password entered is invalid.")
+            logger.critical("The database password entered is invalid.")
             raise exc
+
         except ConnectionRefusedError:
             logger.error("Database connection refused. Trying again.")
+
             await asyncio.sleep(3)
             return await self.init_db()
 
@@ -101,13 +105,14 @@ class Bot(AutoShardedBot):
             logger.info("Bot connection reinitialized")
 
         rows = await Prefix.get_prefixes(self.database)
+
         for row in rows:
             self.prefix_dict[row["context_id"]] = row["prefix"]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
         if not token:
-            logger.error("Missing Bot Token!")
+            logger.critical("Missing Bot Token!")
         else:
             super().run(token)
 
@@ -120,7 +125,8 @@ class Bot(AutoShardedBot):
 
     async def close(self) -> None:
         """Close the bot and do some cleanup."""
-        logger.debug("Closing bot connection")
+        logger.info("Closing bot connection")
+
         if hasattr(self, "session"):
             await self.session.close()
 
@@ -129,6 +135,7 @@ class Bot(AutoShardedBot):
 
         await super().close()
 
+    # -- Other methods --
     async def get_msg_prefix(self, message: discord.Message, not_print: bool = True) -> str:
         """Get the prefix from a message."""
         if message.content.startswith(f"{self.default_prefix}help") and not_print:
@@ -144,6 +151,7 @@ class Bot(AutoShardedBot):
 
         return message.channel.id
 
+    # -- Bot methods --
     async def confirmation(
             self, ctx, description: str, title: str, color=discord.Color.blurple(), footer: t.Optional[str] = None
     ):
