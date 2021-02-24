@@ -12,8 +12,8 @@ class Announcements(DatabaseBase):
     __tablename__ = "announcements"
 
     guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
-    channel_id = Column(BigInteger, nullable=False)
-    role_id = Column(BigInteger, nullable=False)
+    channel_id = Column(BigInteger)
+    role_id = Column(BigInteger)
 
     @classmethod
     async def get_announcement_role(
@@ -64,7 +64,7 @@ class Announcements(DatabaseBase):
         await session.commit()
 
     @classmethod
-    async def set_announcement_role(
+    async def set_announcement_channel(
             cls,
             session: AsyncSession,
             guild_id: t.Union[str, int, discord.Guild],

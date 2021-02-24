@@ -1,4 +1,5 @@
 import textwrap
+import traceback
 import typing as t
 
 from discord import Color, Embed
@@ -205,7 +206,7 @@ class ErrorHandler(Cog):
                         f"""
                         An error has occurred which isn't properly handled.
 
-                        **Error**
+                        **Error log**
                         ```{error_cause.__class__.__name__}: {error_cause}```
                         """
                     )

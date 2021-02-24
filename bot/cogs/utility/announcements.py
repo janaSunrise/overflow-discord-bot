@@ -1,3 +1,5 @@
+import typing as t
+
 import discord
 from discord.ext.commands import Cog, Context, group, has_permissions
 
@@ -34,20 +36,73 @@ class Announcements(Cog):
     @announcement.command()
     @has_permissions(manage_channels=True)
     async def channel(self, ctx: Context, channel: discord.TextChannel) -> None:
-        """Setup the announcement role."""
-        if isinstance(channel, discord.Role):
+        """Setup the announcement channel."""
+        if isinstance(channel, discord.TextChannel):
             channel = channel.id
 
         await AnnouncementDB.set_announcement_channel(self.bot.database, ctx.guild.id, channel)
 
+        channel = ctx.guild.get_channel(channel)
+
         await ctx.send(f"The channel has been successfully set to {channel.mention}")
+
+    @announcement.command()
+    @has_permissions(manage_roles=True)
+    async def announce(self, ctx: Context, *, message: t.Optional[str] = None) -> None:
+        """
+        Send a notification or announcement through the bot.
+
+        This supports sending a simple message, or sending customized messages using our embed handler.
+        """
+        # -- Get the roles and IDs from database
+        role = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
+
+        if not role["role_id"]:
+            await ctx.send("The announcement role hasn't been configured for this server!")
+
+        channel = await AnnouncementDB.get_announcement_channel(self.bot.database, ctx.guild.id)
+
+        if not channel["channel_id"]:
+            await ctx.send("The announcement channel hasn't been configured for this server!")
+
+        # -- Get the embeds cog. --
+        embed_data = self.embeds_cog.embeds[ctx.author.id]
+
+        embed_message = embed_data.message
+        embed = embed_data.embed
+
+        # -- Get the discord objects --
+        role = ctx.guild.get_role(role["role_id"])
+        channel = ctx.guild.get_channel(channel["channel_id"])
+
+        if message is None and (embed.description is None and embed.title is None):
+            await ctx.send(
+                ":x: You need to create an embed using our embed maker before sending it or specify a message!"
+            )
+            return
+
+        if message is not None:
+            if embed.title == discord.Embed.Empty:
+                embed.title = "Announcement!"
+            embed.description = message
+
+        if embed_message == "" and embed == discord.Embed():
+            message = f"Hey {role.mention}"
+        else:
+            msg = embed_message
+            message = f"Hey {role.mention} {msg}"
+
+        if not embed.footer:
+            embed.set_footer(text=f"By {ctx.author.name}", icon_url=ctx.author.avatar_url)
+
+        await channel.send(message, embed=embed)
 
     @announcement.command()
     async def subscribe(self, ctx: Context) -> None:
         """Subscribe to the notifications and announcements in the server."""
         row = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
 
-        if not row:
+        if not row["role_id"]:
             await ctx.send("The announcement role hasn't been configured for this server!")
 
         role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
