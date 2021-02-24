@@ -75,9 +75,9 @@ class Announcements(Cog):
         role = ctx.guild.get_role(role["role_id"])
         channel = ctx.guild.get_channel(channel["channel_id"])
 
-        if message is None and (embed.description is None and embed.title is None):
+        if embed.description is None and embed.title is None:
             await ctx.send(
-                ":x: You need to create an embed using our embed maker before sending it or specify a message!"
+                ":x: You need to create an embed using our embed maker before sending it!"
             )
             return
 
