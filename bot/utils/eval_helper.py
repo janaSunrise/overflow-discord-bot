@@ -193,7 +193,7 @@ class EvalHelper:
 
     async def paste(self, text: str) -> Union[str, dict]:
         """Upload the eval output to a paste service and return a URL to it if successful."""
-        result = dict()
+        result = {}
 
         text, exit_code = text.split("Exit code: ")
 
