@@ -49,7 +49,6 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     @is_owner()
     async def sudo(self, ctx: Context) -> None:
         """Administrative information."""
-        pass
 
     @sudo.command()
     async def shutdown(self, ctx: Context) -> None:
