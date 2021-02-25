@@ -54,7 +54,7 @@ class Eval(Cog):
 
         pages = menus.MenuPages(
             source=CodeInfoSource(
-                f"Languages supported by the compiler",
+                "Languages supported by the compiler",
                 None,
                 paginator.pages,
                 per_page=1,

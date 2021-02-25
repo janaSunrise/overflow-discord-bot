@@ -48,7 +48,7 @@ async def get_spotify_tracks(
 
     except (spotify.NotFound, discord.HTTPException):
         return await ctx.send(
-            f"No results were found for your spotify link.", delete_after=15
+            "No results were found for your spotify link.", delete_after=15
         )
 
     return name, search_tracks
