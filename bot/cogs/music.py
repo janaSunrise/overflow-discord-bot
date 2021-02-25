@@ -45,8 +45,7 @@ class SongQueue(asyncio.Queue):
     def __getitem__(self, item) -> t.Union[list, str]:
         if isinstance(item, slice):
             return list(itertools.islice(self._queue, item.start, item.stop, item.step))
-        else:
-            return self._queue[item]
+        return self._queue[item]
 
     @property
     def queue(self) -> list:
@@ -1181,13 +1180,12 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     ),
                     delete_after=10,
                 )
-            else:
-                return await ctx.send(
-                    embed=discord.Embed(
-                        description="Nothing to clear!", color=discord.Color.gold()
-                    ),
-                    delete_after=10,
-                )
+            return await ctx.send(
+                embed=discord.Embed(
+                    description="Nothing to clear!", color=discord.Color.gold()
+                ),
+                delete_after=10,
+            )
 
         required = self.required(ctx)
         player.clear_votes.add(ctx.author)
@@ -1202,13 +1200,13 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     ),
                     delete_after=10,
                 )
-            else:
-                await ctx.send(
-                    embed=discord.Embed(
-                        description="Nothing to clear!", color=discord.Color.gold()
-                    ),
-                    delete_after=10,
-                )
+
+            await ctx.send(
+                embed=discord.Embed(
+                    description="Nothing to clear!", color=discord.Color.gold()
+                ),
+                delete_after=10,
+            )
 
             player.clear_votes.clear()
         else:

@@ -1,10 +1,18 @@
 ## Overflow bot
 
+
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python%203.8-ffe900.svg?longCache=true&style=flat-square&colorB=00a1ff&logo=python&logoColor=88889e)](https://www.python.org/)
+[![made-with-discord.py](https://img.shields.io/badge/Using-discord.py-ffde57.svg?longCache=true&style=flat-square&colorB=4584b6&logo=discord&logoColor=7289DA)](https://github.com/Rapptz/discord.py)
+[![CodeFactor](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot/badge)](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot)
+[![DeepSource](https://deepsource.io/gh/janaSunrise/overflow-discord-bot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janaSunrise/overflow-discord-bot/?ref=repository-badge)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/janaSunrise/overflow-discord-bot/graphs/commit-activity)
+
 A small bot designed to help you with coding and finding and solving 
 issues faster by integrating stack overflow workflow into discord and more.
 
 ### Usage
-
+[![CodeFactor](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot/badge)](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot)
 Go to any channel in discord of any server where this bot is invited, and 
 invoke it using `=help`
 
