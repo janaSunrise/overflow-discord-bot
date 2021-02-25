@@ -18,6 +18,7 @@ intents = discord.Intents.all()
 intents.presences = False
 
 bot = Bot(
+    version="0.1.3",
     command_prefix=command_prefix,
     intents=intents,
     activity=discord.Game(name=f"{PREFIX}help | Busy coding with developers!"),

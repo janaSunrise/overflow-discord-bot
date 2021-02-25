@@ -29,22 +29,32 @@ class Bot(AutoShardedBot):
         """Initialize the subclass."""
         super().__init__(*args, **kwargs)
 
+        # -- Prefix --
         self.default_prefix = config.COMMAND_PREFIX
+        self.prefix_dict = {}
 
+        # -- Bot info --
+        self.cluster = kwargs.get("cluster_id")
+        self.cluster_count = kwargs.get("cluster_count")
+        self.version = kwargs.get("version")
+
+        # -- Start time config --
         self.start_time = datetime.utcnow()
+
+        # -- Sessions config --
         self.session = None
         self.database = None
 
+        # -- Startup config --
         self.initial_call = True
 
+        # -- Spotify config --
         self.spotify = spotify.Client(
             client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
         )
         self.spotify_http = spotify.HTTPClient(
             client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
         )
-
-        self.prefix_dict = {}
 
     async def is_owner(self, user: discord.User):
         if user.id in config.devs:
