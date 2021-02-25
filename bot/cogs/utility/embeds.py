@@ -12,7 +12,7 @@ from discord.ext.commands import (
 
 from bot import Bot
 
-EmbedInfo = namedtuple('EmbedInfo', ['message', 'embed'])
+EmbedInfo = namedtuple('EmbedInfo', ('message', 'embed'))
 
 
 class Embeds(Cog):

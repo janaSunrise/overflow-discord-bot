@@ -7,7 +7,7 @@ import aiohttp
 import discord
 import spotify
 from asyncpg.exceptions import InvalidPasswordError
-from discord.ext.commands import AutoShardedBot, Context, when_mentioned_or
+from discord.ext.commands import AutoShardedBot, Context
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
@@ -19,7 +19,7 @@ from bot.databases.prefix import Prefix
 logger.configure(
     handlers=[
         dict(sink=sys.stdout, format=config.log_format, level=config.log_level),
-        dict(sink=config.log_file, format=config.log_format, level=config.log_level, rotation="300 MB")
+        dict(sink=config.log_file, format=config.log_format, level=config.log_level, rotation=config.log_file_size)
     ]
 )
 
@@ -38,12 +38,10 @@ class Bot(AutoShardedBot):
         self.initial_call = True
 
         self.spotify = spotify.Client(
-            client_id=config.spotify_client_id,
-            client_secret=config.spotify_client_secret
+            client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
         )
         self.spotify_http = spotify.HTTPClient(
-            client_id=config.spotify_client_id,
-            client_secret=config.spotify_client_secret
+            client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
         )
 
         self.prefix_dict = {}
@@ -84,8 +82,8 @@ class Bot(AutoShardedBot):
             try:
                 self.load_extension(extension)
                 logger.info(f"Cog {extension} loaded.")
-            except Exception as e:
-                logger.error(f"Cog {extension} failed to load with {type(e)}: {e!r}")
+            except Exception as exc:
+                logger.error(f"Cog {extension} failed to load with {type(exc)}: {exc!r}")
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Log message on guild join."""
