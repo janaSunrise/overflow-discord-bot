@@ -114,7 +114,8 @@ BALL_REPLIES = {
 # -- Search --
 basic_search_categories = [
     "web",
-    "videos", "music",
+    "videos",
+    "music",
     "files",
     "images",
     "it",
