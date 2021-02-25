@@ -3,19 +3,21 @@ import typing as t
 from itertools import cycle
 
 import discord
-from discord.ext import commands
-from discord.ext import menus
+from discord.ext import commands, menus
 
 
 class TTT_Game(menus.Menu):
     """Tic-tac-Toe menu."""
+
     emojis = [
         ":black_large_square:",
         ":o:",
         ":x:",
     ]
 
-    def __init__(self, author: discord.Member, opponent: t.Optional[discord.Member], **kwargs) -> None:
+    def __init__(
+        self, author: discord.Member, opponent: t.Optional[discord.Member], **kwargs
+    ) -> None:
         super().__init__(**kwargs)
         self.players = (author, opponent)
         self.player_cycle = cycle(self.players)
@@ -31,7 +33,9 @@ class TTT_Game(menus.Menu):
             return False
         return payload.user_id == self.next_player.id and payload.emoji in self.buttons
 
-    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel) -> discord.Message:
+    async def send_initial_message(
+        self, ctx: commands.Context, channel: discord.TextChannel
+    ) -> discord.Message:
         """Send the first message."""
         return await ctx.send(embed=self.get_embed())
 
@@ -41,9 +45,8 @@ class TTT_Game(menus.Menu):
             title="Tic Tac Toe",
             description="\n".join(
                 (
-                    "".join(
-                        self.emojis[state] for state in column
-                    ) for column in self.status
+                    "".join(self.emojis[state] for state in column)
+                    for column in self.status
                 )
             ),
             color=discord.Color.blurple(),
@@ -125,10 +128,14 @@ class TTT_Game(menus.Menu):
             all_checks.append(row)
         # columns
         for column_id in range(3):
-            all_checks.append([self.status[row_id][column_id] for row_id in range(3)])
+            all_checks.append([self.status[row_id][column_id]
+                               for row_id in range(3)])
         # diagonals
-        all_checks.append([self.status[place_id][place_id] for place_id in range(3)])
-        all_checks.append([self.status[2 - place_id][place_id] for place_id in range(3)])
+        all_checks.append([self.status[place_id][place_id]
+                           for place_id in range(3)])
+        all_checks.append(
+            [self.status[2 - place_id][place_id] for place_id in range(3)]
+        )
 
         for to_check in all_checks:
             if to_check.count(1) == 3:

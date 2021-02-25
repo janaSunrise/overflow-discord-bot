@@ -1,6 +1,6 @@
 from itertools import cycle
 
-from discord import Embed, Message, Member
+from discord import Embed, Member, Message
 from discord.ext import menus
 
 
@@ -12,7 +12,8 @@ class Connect4(menus.Menu):
         self.ids = cycle(list(self.id_dict))
         self.players = players
         self.next = next(self.ids)
-        self.status = [":black_large_square:", ":green_circle:", ":red_circle:"]
+        self.status = [":black_large_square:",
+                       ":green_circle:", ":red_circle:"]
         self.state = [[0 for _ in range(6)] for __ in range(7)]
 
     def reaction_check(self, payload) -> bool:
@@ -22,7 +23,15 @@ class Connect4(menus.Menu):
         return payload.user_id == self.next and payload.emoji in self.buttons
 
     def get_embed(self) -> Embed:
-        return Embed(description="\n".join(["".join([self.status[column[5 - i]] for column in self.state]) for i in range(6)]))
+        return Embed(
+            description="\n".join(
+                [
+                    "".join([self.status[column[5 - i]]
+                             for column in self.state])
+                    for i in range(6)
+                ]
+            )
+        )
 
     async def send_initial_message(self, ctx, channel) -> Message:
         return await ctx.send(embed=self.get_embed())

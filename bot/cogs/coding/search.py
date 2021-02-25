@@ -4,11 +4,11 @@ import textwrap
 from typing import List
 
 import aiohttp
+import html2text
 from discord import Color, Embed, utils
 from discord.ext.commands import Cog, CommandError, Context, command
 from discord.ext.commands.errors import CommandInvokeError
 
-import html2text
 from bot import Bot, config
 
 with open("bot/assets/filter_words.txt", "r") as f:
@@ -43,7 +43,9 @@ class Search(Cog):
         self.tomd.ignore_emphasis = True
         self.tomd.body_width = 0
 
-    async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5) -> list:
+    async def _search_logic(
+        self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5
+    ) -> list:
         """Use scrapestack and the Qwant API to find search results."""
         if not is_nsfw:
             if filter_words.search(query):
@@ -57,11 +59,13 @@ class Search(Cog):
             safesearch = "2"
 
         # Search URL Building
-        search_url = f"{base}/search/{category}" \
-                     f"?count={count}" \
-                     f"&q={query.replace(' ', '+')}" \
-                     f"&safesearch={safesearch}" \
-                     f"&t=web&locale=en_US&uiv=4"
+        search_url = (
+            f"{base}/search/{category}"
+            f"?count={count}"
+            f"&q={query.replace(' ', '+')}"
+            f"&safesearch={safesearch}"
+            f"&t=web&locale=en_US&uiv=4"
+        )
 
         # Searching
         headers = {"User-Agent": "Overflow bot"}
@@ -94,14 +98,15 @@ class Search(Cog):
                 return await ctx.send(f"No results found for `{query_display}`.")
 
             # Gets the first entry's data
-            first_title = self.tomd.handle(results[0]["title"]).rstrip("\n").strip("<>")
+            first_title = self.tomd.handle(
+                results[0]["title"]).rstrip("\n").strip("<>")
             first_url = results[0]["url"]
             first_desc = self.tomd.handle(results[0]["desc"]).rstrip("\n")
 
             # Builds the substring for each of the other result.
             other_results: List[str] = []
 
-            for result in results[1: count]:
+            for result in results[1:count]:
                 title = self.tomd.handle(result["title"]).rstrip("\n")
                 url = result["url"]
                 other_results.append(f"**{title}**\n{url}")
@@ -118,17 +123,16 @@ class Search(Cog):
             )
 
             msg = re.sub(
-                r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\." r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)",
+                r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\."
+                r"[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)",
                 r"<\1>",
-                msg
+                msg,
             )
 
-            embed = Embed(
-                title="Search Results",
-                description=msg,
-                color=Color.blue()
-            )
-            embed.set_footer(text=f"Showing {count} results for {query_display}.")
+            embed = Embed(title="Search Results",
+                          description=msg, color=Color.blue())
+            embed.set_footer(
+                text=f"Showing {count} results for {query_display}.")
 
             await ctx.send(embed=embed)
 
@@ -163,7 +167,9 @@ class Search(Cog):
 
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
-                async with session.get(base + "anime", params={"filter[text]": query}) as resp:
+                async with session.get(
+                    base + "anime", params={"filter[text]": query}
+                ) as resp:
                     resp = await resp.json()
                     resp = resp["data"]
 
@@ -178,22 +184,35 @@ class Search(Cog):
             title = f'{anime["attributes"]["canonicalTitle"]}'
             anime_id = anime["id"]
             url = f"https://kitsu.io/anime/{anime_id}"
-            thing = "" if not anime["attributes"]["endDate"] else f' to {anime["attributes"]["endDate"]}'
+            thing = (
+                ""
+                if not anime["attributes"]["endDate"]
+                else f' to {anime["attributes"]["endDate"]}'
+            )
 
             embed = Embed(
                 title=f"{title}",
                 description=anime["attributes"]["synopsis"][0:425] + "...",
                 color=ctx.author.color,
-                rl=url
+                rl=url,
             )
-            embed.add_field(name="Average Rating", value=anime["attributes"]["averageRating"])
-            embed.add_field(name="Popularity Rank", value=anime["attributes"]["popularityRank"])
-            embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
+            embed.add_field(
+                name="Average Rating", value=anime["attributes"]["averageRating"]
+            )
+            embed.add_field(
+                name="Popularity Rank", value=anime["attributes"]["popularityRank"]
+            )
+            embed.add_field(name="Age Rating",
+                            value=anime["attributes"]["ageRating"])
             embed.add_field(name="Status", value=anime["attributes"]["status"])
-            embed.add_field(name="Aired", value=f"{anime['attributes']['startDate']}{thing}")
-            embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
+            embed.add_field(
+                name="Aired", value=f"{anime['attributes']['startDate']}{thing}"
+            )
+            embed.add_field(name="Episodes",
+                            value=anime["attributes"]["episodeCount"])
             embed.add_field(name="Type", value=anime["attributes"]["showType"])
-            embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
+            embed.set_thumbnail(
+                url=anime["attributes"]["posterImage"]["original"])
             embed.set_footer(
                 text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar_url
             )
@@ -225,7 +244,9 @@ class Search(Cog):
 
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
-                async with session.get(base + "manga", params={"filter[text]": query}) as resp:
+                async with session.get(
+                    base + "manga", params={"filter[text]": query}
+                ) as resp:
                     resp = await resp.json()
                     resp = resp["data"]
 
@@ -245,26 +266,42 @@ class Search(Cog):
                 title=title,
                 description=manga["attributes"]["synopsis"][0:425] + "...",
                 color=ctx.author.color,
-                url=url
+                url=url,
             )
 
             if manga["attributes"]["averageRating"]:
-                embed.add_field(name="Average Rating", value=manga["attributes"]["averageRating"])
+                embed.add_field(
+                    name="Average Rating", value=manga["attributes"]["averageRating"]
+                )
 
-            embed.add_field(name="Popularity Rank", value=manga["attributes"]["popularityRank"])
+            embed.add_field(
+                name="Popularity Rank", value=manga["attributes"]["popularityRank"]
+            )
 
             if manga["attributes"]["ageRating"]:
-                embed.add_field(name="Age Rating", value=manga["attributes"]["ageRating"])
+                embed.add_field(
+                    name="Age Rating", value=manga["attributes"]["ageRating"]
+                )
 
             embed.add_field(name="Status", value=manga["attributes"]["status"])
-            thing = "" if not manga["attributes"]["endDate"] else f' to {manga["attributes"]["endDate"]}'
-            embed.add_field(name="Published", value=f"{manga['attributes']['startDate']}{thing}")
+            thing = (
+                ""
+                if not manga["attributes"]["endDate"]
+                else f' to {manga["attributes"]["endDate"]}'
+            )
+            embed.add_field(
+                name="Published", value=f"{manga['attributes']['startDate']}{thing}"
+            )
 
             if manga["attributes"]["chapterCount"]:
-                embed.add_field(name="Chapters", value=manga["attributes"]["chapterCount"])
+                embed.add_field(
+                    name="Chapters", value=manga["attributes"]["chapterCount"]
+                )
 
-            embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
-            embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
+            embed.add_field(
+                name="Type", value=manga["attributes"]["mangaType"])
+            embed.set_thumbnail(
+                url=manga["attributes"]["posterImage"]["original"])
 
             try:
                 await ctx.send(f"**{title}** - <{url}>", embed=embed)
@@ -294,14 +331,16 @@ class Search(Cog):
         except CommandInvokeError:
             await ctx.send("You didn't provide a city")
 
-        WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+        WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
         if WEATHER_API_KEY is None:
             await ctx.send("Fetch Error!")
             return
 
-        weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}" \
-                             f"&appid={WEATHER_API_KEY}"
+        weather_lookup_url = (
+            f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}"
+            f"&appid={WEATHER_API_KEY}"
+        )
 
         async with self.bot.session.get(weather_lookup_url) as resp:
             data = await resp.json()
@@ -315,8 +354,7 @@ class Search(Cog):
             return
 
         weather_embed = Embed(
-            title=f"Current Weather in {city.capitalize()}",
-            color=Color.blue()
+            title=f"Current Weather in {city.capitalize()}", color=Color.blue()
         )
 
         longtitude = data["coord"]["lon"]
@@ -324,14 +362,14 @@ class Search(Cog):
 
         weather_embed.add_field(
             name="❯❯ Coordinates",
-            value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`"
+            value=f"**Longtitude: **`{longtitude}`\n**Latittude: **`{lattitude}`",
         )
 
         actual_temp = round(data["main"]["temp"] / 10, 1)
         feels_like = round(data["main"]["feels_like"] / 10, 1)
         weather_embed.add_field(
             name="❯❯ Temperature",
-            value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`"
+            value=f"**Temperature: **`{actual_temp}°C`\n**Feels Like: **`{feels_like}°C`",
         )
 
         wind_speed = data["wind"]["speed"]
@@ -347,7 +385,7 @@ class Search(Cog):
         weather_embed.add_field(
             name="❯❯ Miscellaneous",
             value=f"**Humidity: **`{humidity}%`\n**Visibility: **`{visibility}km`"
-                  f"\n**Weather Summary: **`{weather_description}`",
+            f"\n**Weather Summary: **`{weather_description}`",
         )
 
         states = ["wind", "partly", "cloud", "snow", "rain"]

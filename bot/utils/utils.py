@@ -13,8 +13,10 @@ def snake_to_camel(snake: str, start_lower: bool = False) -> str:
 
 
 def camel_to_snake(camel: str) -> str:
-    snake = re.sub(r"([a-zA-Z])([0-9])", lambda m: f"{m.group(1)}_{m.group(2)}", camel)
-    snake = re.sub(r"([a-z0-9])([A-Z])", lambda m: f"{m.group(1)}_{m.group(2)}", snake)
+    snake = re.sub(r"([a-zA-Z])([0-9])",
+                   lambda m: f"{m.group(1)}_{m.group(2)}", camel)
+    snake = re.sub(r"([a-z0-9])([A-Z])",
+                   lambda m: f"{m.group(1)}_{m.group(2)}", snake)
     return snake.lower()
 
 
@@ -22,7 +24,7 @@ def format_time(time):
     hours, remainder = divmod(time / 1000, 3600)
     minutes, seconds = divmod(remainder, 60)
 
-    return '%02d:%02d:%02d' % (hours, minutes, seconds)
+    return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
 def progress_bar(current, total):
@@ -37,6 +39,7 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
 
     def cleanup_definition(definition: str, *, regex: str = BRACKETED) -> str:
         """Cleanup the definition."""
+
         def repl(message) -> str:
             word = message.group(2)
             return f'[{word}](http://{word.replace(" ", "-")}.urbanup.com)'
@@ -49,7 +52,8 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     for res in results:
         title = res["word"]
 
-        embed = discord.Embed(colour=0xE86222, title=title, url=res["permalink"])
+        embed = discord.Embed(
+            colour=0xE86222, title=title, url=res["permalink"])
         embed.set_footer(text=f'Author : {res["author"]}')
         embed.description = cleanup_definition(res["definition"])
 

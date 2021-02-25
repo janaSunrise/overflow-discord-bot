@@ -7,8 +7,7 @@ from os import path
 from discord import Color, Embed, Guild, Member, Message, TextChannel
 from discord.ext.commands import Context
 
-from bot import config
-from bot import Bot
+from bot import Bot, config
 
 
 class HangmanGame:
@@ -24,7 +23,9 @@ class HangmanGame:
 
     players = defaultdict(lambda: defaultdict(list))
 
-    def __init__(self, bot: Bot, guild: Guild, channel: TextChannel, player: Member, word: str) -> None:
+    def __init__(
+        self, bot: Bot, guild: Guild, channel: TextChannel, player: Member, word: str
+    ) -> None:
         self.bot = bot
         self.guild = guild
         self.channel = channel
@@ -36,6 +37,7 @@ class HangmanGame:
 
     async def get_guess(self) -> str:
         """Accept a guess from the user"""
+
         def input_check(msg: Message) -> bool:
             return msg.author == self.player and msg.channel == self.channel
 
@@ -82,7 +84,11 @@ class HangmanGame:
                 display_word += "#"
         return display_word
 
-    async def send_status(self, guess: t.Optional[str] = None, guess_status: t.Optional[t.Literal[0, 1, 2, 3]] = None) -> None:
+    async def send_status(
+        self,
+        guess: t.Optional[str] = None,
+        guess_status: t.Optional[t.Literal[0, 1, 2, 3]] = None,
+    ) -> None:
         """Get current game status as embed."""
         embed = Embed(
             title="Hangman",
@@ -91,12 +97,10 @@ class HangmanGame:
         embed.add_field(
             name="**❯❯ Status**",
             value=f"```\n{HangmanGame.stages[self.tries]}```",
-            inline=False
+            inline=False,
         )
         embed.add_field(
-            name="**❯❯ Word**",
-            value=f"**{self.display_word}**",
-            inline=False
+            name="**❯❯ Word**", value=f"**{self.display_word}**", inline=False
         )
         if guess:
             description = f"Letter {guess}"
@@ -112,14 +116,10 @@ class HangmanGame:
             elif guess_status == 3:
                 description += " was already guessed."
                 color = Color.dark_red()
-            guess_embed = Embed(
-                description=description,
-                color=color
-            )
+            guess_embed = Embed(description=description, color=color)
             await self.channel.send(embed=guess_embed, delete_after=5)
         embed.set_footer(
-            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!"
-        )
+            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)
         else:
@@ -154,7 +154,7 @@ class HangmanGame:
                     embed=Embed(
                         title="Game aborted",
                         description="You aborted the game.",
-                        color=Color.dark_red()
+                        color=Color.dark_red(),
                     )
                 )
                 return
@@ -168,13 +168,13 @@ class HangmanGame:
                     embed = Embed(
                         title="You won",
                         description=":tada: You won the game!",
-                        color=Color.green()
+                        color=Color.green(),
                     )
                 elif state == 2:
                     embed = Embed(
                         title="You lost",
                         description="You ran out of guesses.",
-                        color=Color.red()
+                        color=Color.red(),
                     )
                 await self.channel.send(embed=embed)
                 return

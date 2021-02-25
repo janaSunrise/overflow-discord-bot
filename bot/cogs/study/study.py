@@ -1,16 +1,11 @@
 import io
-import urllib
 import textwrap
+import urllib
 
 import aiohttp
 import discord
-from discord.ext.commands import (
-    BadArgument,
-    Cog,
-    Context,
-    command,
-    clean_content
-)
+from discord.ext.commands import (BadArgument, Cog, Context, clean_content,
+                                  command)
 
 from bot import Bot, config
 from bot.utils.pages import EmbedPages
@@ -49,13 +44,13 @@ class Study(Cog):
             json = await resp.json()
             data = json.get("list", [])
             if not data:
-                embed = discord.Embed(description="No results found, sorry.", color=discord.Color.red())
+                embed = discord.Embed(
+                    description="No results found, sorry.", color=discord.Color.red()
+                )
                 await ctx.send(embed=embed)
                 return
 
-        await EmbedPages(
-            (await create_urban_embed_list(data))
-        ).start(ctx)
+        await EmbedPages((await create_urban_embed_list(data))).start(ctx)
 
     @command()
     async def calc(self, ctx: Context, *, equation: str) -> None:
@@ -71,14 +66,15 @@ class Study(Cog):
                 emb = discord.Embed(
                     title="ERROR!",
                     description="❌ Invalid Equation Specified, Please Recheck the Equation",
-                    color=discord.Color.red()
+                    color=discord.Color.red(),
                 )
                 emb.set_footer(text=f"Invoked by {str(ctx.message.author)}")
                 await ctx.send(embed=emb)
 
         if response is True:
             embed = discord.Embed(title="Equation Results")
-            embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
+            embed.add_field(name="**❯❯ Question**",
+                            value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=r, inline=False)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
             await ctx.send(embed=embed)
@@ -94,14 +90,14 @@ class Study(Cog):
             "prop": "extracts",
             "exintro": "1",
             "redirects": "1",
-            "explaintext": "1"
+            "explaintext": "1",
         }
 
         conn = aiohttp.TCPConnector()
 
         async with aiohttp.ClientSession(connector=conn) as session:
             async with session.get(
-                    self.base_url, params=payload, headers=self.headers
+                self.base_url, params=payload, headers=self.headers
             ) as res:
                 result = await res.json()
 
@@ -112,7 +108,8 @@ class Study(Cog):
             for page in result["query"]["pages"]:
                 title = page["title"]
                 description = page["extract"].strip().replace("\n", "\n\n")
-                url = "https://en.wikipedia.org/wiki/{}".format(title.replace(" ", "_"))
+                url = "https://en.wikipedia.org/wiki/{}".format(
+                    title.replace(" ", "_"))
 
             if len(description) > 1500:
                 description = description[:1500].strip()
@@ -120,20 +117,18 @@ class Study(Cog):
 
             embed = discord.Embed(
                 title=f"Wikipedia: {title}",
-                description=u"\u2063\n{}\n\u2063".format(description),
+                description="\u2063\n{}\n\u2063".format(description),
                 color=discord.Color.blue(),
-                url=url
+                url=url,
             )
-            embed.set_footer(
-                text="Wikipedia", icon_url=self.footer_icon
-            )
+            embed.set_footer(text="Wikipedia", icon_url=self.footer_icon)
             await ctx.send(embed=embed)
 
         except KeyError:
             await ctx.send(
                 embed=discord.Embed(
                     description=f"I'm sorry, I couldn't find \"{query}\" on Wikipedia",
-                    color=discord.Color.red()
+                    color=discord.Color.red(),
                 )
             )
 
@@ -150,10 +145,14 @@ class Study(Cog):
                 img = await result.read()
 
         if not 200 <= result.status < 300:
-            raise BadArgument(f"```{equation}``` is not a valid expression or equation")
+            raise BadArgument(
+                f"```{equation}``` is not a valid expression or equation")
 
         output_img = discord.File(fp=io.BytesIO(img), filename="latex_eq.png")
         embed = discord.Embed(color=discord.Color.blue())
-        embed.set_author(name=f"Requested by {ctx.author.display_name}", icon_url=ctx.author.avatar_url)
+        embed.set_author(
+            name=f"Requested by {ctx.author.display_name}",
+            icon_url=ctx.author.avatar_url,
+        )
         embed.set_image(url="attachment://latex_eq.png")
         return await ctx.channel.send(file=output_img, embed=embed)

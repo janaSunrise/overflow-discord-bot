@@ -1,22 +1,14 @@
 import asyncio
+import re
 import textwrap
 import time
 import typing as t
-import re
 from datetime import datetime
 
 import discord
 from dateutil.relativedelta import relativedelta
-from discord.ext.commands import (
-    BadArgument,
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown,
-    group,
-    has_permissions,
-)
+from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
+                                  command, cooldown, group, has_permissions)
 
 from bot import Bot, config
 from bot.core.converters import TimeConverter
@@ -47,10 +39,14 @@ class Commands(Cog):
             await Prefix.set_prefix(self.bot.database, ctx_id, prefix=prefix)
             self.bot.prefix_dict[ctx_id] = prefix
 
-            await ctx.send(f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**")
+            await ctx.send(
+                f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**"
+            )
             return
 
-        old_prefix = discord.utils.escape_markdown(await self.bot.get_msg_prefix(ctx.message, False))
+        old_prefix = discord.utils.escape_markdown(
+            await self.bot.get_msg_prefix(ctx.message, False)
+        )
         await ctx.send(f"The prefix for this channel is **`{old_prefix}`**")
 
     @prefix.command()
@@ -62,7 +58,9 @@ class Commands(Cog):
         await Prefix.set_prefix(self.bot.database, ctx_id, prefix=prefix)
         self.bot.prefix_dict[ctx_id] = prefix
 
-        await ctx.send(f"Prefix changed back to **`{discord.utils.escape_markdown(prefix)}`**")
+        await ctx.send(
+            f"Prefix changed back to **`{discord.utils.escape_markdown(prefix)}`**"
+        )
         return
 
     @command()
@@ -70,7 +68,9 @@ class Commands(Cog):
         """Show bot ping."""
         start = time.perf_counter()
 
-        embed = discord.Embed(title="Info", description="Pong!", color=discord.Color.blurple())
+        embed = discord.Embed(
+            title="Info", description="Pong!", color=discord.Color.blurple()
+        )
         message = await ctx.send(embed=embed)
 
         end = time.perf_counter()
@@ -93,18 +93,26 @@ class Commands(Cog):
             """
         )
 
-        embed = discord.Embed(title="Info", description=desc, color=discord.Color.blurple())
+        embed = discord.Embed(
+            title="Info", description=desc, color=discord.Color.blurple()
+        )
         await message.edit(embed=embed)
 
     @command()
     async def paste(self, ctx: Context, *, text: str) -> None:
         """Creates a Paste out of the text specified."""
-        async with self.bot.session.post("https://hasteb.in/documents", data=self._clean_code(text)) as resp:
-            key = (await resp.json())['key']
-            file_paste = 'https://www.hasteb.in/' + key
+        async with self.bot.session.post(
+            "https://hasteb.in/documents", data=self._clean_code(text)
+        ) as resp:
+            key = (await resp.json())["key"]
+            file_paste = "https://www.hasteb.in/" + key
 
             await ctx.send(
-                embed=discord.Embed(title="File pastes", description=file_paste, color=discord.Color.blue())
+                embed=discord.Embed(
+                    title="File pastes",
+                    description=file_paste,
+                    color=discord.Color.blue(),
+                )
             )
 
     @staticmethod
@@ -136,13 +144,16 @@ class Commands(Cog):
 
         async with self.bot.session.get(url) as resp:
             if resp.status != 200:
-                await ctx.send("Error retrieving shortened URL, please try again in a minute.")
+                await ctx.send(
+                    "Error retrieving shortened URL, please try again in a minute."
+                )
                 return
             shortened_link = await resp.text()
 
         embed = discord.Embed(color=discord.Color.blurple())
         embed.add_field(name="Original Link", value=link, inline=False)
-        embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
+        embed.add_field(name="Shortened Link",
+                        value=shortened_link, inline=False)
         await ctx.send(embed=embed)
 
     @command(aliases=("poll",))
@@ -162,9 +173,16 @@ class Commands(Cog):
         if len(options) > 20:
             raise BadArgument("I can only handle 20 options!")
 
-        options = {chr(i): f"{chr(i)} - {v}" for i, v in enumerate(options, start=codepoint_start)}
+        options = {
+            chr(i): f"{chr(i)} - {v}"
+            for i, v in enumerate(options, start=codepoint_start)
+        }
 
-        embed = discord.Embed(title=title, description="\n".join(options.values()), color=discord.Color.blurple())
+        embed = discord.Embed(
+            title=title,
+            description="\n".join(options.values()),
+            color=discord.Color.blurple(),
+        )
         message = await ctx.send(embed=embed)
 
         for reaction in options:
@@ -173,10 +191,16 @@ class Commands(Cog):
     @command()
     @cooldown(1, 10, BucketType.member)
     async def countdown(
-            self, ctx: Context, duration: TimeConverter, *, description: t.Optional[str] = "Countdown!"
+        self,
+        ctx: Context,
+        duration: TimeConverter,
+        *,
+        description: t.Optional[str] = "Countdown!",
     ) -> None:
         """A countdown timer that counts down for the specific duration."""
-        embed = discord.Embed(title="Timer", description=description, color=discord.Color.blurple())
+        embed = discord.Embed(
+            title="Timer", description=description, color=discord.Color.blurple()
+        )
         embed.add_field(name="**Countdown**", value=humanize_time(duration))
         message = await ctx.send(embed=embed)
 
@@ -186,7 +210,8 @@ class Commands(Cog):
                 break
             duration = relativedelta(final_time, datetime.utcnow())
 
-            embed.set_field_at(0, name="**Countdown**", value=humanize_time(duration))
+            embed.set_field_at(0, name="**Countdown**",
+                               value=humanize_time(duration))
             await message.edit(embed=embed)
 
             await asyncio.sleep(1)

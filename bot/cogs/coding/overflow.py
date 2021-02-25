@@ -3,13 +3,7 @@ from html import unescape
 from urllib.parse import quote_plus
 
 import discord
-from discord.ext.commands import (
-    BucketType,
-    Cog,
-    Context,
-    command,
-    cooldown,
-)
+from discord.ext.commands import BucketType, Cog, Context, command, cooldown
 
 from bot import Bot
 
@@ -28,15 +22,17 @@ class Overflow(Cog):
     @cooldown(1, 15, BucketType.user)
     async def stackoverflow(self, ctx: Context, *, query: str) -> None:
         """Search stackoverflow for a query."""
-        async with self.bot.session.get(BASE_URL.format(query=quote_plus(query))) as response:
+        async with self.bot.session.get(
+            BASE_URL.format(query=quote_plus(query))
+        ) as response:
             data = await response.json()
 
-        top = data["items"][:self.MAX_QUESTIONS]
+        top = data["items"][: self.MAX_QUESTIONS]
         embed = discord.Embed(
             title=f"Stack Overflow Top Questions for {query!r}",
             url=SEARCH_URL.format(query=quote_plus(query)),
             description=f"Here are the top {len(top)} results:",
-            color=discord.Color.blurple()
+            color=discord.Color.blurple(),
         )
 
         for item in top:
@@ -48,6 +44,7 @@ class Overflow(Cog):
                     f"Tags: {', '.join(item['tags'])} ┃ "
                     f"[LINK here]({item['link']})"
                 ),
-                inline=False)
+                inline=False,
+            )
 
         await ctx.send(embed=embed)

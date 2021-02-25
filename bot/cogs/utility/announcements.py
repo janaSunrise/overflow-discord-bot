@@ -28,7 +28,9 @@ class Announcements(Cog):
         if isinstance(role, discord.Role):
             role = role.id
 
-        await AnnouncementDB.set_announcement_role(self.bot.database, ctx.guild.id, role)
+        await AnnouncementDB.set_announcement_role(
+            self.bot.database, ctx.guild.id, role
+        )
 
         role = ctx.guild.get_role(role)
         await ctx.send(f"The role has been successfully set to {role.mention}")
@@ -40,7 +42,9 @@ class Announcements(Cog):
         if isinstance(channel, discord.TextChannel):
             channel = channel.id
 
-        await AnnouncementDB.set_announcement_channel(self.bot.database, ctx.guild.id, channel)
+        await AnnouncementDB.set_announcement_channel(
+            self.bot.database, ctx.guild.id, channel
+        )
 
         channel = ctx.guild.get_channel(channel)
 
@@ -55,15 +59,23 @@ class Announcements(Cog):
         This supports sending a simple message, or sending customized messages using our embed handler.
         """
         # -- Get the roles and IDs from database
-        role = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
+        role = await AnnouncementDB.get_announcement_role(
+            self.bot.database, ctx.guild.id
+        )
 
         if not role["role_id"]:
-            await ctx.send("The announcement role hasn't been configured for this server!")
+            await ctx.send(
+                "The announcement role hasn't been configured for this server!"
+            )
 
-        channel = await AnnouncementDB.get_announcement_channel(self.bot.database, ctx.guild.id)
+        channel = await AnnouncementDB.get_announcement_channel(
+            self.bot.database, ctx.guild.id
+        )
 
         if not channel["channel_id"]:
-            await ctx.send("The announcement channel hasn't been configured for this server!")
+            await ctx.send(
+                "The announcement channel hasn't been configured for this server!"
+            )
 
         # -- Get the embeds cog. --
         embed_data = self.embeds_cog.embeds[ctx.author.id]
@@ -93,19 +105,26 @@ class Announcements(Cog):
             message = f"Hey {role.mention} {msg}"
 
         if not embed.footer:
-            embed.set_footer(text=f"By {ctx.author.name}", icon_url=ctx.author.avatar_url)
+            embed.set_footer(
+                text=f"By {ctx.author.name}", icon_url=ctx.author.avatar_url
+            )
 
         await channel.send(message, embed=embed)
 
     @announcement.command()
     async def subscribe(self, ctx: Context) -> None:
         """Subscribe to the notifications and announcements in the server."""
-        row = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
+        row = await AnnouncementDB.get_announcement_role(
+            self.bot.database, ctx.guild.id
+        )
 
         if not row["role_id"]:
-            await ctx.send("The announcement role hasn't been configured for this server!")
+            await ctx.send(
+                "The announcement role hasn't been configured for this server!"
+            )
 
-        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = discord.utils.find(
+            lambda r: r.id == row["role_id"], ctx.guild.roles)
 
         if role in ctx.author.roles:
             await ctx.send("You're already subscribed!")
@@ -116,16 +135,20 @@ class Announcements(Cog):
     @announcement.command()
     async def unsubscribe(self, ctx: Context) -> None:
         """Unsubscribe from the notifications and announcements."""
-        row = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
+        row = await AnnouncementDB.get_announcement_role(
+            self.bot.database, ctx.guild.id
+        )
 
         if not row:
-            await ctx.send("ERROR! The Announcement role hasn't been configured for this server!")
+            await ctx.send(
+                "ERROR! The Announcement role hasn't been configured for this server!"
+            )
 
-        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = discord.utils.find(
+            lambda r: r.id == row["role_id"], ctx.guild.roles)
 
         if role not in ctx.author.roles:
             await ctx.send("You're already unsubscribed!")
         else:
             await ctx.author.remove_roles(role)
             await ctx.send("Aww :( We hate to see you unsubscribe.")
-

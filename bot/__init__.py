@@ -12,14 +12,19 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from bot import config
-from bot.databases import bring_databases_into_scope, DatabaseBase
+from bot.databases import DatabaseBase, bring_databases_into_scope
 from bot.databases.prefix import Prefix
 
 # -- Logger configuration --
 logger.configure(
     handlers=[
         dict(sink=sys.stdout, format=config.log_format, level=config.log_level),
-        dict(sink=config.log_file, format=config.log_format, level=config.log_level, rotation=config.log_file_size)
+        dict(
+            sink=config.log_file,
+            format=config.log_format,
+            level=config.log_level,
+            rotation=config.log_file_size,
+        ),
     ]
 )
 
@@ -50,10 +55,12 @@ class Bot(AutoShardedBot):
 
         # -- Spotify config --
         self.spotify = spotify.Client(
-            client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
+            client_id=config.spotify_client_id,
+            client_secret=config.spotify_client_secret,
         )
         self.spotify_http = spotify.HTTPClient(
-            client_id=config.spotify_client_id, client_secret=config.spotify_client_secret
+            client_id=config.spotify_client_id,
+            client_secret=config.spotify_client_secret,
         )
 
     async def is_owner(self, user: discord.User):
@@ -66,7 +73,8 @@ class Bot(AutoShardedBot):
         """Initialize the database."""
         bring_databases_into_scope()
 
-        engine = create_async_engine(config.DATABASE_CONN, pool_size=20, max_overflow=0)
+        engine = create_async_engine(
+            config.DATABASE_CONN, pool_size=20, max_overflow=0)
 
         try:
             async with engine.begin() as conn:
@@ -93,7 +101,9 @@ class Bot(AutoShardedBot):
                 self.load_extension(extension)
                 logger.info(f"Cog {extension} loaded.")
             except Exception as exc:
-                logger.error(f"Cog {extension} failed to load with {type(exc)}: {exc!r}")
+                logger.error(
+                    f"Cog {extension} failed to load with {type(exc)}: {exc!r}"
+                )
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         """Log message on guild join."""
@@ -144,7 +154,9 @@ class Bot(AutoShardedBot):
         await super().close()
 
     # -- Other methods --
-    async def get_msg_prefix(self, message: discord.Message, not_print: bool = True) -> str:
+    async def get_msg_prefix(
+        self, message: discord.Message, not_print: bool = True
+    ) -> str:
         """Get the prefix from a message."""
         if message.content.startswith(f"{self.default_prefix}help") and not_print:
             return self.default_prefix
@@ -161,11 +173,17 @@ class Bot(AutoShardedBot):
 
     # -- Bot methods --
     async def confirmation(
-            self, ctx, description: str, title: str, color=discord.Color.blurple(), footer: t.Optional[str] = None
+        self,
+        ctx,
+        description: str,
+        title: str,
+        color=discord.Color.blurple(),
+        footer: t.Optional[str] = None,
     ):
         emojis = {"✅": True, "❌": False}
 
-        embed = discord.Embed(title=title, description=description, color=color)
+        embed = discord.Embed(
+            title=title, description=description, color=color)
 
         if footer is not None:
             embed.set_footer(text=footer)
@@ -179,8 +197,10 @@ class Bot(AutoShardedBot):
         try:
             reaction, user = await self.wait_for(
                 "reaction_add",
-                check=lambda r, u: (r.message.id == message.id) and (u.id == user.id) and (r.emoji in emojis),
-                timeout=30
+                check=lambda r, u: (r.message.id == message.id)
+                and (u.id == user.id)
+                and (r.emoji in emojis),
+                timeout=30,
             )
         except asyncio.TimeoutError:
             confirmed = None

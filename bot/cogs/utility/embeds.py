@@ -2,17 +2,12 @@ import typing as t
 from collections import defaultdict, namedtuple
 
 import discord
-from discord.ext.commands import (
-    Cog,
-    Context,
-    ColorConverter,
-    MessageConverter,
-    group,
-)
+from discord.ext.commands import (Cog, ColorConverter, Context,
+                                  MessageConverter, group)
 
 from bot import Bot
 
-EmbedInfo = namedtuple('EmbedInfo', ('message', 'embed'))
+EmbedInfo = namedtuple("EmbedInfo", ("message", "embed"))
 
 
 class Embeds(Cog):
@@ -28,7 +23,9 @@ class Embeds(Cog):
     @embed.command()
     async def show(self, ctx: Context) -> None:
         """Show your embed, how it looks before using it."""
-        await ctx.send(self.embeds[ctx.author.id].message, embed=self.embeds[ctx.author.id].embed)
+        await ctx.send(
+            self.embeds[ctx.author.id].message, embed=self.embeds[ctx.author.id].embed
+        )
 
     @embed.command()
     async def reset(self, ctx: Context) -> None:
@@ -50,10 +47,15 @@ class Embeds(Cog):
         can_send_message = channel.permissions_for(ctx.author).send_messages
 
         if can_send_message:
-            await channel.send(self.embeds[ctx.author.id].message, embed=self.embeds[ctx.author.id].embed)
+            await channel.send(
+                self.embeds[ctx.author.id].message,
+                embed=self.embeds[ctx.author.id].embed,
+            )
             await ctx.send(f"✅ Your embed was successfully sent to {ctx.channel}")
         else:
-            await ctx.send(f"❌ You need the permissions to send messages in {channel.mention}")
+            await ctx.send(
+                f"❌ You need the permissions to send messages in {channel.mention}"
+            )
 
     @embed.command()
     async def title(self, ctx: Context, *, title: str) -> None:
@@ -96,7 +98,9 @@ class Embeds(Cog):
             else:
                 self.embeds[ctx.author.id].embed.set_image(url=attachment.url)
         else:
-            await ctx.send("❌ Please supply an URL or upload an image to add to the embed.")
+            await ctx.send(
+                "❌ Please supply an URL or upload an image to add to the embed."
+            )
             return
 
         await ctx.send("✅ Successfully set the image.")
@@ -104,7 +108,9 @@ class Embeds(Cog):
     @embed.command()
     async def message(self, ctx: Context, *, message: str) -> None:
         """Add the external message for your embed."""
-        self.embeds[ctx.author.id] = EmbedInfo(message, self.embeds[ctx.author.id].embed)
+        self.embeds[ctx.author.id] = EmbedInfo(
+            message, self.embeds[ctx.author.id].embed
+        )
         await ctx.send("✅ Successfully set the message content for embed.")
 
     @embed.group(invoke_without_command=True)
@@ -120,7 +126,9 @@ class Embeds(Cog):
         if isinstance(name, discord.Member):
             name = name.name
 
-        embed.set_author(name=name, url=embed.author.url, icon_url=embed.author.icon_url)
+        embed.set_author(
+            name=name, url=embed.author.url, icon_url=embed.author.icon_url
+        )
 
         await ctx.send("✅ Successfully set the embed author.")
 
@@ -132,12 +140,15 @@ class Embeds(Cog):
         if isinstance(icon, discord.Member):
             icon = icon.avatar_url_as(format="png")
 
-        embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=icon)
+        embed.set_author(name=embed.author.name,
+                         url=embed.author.url, icon_url=icon)
         await ctx.send("✅ Successfully set author's icon.")
 
     @author.command()
     async def url(self, ctx: Context, url: str) -> None:
         """Set the author's URL in the embed."""
         embed = self.embeds[ctx.author.id].embed
-        embed.set_author(name=embed.author.name, url=url, icon_url=embed.author.icon_url)
+        embed.set_author(
+            name=embed.author.name, url=url, icon_url=embed.author.icon_url
+        )
         await ctx.send("✅ Successfully set author's URL.")

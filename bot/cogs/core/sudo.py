@@ -13,7 +13,7 @@ import psutil
 from discord import Color, DiscordException, Embed
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
-from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
+from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 
 from bot import Bot, config
 
@@ -43,7 +43,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     @Cog.listener()
     async def on_socket_response(self, msg: t.Any) -> None:
         """Cog listener for socket responses."""
-        self.bot.socket_stats[msg.get('t')] += 1
+        self.bot.socket_stats[msg.get("t")] += 1
 
     @group(hidden=True)
     @is_owner()
@@ -66,7 +66,9 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         time.sleep(1)
         os.system("python -m pipenv run start")
 
-    async def _manage_cog(self, ctx: Context, process: str, extension: t.Optional[str] = None) -> None:
+    async def _manage_cog(
+        self, ctx: Context, process: str, extension: t.Optional[str] = None
+    ) -> None:
         from bot.core.loader import COGS
 
         if not extension:
@@ -116,8 +118,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         await ctx.send(
             embed=Embed(
                 title="Socket stats",
-                description=f'{total} socket events observed ({cpm:.2f}/minute):\n`{self.bot.socket_stats}`',
-                color=Color.blue()
+                description=f"{total} socket events observed ({cpm:.2f}/minute):\n`{self.bot.socket_stats}`",
+                color=Color.blue(),
             )
         )
 
@@ -149,7 +151,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
-        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
+        embed.add_field(name="**❯ Shard info**",
+                        value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
@@ -179,7 +182,9 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 inline=False,
             )
 
-        embed.set_author(name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url)
+        embed.set_author(
+            name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url
+        )
         embed.set_footer(text=f"Made by {config.creator}.")
 
         await ctx.send(embed=embed)
@@ -190,40 +195,45 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         shard_info = ""
 
         for key, item in self.bot.shards.items():
-            shard_info += f"**`[{key}]`**:\n" \
-                          f"Latency: **`{round(item.latency * 1000)}ms`**\n" \
-                          f"Shard count: `{item.shard_count}`\n"
+            shard_info += (
+                f"**`[{key}]`**:\n"
+                f"Latency: **`{round(item.latency * 1000)}ms`**\n"
+                f"Shard count: `{item.shard_count}`\n"
+            )
 
         await ctx.send(
             embed=Embed(
                 title="Cluster info",
-                description=textwrap.dedent(f"""
+                description=textwrap.dedent(
+                    f"""
                 Clusters IDs: `{self.bot.shard_ids}`
 
-                """ + shard_info),
-                color=Color.blue()
+                """
+                    + shard_info
+                ),
+                color=Color.blue(),
             )
         )
 
     @staticmethod
     def cleanup_code(content: str) -> str:
         """Automatically removes code blocks from the code."""
-        if content.startswith('```') and content.endswith('```'):
-            return '\n'.join(content.split('\n')[1:-1])
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
 
-        return content.strip('` \n')
+        return content.strip("` \n")
 
-    @sudo.command(name='eval')
+    @sudo.command(name="eval")
     async def _eval(self, ctx: Context, *, code: str):
         """Eval some code"""
         env = {
-            'bot': self.bot,
-            'ctx': ctx,
-            'guild': ctx.guild,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            'message': ctx.message,
-            '_': self._last_eval_result
+            "bot": self.bot,
+            "ctx": ctx,
+            "guild": ctx.guild,
+            "channel": ctx.channel,
+            "author": ctx.author,
+            "message": ctx.message,
+            "_": self._last_eval_result,
         }
         env.update(globals())
 
@@ -235,26 +245,26 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         try:
             exec(to_compile, env)
         except Exception as error:
-            return await ctx.send(f'```py\n{error.__class__.__name__}: {error}\n``')
+            return await ctx.send(f"```py\n{error.__class__.__name__}: {error}\n``")
 
-        func = env['func']
+        func = env["func"]
 
         try:
             with redirect_stdout(buffer):
                 ret = await func()
         except Exception:
             value = buffer.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
             value = buffer.getvalue()
             try:
-                await ctx.message.add_reaction('\N{INCOMING ENVELOPE}')
+                await ctx.message.add_reaction("\N{INCOMING ENVELOPE}")
             except DiscordException:
                 pass
 
             if ret is None:
                 if value:
-                    await ctx.send(f'```py\n{value}\n```')
+                    await ctx.send(f"```py\n{value}\n```")
                 else:
                     self._last_result = ret
-                    await ctx.send(f'```py\n{value}{ret}\n```')
+                    await ctx.send(f"```py\n{value}{ret}\n```")

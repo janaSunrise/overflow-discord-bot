@@ -1,12 +1,6 @@
 import discord
-from discord.ext.commands import (
-    Cog,
-    Context,
-    Greedy,
-    NoPrivateMessage,
-    command,
-    has_permissions
-)
+from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
+                                  command, has_permissions)
 
 from bot import Bot
 
@@ -24,10 +18,10 @@ class Lock(Cog):
     @command()
     @has_permissions(manage_channels=True)
     async def lock(
-            self,
-            ctx: Context,
-            channels: Greedy[discord.TextChannel] = None,
-            override_roles: Greedy[discord.Role] = None
+        self,
+        ctx: Context,
+        channels: Greedy[discord.TextChannel] = None,
+        override_roles: Greedy[discord.Role] = None,
     ) -> None:
         """
         Lock a channel to stop people from talking and make the server under maintenance.
@@ -40,17 +34,14 @@ class Lock(Cog):
             channels = [ctx.channel]
 
         overwrites = {
-            guild.default_role:
-                discord.PermissionOverwrite(send_messages=False),
-
-            guild.me:
-                discord.PermissionOverwrite(
-                    read_messages=True,
-                    send_messages=True,
-                    manage_messages=True,
-                    add_reactions=True,
-                    manage_channels=True
-                ),
+            guild.default_role: discord.PermissionOverwrite(send_messages=False),
+            guild.me: discord.PermissionOverwrite(
+                read_messages=True,
+                send_messages=True,
+                manage_messages=True,
+                add_reactions=True,
+                manage_channels=True,
+            ),
         }
 
         if override_roles is not None:
@@ -71,15 +62,17 @@ class Lock(Cog):
                 continue
 
         if channels != [ctx.channel]:
-            await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
+            await ctx.send(
+                f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}."
+            )
 
     @command()
     @has_permissions(manage_channels=True)
     async def unlock(
-            self,
-            ctx: Context,
-            channels: Greedy[discord.TextChannel] = None,
-            override_roles: Greedy[discord.Role] = None
+        self,
+        ctx: Context,
+        channels: Greedy[discord.TextChannel] = None,
+        override_roles: Greedy[discord.Role] = None,
     ) -> None:
         """
         Unlock a locked channel to continue traffic.
@@ -92,17 +85,14 @@ class Lock(Cog):
             channels = [ctx.channel]
 
         overwrites = {
-            guild.default_role:
-                discord.PermissionOverwrite(send_messages=True),
-
-            guild.me:
-                discord.PermissionOverwrite(
-                    read_messages=True,
-                    send_messages=True,
-                    manage_messages=True,
-                    add_reactions=True,
-                    manage_channels=True
-                ),
+            guild.default_role: discord.PermissionOverwrite(send_messages=True),
+            guild.me: discord.PermissionOverwrite(
+                read_messages=True,
+                send_messages=True,
+                manage_messages=True,
+                add_reactions=True,
+                manage_channels=True,
+            ),
         }
 
         if override_roles is not None:
@@ -123,12 +113,17 @@ class Lock(Cog):
                 continue
 
         if channels != [ctx.channel]:
-            await ctx.send(f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}.")
+            await ctx.send(
+                f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}."
+            )
 
     @command()
     @has_permissions(manage_channels=True)
     async def slowmode(
-            self, ctx: Context, duration: int = 0, channels: Greedy[discord.TextChannel] = None
+        self,
+        ctx: Context,
+        duration: int = 0,
+        channels: Greedy[discord.TextChannel] = None,
     ) -> None:
         """
         Set slowmode in 1 or more channel.
@@ -136,11 +131,13 @@ class Lock(Cog):
         Specify the duration for slowmode, or just execute the command without adding anything to remove the slowmode.
         """
         if not 0 <= duration <= 21600:
-            await ctx.send(embed=discord.Embed(
+            await ctx.send(
+                embed=discord.Embed(
                     description=":x: The duration specified is out of bounds. Minimum 0 to remove slowmode "
-                                "or 21600 for 6 hours slowmode.",
-                    color=discord.Color.red()
-            ))
+                    "or 21600 for 6 hours slowmode.",
+                    color=discord.Color.red(),
+                )
+            )
 
         if channels is None:
             channels = [ctx.channel]
@@ -158,4 +155,6 @@ class Lock(Cog):
                 f"✅ Set {channel_count} channel{'s' if channel_count > 1 else ''} with {duration} second slowmode."
             )
         else:
-            await ctx.send(f"✅ Disabled slowmode for {channel_count} channel{'s' if channel_count > 1 else ''}.")
+            await ctx.send(
+                f"✅ Disabled slowmode for {channel_count} channel{'s' if channel_count > 1 else ''}."
+            )
