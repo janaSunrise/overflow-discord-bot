@@ -22,6 +22,7 @@ class Eval(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.languages = None
         self.languages_url = "https://tio.run/languages.json"
         self.update_languages.start()
 
@@ -41,8 +42,8 @@ class Eval(Cog):
             languages = tuple(sorted(json.loads(await response.text())))
             self.languages = languages
 
-    @command()
-    async def languages(self, ctx: Context) -> None:
+    @command(aliases=["language-list", "langs", "langs-list"])
+    async def language_supported(self, ctx: Context) -> None:
         """Show all the languages supported by this compiler."""
         paginator = commands.Paginator(
             max_size=2048,

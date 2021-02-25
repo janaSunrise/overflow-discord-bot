@@ -48,7 +48,11 @@ class SongQueue(asyncio.Queue):
         else:
             return self._queue[item]
 
-    def __iter__(self) -> None:
+    @property
+    def queue(self) -> list:
+        return self._queue
+
+    def __iter__(self) -> t.AsyncIterator:
         return self._queue.__iter__()
 
     def __len__(self) -> int:
@@ -1137,7 +1141,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
             return
 
-        entries = [track.title for track in player.queue._queue]
+        entries = [track.title for track in player.queue.queue]
         pages = PaginatorSource(entries=entries)
         paginator = menus.MenuPages(
             source=pages, timeout=None, delete_message_after=True
