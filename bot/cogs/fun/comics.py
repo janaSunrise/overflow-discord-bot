@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 from discord import Color, Embed, File
 from discord.ext.commands import Cog, Context, group
 
-from bot import config
-from bot import Bot
+from bot import Bot, config
 
 
 class Comics(Cog):
@@ -46,7 +45,9 @@ class Comics(Cog):
         url = "http://www.smbc-comics.com/comic/archive"
 
         async with ctx.typing():
-            async with self.bot.session.get(url, headers={"Connection": "keep-alive"}) as response:
+            async with self.bot.session.get(
+                url, headers={"Connection": "keep-alive"}
+            ) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
             all_comics = soup.find("select", attrs={"name": "comic"})
@@ -58,7 +59,7 @@ class Comics(Cog):
             comic_url = f"http://www.smbc-comics.com/{random_comic}"
 
             async with self.bot.session.get(
-                    comic_url, headers={"Connection": "keep-alive"}
+                comic_url, headers={"Connection": "keep-alive"}
             ) as resp:
                 soup = BeautifulSoup(await resp.text(), "html.parser")
                 img_url = soup.find(property="og:image")["content"]
@@ -104,9 +105,8 @@ class Comics(Cog):
             async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
-            embed = Embed(
-                title="Random Cyanide and Happiness", color=Color.blurple()
-            )
+            embed = Embed(title="Random Cyanide and Happiness",
+                          color=Color.blurple())
             embed.set_image(url="attachment://cah.png")
             file = File(img, "cah.png")
             await ctx.send(file=file, embed=embed)
@@ -173,7 +173,9 @@ class Comics(Cog):
             async with self.bot.session.get(url) as response:
                 soup = BeautifulSoup(await response.text(), "html.parser")
 
-            img_url = f"http://www.mrlovenstein.com{soup.find(id='comic_main_image')['src']}"
+            img_url = (
+                f"http://www.mrlovenstein.com{soup.find(id='comic_main_image')['src']}"
+            )
 
             async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
@@ -216,9 +218,8 @@ class Comics(Cog):
             async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
-            embed = Embed(
-                title="Random Sarah Scribbles", color=Color.blurple()
-            )
+            embed = Embed(title="Random Sarah Scribbles",
+                          color=Color.blurple())
             embed.set_image(url="attachment://sarahscribbles.png")
             file = File(img, "sarahscribbles.png")
             await ctx.send(file=file, embed=embed)

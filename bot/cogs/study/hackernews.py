@@ -1,14 +1,10 @@
 import random
-from textwrap import dedent
 import typing as t
+from textwrap import dedent
 
 import discord
 from discord.ext import tasks
-from discord.ext.commands import (
-    Cog,
-    Context,
-    group
-)
+from discord.ext.commands import Cog, Context, group
 
 from bot import Bot
 from bot.databases.hackernews_feed import HackernewsFeed
@@ -32,17 +28,19 @@ class HackerNews(Cog):
             async with self.bot.session.get(NEWS_URL + f"item/{item_id}.json") as resp:
                 data = await resp.json()
 
-                description = dedent(f"""
+                description = dedent(
+                    f"""
                 • Story ID: **{data["id"]}**
                 • URL: [Here]({data.get("url")})
                 • Score: **{data["score"]}**
                 • Author: **{data["by"]}**
-                """)
+                """
+                )
 
                 embed = discord.Embed(
                     title=data["title"],
                     description=description,
-                    color=discord.Color.blurple()
+                    color=discord.Color.blurple(),
                 )
             article_embeds.append(embed)
 
@@ -55,19 +53,21 @@ class HackerNews(Cog):
             async with self.bot.session.get(NEWS_URL + f"item/{item_id}.json") as resp:
                 data = await resp.json()
 
-                description += dedent(f"""
+                description += dedent(
+                    f"""
                 TITLE: **{data["title"]}**
 
                 • Story ID: **{data["id"]}**
                 • URL: [Here]({data.get("url")})
                 • Score: **{data["score"]}**
                 • Author: **{data["by"]}**\n
-                """)
+                """
+                )
 
         embed = discord.Embed(
             title="Quick news feed!",
             description=description,
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         return embed
 
@@ -105,13 +105,17 @@ class HackerNews(Cog):
         await EmbedPages(article_embeds).start(ctx)
 
     @hackernews.command(manage_channels=True)
-    async def subscribe(self, ctx: Context, channel: t.Optional[discord.TextChannel] = None) -> None:
+    async def subscribe(
+        self, ctx: Context, channel: t.Optional[discord.TextChannel] = None
+    ) -> None:
         """Subscribe to the scheduled hacker news feed."""
         if not channel:
             await ctx.send("Please specify a channel to send the feed!")
             return
 
-        await HackernewsFeed.set_feed_channel(self.bot.database, ctx.guild.id, channel.id)
+        await HackernewsFeed.set_feed_channel(
+            self.bot.database, ctx.guild.id, channel.id
+        )
         await ctx.send(f"Congrats :tada: Set {channel.mention} as the feed channel!")
 
     @hackernews.command(manage_channels=True)

@@ -9,7 +9,7 @@ from .sudo import Sudo
 
 def setup(bot: Bot) -> None:
     """Load the cogs."""
-    if not hasattr(bot, 'socket_stats'):
+    if not hasattr(bot, "socket_stats"):
         bot.socket_stats = Counter()
 
     bot.add_cog(ErrorHandler(bot))

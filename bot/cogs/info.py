@@ -4,13 +4,8 @@ import os
 import pathlib
 import textwrap
 
-from discord.ext.commands import (
-    Cog,
-    Context,
-    Paginator,
-    command
-)
 from discord.ext import menus
+from discord.ext.commands import Cog, Context, Paginator, command
 
 from bot import Bot
 from bot.utils.pages import CodeInfoSource, SauceSource
@@ -20,6 +15,7 @@ ZWS = "\u200b"
 
 class Info(Cog):
     """Get info about the bot."""
+
     def __init__(self, bot: Bot):
         self.bot = bot
 
@@ -30,22 +26,27 @@ class Info(Cog):
         file_amount = 0
         list_of_files = []
 
-        for filepath, _, files in os.walk('bot'):
+        for filepath, _, files in os.walk("bot"):
             for name in files:
-                if name.endswith('.py'):
+                if name.endswith(".py"):
                     file_lines = 0
                     file_amount += 1
-                    with codecs.open('./' + str(pathlib.PurePath(filepath, name)), 'r', 'utf-8') as file:
+                    with codecs.open(
+                        "./" + str(pathlib.PurePath(filepath, name)
+                                   ), "r", "utf-8"
+                    ) as file:
                         for _, line in enumerate(file):
-                            if line.strip().startswith('#') or len(
-                                    line.strip()) == 0:
+                            if line.strip().startswith("#") or len(line.strip()) == 0:
                                 pass
                             else:
                                 total += 1
                                 file_lines += 1
 
                     final_path = filepath + os.path.sep + name
-                    list_of_files.append(final_path.split('.' + os.path.sep)[-1] + f" : {file_lines} lines")
+                    list_of_files.append(
+                        final_path.split("." + os.path.sep)[-1]
+                        + f" : {file_lines} lines"
+                    )
 
         paginator = Paginator(
             max_size=2048,
@@ -82,7 +83,9 @@ class Info(Cog):
             )
             return
 
-        source_lines = textwrap.dedent("".join(source_lines).replace("```", f"`{ZWS}`{ZWS}`")).split("\n")
+        source_lines = textwrap.dedent(
+            "".join(source_lines).replace("```", f"`{ZWS}`{ZWS}`")
+        ).split("\n")
         paginator = Paginator(
             prefix="```py",
             suffix="```",

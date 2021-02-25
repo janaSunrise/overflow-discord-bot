@@ -1,7 +1,7 @@
 from bot import Bot
 
-from .moderation import Moderation
 from .lock import Lock
+from .moderation import Moderation
 
 
 def setup(bot: Bot) -> None:

@@ -5,15 +5,8 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (
-    Cog,
-    Context,
-    Greedy,
-    NoPrivateMessage,
-    command,
-    has_permissions,
-    MemberConverter
-)
+from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
+                                  NoPrivateMessage, command, has_permissions)
 
 from bot import Bot
 from bot.core.converters import ModerationReason
@@ -38,21 +31,31 @@ class Moderation(Cog):
     @command()
     @has_permissions(kick_members=True)
     async def kick(
-            self, ctx: Context, member: MemberConverter, *, reason: ModerationReason = "No reason specified."
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
     ) -> None:
         """Kick a member from your server."""
         if not isinstance(member, discord.Member):
-            await ctx.send(embed=discord.Embed(
-                description=dedent(f"""
+            await ctx.send(
+                embed=discord.Embed(
+                    description=dedent(
+                        f"""
                 You cannot kick this member! 
                 
                 {member.mention} [**`{member.id}`**] isn't a member of this server. You can only kick members in this
                 server.
-                """)
-            ))
+                """
+                    )
+                )
+            )
             return
 
-        embed = moderation_embed(ctx, action="kick", user=member, reason=reason, color=discord.Color.gold())
+        embed = moderation_embed(
+            ctx, action="kick", user=member, reason=reason, color=discord.Color.gold()
+        )
         embed.timestamp = datetime.utcnow()
         embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
 
@@ -62,10 +65,16 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     async def ban(
-            self, ctx: Context, member: MemberConverter, *, reason: ModerationReason = "No reason specified."
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
     ) -> None:
         """Ban a member from your server."""
-        embed = moderation_embed(ctx, action="ban", user=member, reason=reason, color=discord.Color.gold())
+        embed = moderation_embed(
+            ctx, action="ban", user=member, reason=reason, color=discord.Color.gold()
+        )
         embed.timestamp = datetime.utcnow()
         embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
 
@@ -74,27 +83,31 @@ class Moderation(Cog):
 
     @command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx: Context, amount: int, member: discord.Member = None) -> None:
+    async def clear(
+        self, ctx: Context, amount: int, member: discord.Member = None
+    ) -> None:
         """Clear messages from a specific channel. Specify a member to clear his messages only."""
         if not member:
             await ctx.message.channel.purge(limit=amount)
         else:
-            await ctx.message.channel.purge(limit=amount, check=lambda msg: msg.author == member)
+            await ctx.message.channel.purge(
+                limit=amount, check=lambda msg: msg.author == member
+            )
 
-        description = dedent(f"""
+        description = dedent(
+            f"""
         **Cleared messages!**
 
         • Count: {amount}
-        """)
+        """
+        )
 
         description += f"• Member: {member.mention}" if member else ""
 
         message = await ctx.send(
             f"Hey {ctx.author.mention}!",
-            embed=discord.Embed(
-                description=description,
-                color=discord.Color.green()
-            )
+            embed=discord.Embed(description=description,
+                                color=discord.Color.green()),
         )
         await asyncio.sleep(4)
         await message.delete()
@@ -102,24 +115,28 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_roles=True)
     async def dm(
-            self,
-            ctx: Context,
-            members: Greedy[t.Union[discord.Member, discord.Role]],
-            *,
-            text: str = None
+        self,
+        ctx: Context,
+        members: Greedy[t.Union[discord.Member, discord.Role]],
+        *,
+        text: str = None,
     ) -> None:
         """DM a list of specified users in your server."""
         embed_data = self.embeds_cog.embeds[ctx.author.id]
 
         if embed_data.embed.description is None and embed_data.embed.title is None:
-            await ctx.send(":x: You need to create an embed using our embed maker before sending it!")
+            await ctx.send(
+                ":x: You need to create an embed using our embed maker before sending it!"
+            )
             return
 
         if text is not None:
             embed_data.embed.description = text
 
         if not embed_data.embed.footer:
-            embed_data.embed.set_footer(text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url)
+            embed_data.embed.set_footer(
+                text=f"From {ctx.guild.name}", icon_url=ctx.guild.icon_url
+            )
 
         for member in members:
             if isinstance(member, discord.Role):

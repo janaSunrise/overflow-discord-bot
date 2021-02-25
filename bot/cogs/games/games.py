@@ -1,13 +1,10 @@
 import random
 
 import discord
-from discord.ext.commands import (
-    Cog,
-    Context,
-    command
-)
+from discord.ext.commands import Cog, Context, command
 
 from bot import Bot, config
+
 from .connect4 import Connect4
 from .hangman import HangmanGame
 from .tic_tac_toe import TTT_Game
@@ -29,7 +26,8 @@ class Games(Cog):
         elif reply_type == 3:
             answer = random.choice(config.BALL_REPLIES["error"])
 
-        embed = discord.Embed(title="Magic 8-ball", color=discord.Color.blurple())
+        embed = discord.Embed(title="Magic 8-ball",
+                              color=discord.Color.blurple())
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
 
@@ -50,7 +48,9 @@ class Games(Cog):
     @command(aliases=["c4"])
     async def connect4(self, ctx: Context, member: discord.Member) -> None:
         """Play connect 4 with a friend"""
-        winner = await Connect4(ctx.author, member, clear_reactions_after=True).prompt(ctx)
+        winner = await Connect4(ctx.author, member, clear_reactions_after=True).prompt(
+            ctx
+        )
         if winner:
             await ctx.send(f"{winner.mention} won !")
         else:

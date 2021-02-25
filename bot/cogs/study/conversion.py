@@ -5,8 +5,7 @@ import textwrap
 from discord import Embed
 from discord.ext.commands import Cog, Context, command
 
-from bot import config
-from bot import Bot
+from bot import Bot, config
 
 
 class Conversion(Cog):
@@ -14,7 +13,9 @@ class Conversion(Cog):
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
-        self.hash_algos = sorted([h for h in hashlib.algorithms_available if h.islower()])
+        self.hash_algos = sorted(
+            [h for h in hashlib.algorithms_available if h.islower()]
+        )
 
     @command(name="ascii")
     async def _ascii(self, ctx: Context, *, text: str) -> None:
@@ -47,7 +48,9 @@ class Conversion(Cog):
 
             await ctx.send(embed=embed)
         except ValueError:
-            await ctx.send(f"Invalid sequence. Example usage : `{config.COMMAND_PREFIX}unascii 104 101 121`")
+            await ctx.send(
+                f"Invalid sequence. Example usage : `{config.COMMAND_PREFIX}unascii 104 101 121`"
+            )
 
     @command()
     async def byteconvert(self, ctx: Context, value: int, unit: str = "Mio") -> None:
@@ -79,7 +82,9 @@ class Conversion(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            matches = "\n".join([supported for supported in self.hash_algos if algo in supported][:10])
+            matches = "\n".join(
+                [supported for supported in self.hash_algos if algo in supported][:10]
+            )
             message = f"`{algorithm}` not available."
             if matches:
                 message += f" Did you mean:\n{matches}"

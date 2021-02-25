@@ -2,18 +2,11 @@ import textwrap
 from datetime import datetime
 
 from discord import Color, Embed
-from discord.ext.commands import (
-    Bot,
-    BucketType,
-    Cog,
-    Context,
-    group,
-    cooldown
-)
+from discord.ext.commands import Bot, BucketType, Cog, Context, cooldown, group
 
 BAD_RESPONSES = {
     404: "Issue/pull request not Found! Please enter a valid PR Number!",
-    403: "Rate limit is hit! Please try again later!"
+    403: "Rate limit is hit! Please try again later!",
 }
 
 
@@ -23,6 +16,7 @@ class Github(Cog):
 
     **This command uses the GitHub API and is limited to 1 use per 5 seconds to comply with the rules.**
     """
+
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
@@ -33,10 +27,14 @@ class Github(Cog):
 
     @github.command(aliases=["pullrequest", "pullrequests", "issues"])
     @cooldown(1, 5, type=BucketType.user)
-    async def issue(self, ctx: Context, user: str, repository: str, issue_num: int) -> None:
+    async def issue(
+        self, ctx: Context, user: str, repository: str, issue_num: int
+    ) -> None:
         """Command to retrieve issues or PRs from a GitHub repository."""
         url = f"https://api.github.com/repos/{user}/{repository}/issues/{issue_num}"
-        merge_url = f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}"
+        merge_url = (
+            f"https://api.github.com/repos/{user}/{repository}/pulls/{issue_num}"
+        )
 
         async with self.bot.session.get(url) as resp:
             json_data = await resp.json()
@@ -45,7 +43,10 @@ class Github(Cog):
             await ctx.send(f"ERROR: {BAD_RESPONSES.get(resp.status)}")
             return
 
-        labels = [f"`{json_data['labels'][i]['name']}`" for i in range(len(json_data["labels"]))]
+        labels = [
+            f"`{json_data['labels'][i]['name']}`"
+            for i in range(len(json_data["labels"]))
+        ]
         assignees = len(json_data["assignees"])
 
         if "issues" in json_data.get("html_url"):
@@ -108,7 +109,7 @@ class Github(Cog):
             title=f"{json_data.get('title')} [#{issue_num}]",
             colour=Color.gold(),
             description=description,
-            url=issue_url
+            url=issue_url,
         )
         resp.set_author(name="GitHub", url=issue_url)
         await ctx.send(embed=resp)
@@ -123,10 +124,14 @@ class Github(Cog):
 
         # Fetching the data
 
-        async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}") as resp:
+        async with await self.bot.session.get(
+            f"https://api.github.com/repos/{user}/{repo}"
+        ) as resp:
             response = await resp.json()
 
-        async with await self.bot.session.get(f"https://api.github.com/repos/{user}/{repo}/languages") as resp:
+        async with await self.bot.session.get(
+            f"https://api.github.com/repos/{user}/{repo}/languages"
+        ) as resp:
             json = await resp.json()
             languages = len(json)
 
@@ -177,7 +182,9 @@ class Github(Cog):
     async def user(self, ctx: Context, user: str) -> None:
         """Show info about a given GitHub user."""
         embed = Embed(color=Color.blue())
-        async with await self.bot.session.get(f"https://api.github.com/users/{user}") as resp:
+        async with await self.bot.session.get(
+            f"https://api.github.com/users/{user}"
+        ) as resp:
             response = await resp.json()
 
         if resp.status in BAD_RESPONSES:
