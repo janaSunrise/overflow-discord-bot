@@ -1,4 +1,4 @@
-## Overflow bot
+## Overflow discord bot
 
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://gitHub.com/janaSunrise/overflow-discord-bot/graphs/commit-activity)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
