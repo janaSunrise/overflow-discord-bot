@@ -13,7 +13,7 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
 from loguru import logger
 
 from bot import Bot
-from bot.utils.errors import (IncorrectChannelError, NoChannelProvided)
+from bot.utils.errors import IncorrectChannelError, NoChannelProvided
 from bot.utils.utils import format_time
 
 
