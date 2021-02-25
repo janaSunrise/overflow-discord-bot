@@ -12,7 +12,6 @@ A small bot designed to help you with coding and finding and solving
 issues faster by integrating stack overflow workflow into discord and more.
 
 ### Usage
-[![CodeFactor](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot/badge)](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot)
 Go to any channel in discord of any server where this bot is invited, and 
 invoke it using `=help`
 
