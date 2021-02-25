@@ -9,7 +9,6 @@ import spotify
 from asyncpg.exceptions import InvalidPasswordError
 from discord.ext.commands import AutoShardedBot, Context
 from loguru import logger
-from sqlalchemy.pool import QueuePool
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from bot import config
@@ -57,7 +56,7 @@ class Bot(AutoShardedBot):
         """Initialize the database."""
         bring_databases_into_scope()
 
-        engine = create_async_engine(config.DATABASE_CONN, pool_size=20, max_overflow=0, pool=QueuePool)
+        engine = create_async_engine(config.DATABASE_CONN, pool_size=20, max_overflow=0)
 
         try:
             async with engine.begin() as conn:
