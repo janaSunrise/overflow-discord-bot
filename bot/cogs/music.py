@@ -368,7 +368,8 @@ class PaginatorSource(menus.ListPageSource):
 
         return embed
 
-    def is_paginating(self) -> bool:
+    @staticmethod
+    def is_paginating() -> bool:
         return True
 
 
