@@ -438,9 +438,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             for mem in channel.members:
                 if mem.bot:
                     continue
-                else:
-                    player.dj = mem
-                    return
+                player.dj = mem
+                return
         elif after.channel == channel and player.dj not in channel.members:
             player.dj = member
 
@@ -1278,16 +1277,15 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         for mem in members:
             if mem == player.dj or mem.bot:
                 continue
-            else:
-                player.dj = mem
-                await ctx.send(
-                    embed=discord.Embed(
-                        description=f"{member.mention} is now the DJ.",
-                        color=discord.Color.green(),
-                    ),
-                    delete_after=15,
-                )
-                return
+            player.dj = mem
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"{member.mention} is now the DJ.",
+                    color=discord.Color.green(),
+                ),
+                delete_after=15,
+            )
+            return
 
     @commands.command()
     async def remove(self, ctx: commands.Context, index: int) -> None:
