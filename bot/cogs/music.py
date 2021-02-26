@@ -481,7 +481,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             and not player.context
         ):
             return
-        elif self.is_privileged(ctx):
+        if self.is_privileged(ctx):
             return
 
         if not player.channel_id:
