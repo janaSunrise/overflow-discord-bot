@@ -15,13 +15,13 @@ from bot.utils.utils import camel_to_snake
 DatabaseBase = declarative_base()
 
 
-# -- Cutom database base --
+# -- Custom database base --
 class CustomMeta(DeclarativeMeta):
     __table__: alchemy.Table
 
     @property
-    def columns(self) -> ImmutableColumnCollection:
-        return self.__table__.columns
+    def columns(cls) -> ImmutableColumnCollection:
+        return cls.__table__.columns
 
 
 class CustomBase:
@@ -30,7 +30,6 @@ class CustomBase:
     if t.TYPE_CHECKING:
         __tablename__: str
     else:
-
         @declared_attr
         def __tablename__(self) -> str:
             return camel_to_snake(self.__name__)
@@ -42,9 +41,7 @@ class CustomBase:
 
 
 _Base = declarative_base(cls=CustomBase, metaclass=CustomMeta)
-
 if t.TYPE_CHECKING:
-
     class Base(_Base, CustomBase, metaclass=CustomMeta):
         __table__: alchemy.Table
         __tablename_: str
@@ -54,8 +51,6 @@ if t.TYPE_CHECKING:
 
         def __init__(self, **kwargs: t.Any) -> None:
             pass
-
-
 else:
     Base = _Base
 

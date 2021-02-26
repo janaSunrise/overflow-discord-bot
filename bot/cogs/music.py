@@ -171,7 +171,7 @@ class Player(wavelink.Player):
         """Method which builds our players controller embed."""
         track = self.current
         if not track:
-            return
+            return None
 
         channel = self.bot.get_channel(int(self.channel_id))
         qsize = self.queue.qsize()
