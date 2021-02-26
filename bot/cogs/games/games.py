@@ -49,13 +49,17 @@ class Games(Cog):
         if cost < 0:
             await ctx.send("You can't bet negative money")
 
-        players, money_dict = await Blackjack_players(ctx.author, 100, cost, delete_message_after=True).prompt(ctx)
+        players, money_dict = await Blackjack_players(
+            ctx.author, 100, cost, delete_message_after=True
+        ).prompt(ctx)
 
         if not players:
             await ctx.send("Nobody wants to play")
             return
 
-        await Blackjack(players, money_dict, cost, clear_reactions_after=True).prompt(ctx)
+        await Blackjack(players, money_dict, cost, clear_reactions_after=True).prompt(
+            ctx
+        )
 
     @command(aliases=["8ball"])
     async def ball8(self, ctx: Context, *, question: str) -> None:
@@ -69,8 +73,7 @@ class Games(Cog):
         elif reply_type == 3:
             answer = random.choice(config.BALL_REPLIES["error"])
 
-        embed = discord.Embed(title="Magic 8-ball",
-                              color=discord.Color.blurple())
+        embed = discord.Embed(title="Magic 8-ball", color=discord.Color.blurple())
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
 
