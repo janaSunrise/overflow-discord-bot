@@ -66,10 +66,9 @@ class HangmanGame:
                 return 1
             self.tries -= 1
             return 0
-        else:
-            if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
-                return False
-            return 2
+        if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
+            return False
+        return 2
 
     @property
     def display_word(self) -> str:
@@ -116,8 +115,7 @@ class HangmanGame:
                 color = Color.dark_red()
             guess_embed = Embed(description=description, color=color)
             await self.channel.send(embed=guess_embed, delete_after=5)
-        embed.set_footer(
-            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
+        embed.set_footer(text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)
         else:
