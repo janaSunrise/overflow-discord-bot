@@ -150,8 +150,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
-        embed.add_field(name="**❯ Shard info**",
-                        value=shard_info, inline=False)
+        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
