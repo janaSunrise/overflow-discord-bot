@@ -40,7 +40,7 @@ class Games(Cog):
     async def blackjack(self, ctx: Context, cost: int = 5) -> None:
         """
         Rules: if it's your turn, press the button corresponding to the column in which you want to place the card.
-        If you want to split (play on one more column, up to a max of 3, press :regional_indicator_3: ).  If you want to
+        If you want to split (play on one more column, up to a max of 3, press :regional_indicator_3: ). If you want to
         stop, press :x:.
         To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value,
         except for faces, which are worth 10 points, and the Ace, which is worth either 1 or 11).
