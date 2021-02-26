@@ -61,7 +61,7 @@ class ErrorHandler(Cog):
             title="Invalid command syntax",
             description=textwrap.dedent(
                 f"""
-                The command syntax you used is incorrect. 
+                The command syntax you used is incorrect.
                 **`{error}`**
 
                 **Command Description**

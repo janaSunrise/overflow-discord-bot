@@ -94,7 +94,7 @@ class Github(Cog):
 
                     • Created by {merge["user"]["login"]}
 
-                    • Has {merge["comments"]} comments 
+                    • Has {merge["comments"]} comments.
                     • Has {"no" if not merge["review_comments"] else merge["review_comments"]} reviews
                     • {merge["changed_files"]} Files changes, with {merge["commits"]} commits done.
                     • Changes contain {merge["additions"]} additions and {merge["deletions"]} deletions
@@ -147,14 +147,12 @@ class Github(Cog):
             if response["description"] == "":
                 desc = "No description provided."
             else:
-                desc = response["description"]
+                desc = f'```{response["description"]}```'
 
             description = textwrap.dedent(
                 f"""
                 📄 **Description:**
-                ```
                 {desc}
-                ```
 
                 🧿 **Info:**
                 • Created on {datetime.strptime(response["created_at"],"%Y-%m-%dT%H:%M:%SZ")}
@@ -197,8 +195,9 @@ class Github(Cog):
         except KeyError:
             description = textwrap.dedent(
                 f"""
+                • {"No Name given!" if not response["name"] else f'His/Her/Their name is {response["name"]}'}
+
                 📄 **Description:**
-                • He/She is {"No Name!" if not response["name"] else response["name"]}
                 ```
                 {"No Bio!" if not response["bio"] else response["bio"]}
                 ```
@@ -210,19 +209,23 @@ class Github(Cog):
 
                 • Has been followed by {response["followers"]} developers.
                 • Loves to follow {response["following"]} developers
-                
-                {"" if not response["location"] else f"• Located in {response['location']}"}
-
-                {"" if not response["company"] else f"• Works at {response['company']}"}
-
-                🔗 **Links:**
-                {"" if response["blog"] == "" else f"• Has a site or blog at {response['blog']}"}
-                {
-                "" if not response["twitter_username"] 
-                   else f"• Twitter handle is https://twitter.com/{response['twitter_username']}"
-                }
                 """
             )
+
+            if response["location"] is not None:
+                description += f"\n• Located in {response['location']}"
+
+            if response["company"] is not None:
+                description += f"\n• Works at {response['company']}"
+
+            if response["blog"] != "" or response["twitter_username"] is not None:
+                description += "\n\n🔗 **Links:**"
+
+                if response["blog"] != "":
+                    description += f"\n• Has a site or blog at {response['blog']}"
+
+                if response["twitter_username"] is not None:
+                    description += f"\n• Twitter handle is https://twitter.com/{response['twitter_username']}"
 
             embed.title = f"{user} on Github"
             embed.url = response["html_url"]

@@ -8,11 +8,8 @@ from discord.ext import commands, menus
 
 class TTT_Game(menus.Menu):
     """Tic-tac-Toe menu."""
-
     emojis = [
-        ":black_large_square:",
-        ":o:",
-        ":x:",
+        ":black_large_square:", ":o:", ":x:",
     ]
 
     def __init__(
@@ -94,23 +91,23 @@ class TTT_Game(menus.Menu):
         """Make the computer move."""
         for row in range(3):
             if 0 in self.status[row]:
-                if self.status[row].count(2) == 2 or self.status[row].count(1) == 2:
+                if 2 in (self.status[row].count(2), self.status[row].count(1)):
                     return await self.action(row, self.status[row].index(0))
 
         for column_id in range(3):
             column = [self.status[row_id][column_id] for row_id in range(3)]
             if 0 in column:
-                if column.count(1) == 2 or column.count(2) == 2:
+                if 2 in (column.count(1), column.count(2)):
                     return await self.action(column.index(0), column_id)
 
         diag_1 = [self.status[place_id][place_id] for place_id in range(3)]
         if 0 in diag_1:
-            if diag_1.count(1) == 2 or diag_1.count(2) == 2:
+            if 2 in (diag_1.count(1), diag_1.count(2)):
                 return await self.action(diag_1.index(0), diag_1.index(0))
 
         diag_2 = [self.status[2 - place_id][place_id] for place_id in range(3)]
         if 0 in diag_2:
-            if diag_2.count(1) == 2 or diag_2.count(2) == 2:
+            if 2 in (diag_2.count(1), diag_2.count(2)):
                 return await self.action(2 - diag_2.index(0), diag_2.index(0))
 
         possible_moves = []

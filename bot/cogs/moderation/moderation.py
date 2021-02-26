@@ -43,7 +43,7 @@ class Moderation(Cog):
                 embed=discord.Embed(
                     description=dedent(
                         f"""
-                You cannot kick this member! 
+                You cannot kick this member!
                 
                 {member.mention} [**`{member.id}`**] isn't a member of this server. You can only kick members in this
                 server.

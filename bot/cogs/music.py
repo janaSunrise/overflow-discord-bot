@@ -51,7 +51,7 @@ class SongQueue(asyncio.Queue):
     def queue(self) -> list:
         return self._queue
 
-    def __iter__(self) -> t.AsyncIterator:
+    def __iter__(self) -> t.Iterator[t.Any]:
         return self._queue.__iter__()
 
     def __len__(self) -> int:
@@ -604,7 +604,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                     description=textwrap.dedent(
                         f"""
                     ```ini
-                    Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the 
+                    Added the playlist {tracks.data["playlistInfo"]["name"]} with {len(tracks.tracks)} songs to the
                     queue.
                     ```
                     """
