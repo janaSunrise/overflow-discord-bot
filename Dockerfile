@@ -7,8 +7,8 @@ ENV PIPENV_HIDE_EMOJIS=1 \
     PIPENV_NO_CACHE_DIR=false
 
 # Get the dependencies ready
-RUN apt-get -y update \
-    && apt-get install git -y \
+RUN apt-get -y --no-install-recommends update \
+    && apt-get install git --no-install-recommends -y \
     && rm -rf /root/.cache/pip/* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

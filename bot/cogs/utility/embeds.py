@@ -95,8 +95,8 @@ class Embeds(Cog):
             if extension not in clean_image_extension:
                 await ctx.send("❌ Invalid image extension to parse.")
                 return
-            else:
-                self.embeds[ctx.author.id].embed.set_image(url=attachment.url)
+
+            self.embeds[ctx.author.id].embed.set_image(url=attachment.url)
         else:
             await ctx.send(
                 "❌ Please supply an URL or upload an image to add to the embed."

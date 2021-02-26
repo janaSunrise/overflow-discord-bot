@@ -231,14 +231,17 @@ class EvalHelper:
         if domain == "hastebin.com":
             if "/raw/" in link:
                 return link
+
             token = link.split("/")[-1]
             if "." in token:
                 token = token[: token.rfind(".")]  # removes extension
+
             return f"{self.hastebin_link}/raw/{token}"
-        else:
-            if "/raw" in link:
-                return link
-            return link + "/raw"
+
+        if "/raw" in link:
+            return link
+
+        return link + "/raw"
 
 
 class FormatOutput:
