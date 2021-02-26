@@ -105,7 +105,9 @@ class Announcements(Cog):
             message = f"Hey {role.mention} {msg}"
 
         if not embed.footer:
-            embed.set_footer(text=f"By {ctx.author.name}", icon_url=ctx.author.avatar_url)
+            embed.set_footer(
+                text=f"By {ctx.author.name}", icon_url=ctx.author.avatar_url
+            )
 
         await channel.send(message, embed=embed)
 
