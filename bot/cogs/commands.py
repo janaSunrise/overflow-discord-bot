@@ -12,7 +12,7 @@ from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
 
 from bot import Bot, config
 from bot.core.converters import TimeConverter
-from bot.databases.prefix import Prefix as Prefix
+from bot.databases.prefix import Prefix
 from bot.utils.time import humanize_time
 
 
