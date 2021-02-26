@@ -5,15 +5,8 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (
-    Cog,
-    Context,
-    Greedy,
-    MemberConverter,
-    NoPrivateMessage,
-    command,
-    has_permissions,
-)
+from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
+                                  NoPrivateMessage, command, has_permissions)
 
 from bot import Bot
 from bot.core.converters import ModerationReason
@@ -113,7 +106,8 @@ class Moderation(Cog):
 
         message = await ctx.send(
             f"Hey {ctx.author.mention}!",
-            embed=discord.Embed(description=description, color=discord.Color.green()),
+            embed=discord.Embed(description=description,
+                                color=discord.Color.green()),
         )
         await asyncio.sleep(4)
         await message.delete()

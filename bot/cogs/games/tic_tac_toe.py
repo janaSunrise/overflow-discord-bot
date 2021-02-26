@@ -128,9 +128,11 @@ class TTT_Game(menus.Menu):
             all_checks.append(row)
         # columns
         for column_id in range(3):
-            all_checks.append([self.status[row_id][column_id] for row_id in range(3)])
+            all_checks.append([self.status[row_id][column_id]
+                               for row_id in range(3)])
         # diagonals
-        all_checks.append([self.status[place_id][place_id] for place_id in range(3)])
+        all_checks.append([self.status[place_id][place_id]
+                           for place_id in range(3)])
         all_checks.append(
             [self.status[2 - place_id][place_id] for place_id in range(3)]
         )

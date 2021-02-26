@@ -2,26 +2,14 @@ import textwrap
 import typing as t
 
 from discord import Color, Embed
-from discord.ext.commands import (
-    BotMissingPermissions,
-    BotMissingRole,
-    BucketType,
-    Cog,
-    CommandOnCooldown,
-    Context,
-    DisabledCommand,
-    ExpectedClosingQuoteError,
-    InvalidEndOfQuotedStringError,
-    MaxConcurrencyReached,
-    MissingPermissions,
-    MissingRole,
-    NoPrivateMessage,
-    NotOwner,
-    NSFWChannelRequired,
-    PrivateMessageOnly,
-    UnexpectedQuoteError,
-    errors,
-)
+from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
+                                  BucketType, Cog, CommandOnCooldown, Context,
+                                  DisabledCommand, ExpectedClosingQuoteError,
+                                  InvalidEndOfQuotedStringError,
+                                  MaxConcurrencyReached, MissingPermissions,
+                                  MissingRole, NoPrivateMessage, NotOwner,
+                                  NSFWChannelRequired, PrivateMessageOnly,
+                                  UnexpectedQuoteError, errors)
 from loguru import logger
 
 from bot import Bot
@@ -43,7 +31,8 @@ class ErrorHandler(Cog):
     ) -> None:
         """Utility method to send error embeds easily."""
         await ctx.send(
-            embed=Embed(title=title, description=description, color=Color.red())
+            embed=Embed(title=title, description=description,
+                        color=Color.red())
         )
 
     async def command_syntax_error(
@@ -53,7 +42,8 @@ class ErrorHandler(Cog):
         command = ctx.command
         parent = command.full_parent_name
 
-        command_name = str(command) if not parent else f"{parent} {command.name}"
+        command_name = str(
+            command) if not parent else f"{parent} {command.name}"
         command_syntax = f"```{command_name} {command.signature}```"
 
         aliases = [
