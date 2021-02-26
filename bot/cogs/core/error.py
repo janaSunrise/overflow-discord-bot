@@ -187,7 +187,7 @@ class ErrorHandler(Cog):
             f"`{ctx.command}`",
         }
 
-        error_message = error_messages.get(type(error), None)
+        error_message = error_messages.get(type(error))
         if error_message is not None:
             await self.error_embed(ctx, title="Error", description=error_message)
             return

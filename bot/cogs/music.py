@@ -78,7 +78,7 @@ class Player(wavelink.Player):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.context: commands.Context = kwargs.get("context", None)
+        self.context: commands.Context = kwargs.get("context")
         if self.context:
             self.dj: discord.Member = self.context.author
 
@@ -1099,7 +1099,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             "piano": wavelink.Equalizer.piano(),
         }
 
-        eq = eqs.get(equalizer.lower(), None)
+        eq = eqs.get(equalizer.lower())
 
         if not eq:
             joined = "\n".join(eqs.keys())
