@@ -20,7 +20,7 @@ def moderation_embed(
         f"""
     User: {user.mention} [`{user.id}`]
     Reason Specified: {reason}
-    
+
     Moderator: {ctx.author} [`{ctx.author.id}`]
     """
     )

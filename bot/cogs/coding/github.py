@@ -159,10 +159,10 @@ class Github(Cog):
 
                 • Has been starred {response["stargazers_count"]} times.
                 • Has been forked {response["forks_count"]} times.
-                
+
                 • Written in {response["language"]} among {languages} languages.
                 • Uses {response["license"]["name"]}.
-                
+
                 • Use this command to fork:
                 **`git clone {response["clone_url"]}`**
                 """

@@ -44,7 +44,7 @@ class Moderation(Cog):
                     description=dedent(
                         f"""
                 You cannot kick this member!
-                
+
                 {member.mention} [**`{member.id}`**] isn't a member of this server. You can only kick members in this
                 server.
                 """

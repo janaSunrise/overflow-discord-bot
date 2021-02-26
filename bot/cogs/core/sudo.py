@@ -166,7 +166,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 f"""
                 • CPU usage: **`{cpu_usage:.2f}%`**
                 • Memory usage: **`{memory_usage:.2f} MB`**
-                
+
                 • Physical memory: **`{humanize.naturalsize(mem.rss)}`**
                 • Virtual memory: **`{humanize.naturalsize(mem.vms)}`**
 
