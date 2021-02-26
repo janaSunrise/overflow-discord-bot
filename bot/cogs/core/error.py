@@ -1,3 +1,4 @@
+import json
 import textwrap
 import typing as t
 
@@ -195,7 +196,33 @@ class ErrorHandler(Cog):
         elif isinstance(error, errors.CommandInvokeError):
             error_cause = error.__cause__
 
-            if error_cause is not None:
+            if isinstance(error, json.JSONDecodeError):
+                msg = textwrap.dedent(
+                    f"""
+                    The JSON Couldn't be parsed.
+
+                    Error:
+                    ```
+                    {error_cause.msg}
+                    ```
+
+                    The error occurred on *`line {error_cause.lineno} column {error_cause.colno} 
+                    (char {error_cause.pos})`*
+                    """
+                )
+                if error_cause.lines:
+                    msg += textwrap.dedent(
+                        f"""
+                        ```
+                        {error_cause.lines[error_cause.lineno - 1]}
+                        {" " * (int(error_cause.colno) - 1)}^
+                        ```
+                        """
+                    )
+
+                await self.error_embed(ctx, description=msg)
+
+            elif error_cause is not None:
                 await self.error_embed(
                     ctx,
                     title="Unhandled Error",

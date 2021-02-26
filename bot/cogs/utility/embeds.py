@@ -1,5 +1,7 @@
+import json
 import typing as t
 from collections import defaultdict, namedtuple
+from datetime import datetime
 
 import discord
 from discord.ext.commands import (Cog, ColorConverter, Context,
@@ -8,6 +10,68 @@ from discord.ext.commands import (Cog, ColorConverter, Context,
 from bot import Bot
 
 EmbedInfo = namedtuple("EmbedInfo", ("message", "embed"))
+
+
+class JSONParser:
+    def __init__(self, ctx: Context, json_code: dict) -> None:
+        self.ctx = ctx
+        self.json = JSONParser.process_dict(json_code)
+
+    @staticmethod
+    def process_dict(json_dct: dict) -> dict:
+        try:
+            parsed_json = json_dct["embed"]
+        except KeyError:
+            parsed_json = json_dct
+
+        if "type" not in parsed_json:
+            parsed_json["type"] = "rich"
+
+        if "timestamp" in parsed_json:
+            parsed_json["timestamp"] = datetime.utcnow()
+
+        try:
+            content = json_dct["content"]
+        except KeyError:
+            content = ""
+
+        return {"content": content, "embed": parsed_json}
+
+    @staticmethod
+    def cleanup_code(content: str) -> str:
+        """Automatically removes code blocks from the code."""
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
+
+        return content.strip("` \n")
+
+    @staticmethod
+    async def parse_json(ctx: Context, json_code: str) -> dict:
+        try:
+            json_code = json.loads(JSONParser.cleanup_code(json_code))
+            return json_code
+        except json.JSONDecodeError as error:
+            error.lines = json_code.split("\n")
+            raise error
+
+    @classmethod
+    async def from_embed(cls, ctx: Context, embed: t.Optional[t.Union[EmbedInfo, discord.Embed]]):
+        if isinstance(embed, EmbedInfo):
+            return cls(
+                ctx,
+                {"message": embed.message, "embed": embed.embed.to_dict()}
+            )
+        return cls(ctx, embed.to_dict())
+
+    @classmethod
+    async def from_str(cls, ctx: Context, json_string: str):
+        return cls(ctx, await cls.parse_json(ctx, json_string))
+
+    def create_embed(self) -> EmbedInfo:
+        return EmbedInfo(self.json["content"], discord.Embed.from_dict(self.json["embed"]))
+
+    def get_json(self) -> str:
+        return json.dumps(self.json, indent=2)
 
 
 class Embeds(Cog):
@@ -35,10 +99,10 @@ class Embeds(Cog):
 
     @embed.command(name="import", aliases=["import-embed"])
     async def import_(self, ctx: Context, message: MessageConverter) -> None:
+        """Import the embed from a message."""
         self.embeds[ctx.author.id] = EmbedInfo(
             message.content if message.content is not None else "", message.embeds[0]
         )
-
         await ctx.send("✅ Successfully import the specified embed / message.")
 
     @embed.command()
@@ -152,3 +216,26 @@ class Embeds(Cog):
             name=embed.author.name, url=url, icon_url=embed.author.icon_url
         )
         await ctx.send("✅ Successfully set author's URL.")
+
+    @embed.group(name="json", invoke_without_command=True)
+    async def json_(self, ctx: Context) -> None:
+        """Commands for using JSON commands on the embed."""
+        await ctx.send_help(ctx.command)
+
+    @json_.command(name="import")
+    async def json_import_(self, ctx: Context, *, json_code: str) -> None:
+        embed_parser = await JSONParser.from_str(ctx, json_code)
+        self.embeds[ctx.author.id] = embed_parser.create_embed()
+        await ctx.send("Successfully imported the JSON into the embed.")
+
+    @json_.command(aliases=["export"])
+    async def dump(self, ctx: Context) -> None:
+        embed_parser = await JSONParser.from_embed(ctx, self.embeds[ctx.author.id])
+        await ctx.send(
+            "Here's your JSON!",
+            embed=discord.Embed(
+                title="JSON DUMP",
+                description=f"```json\n{embed_parser.get_json()}```",
+                color=discord.Color.green()
+            )
+        )
