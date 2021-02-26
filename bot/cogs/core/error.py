@@ -196,18 +196,18 @@ class ErrorHandler(Cog):
         elif isinstance(error, errors.CommandInvokeError):
             error_cause = error.__cause__
 
-            if isinstance(error, json.JSONDecodeError):
+            if isinstance(error_cause, json.JSONDecodeError):
                 msg = textwrap.dedent(
                     f"""
                     The JSON Couldn't be parsed.
 
-                    Error:
+                    **Error:**
                     ```
                     {error_cause.msg}
                     ```
 
-                    The error occurred on *`line {error_cause.lineno} column {error_cause.colno} 
-                    (char {error_cause.pos})`*
+                    The error occurred on **`line {error_cause.lineno} column {error_cause.colno} 
+                    (char {error_cause.pos})`**
                     """
                 )
                 if error_cause.lines:
