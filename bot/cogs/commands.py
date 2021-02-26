@@ -8,8 +8,16 @@ from datetime import datetime
 
 import discord
 from dateutil.relativedelta import relativedelta
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, group, has_permissions)
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    group,
+    has_permissions,
+)
 
 from bot import Bot, config
 from bot.core.converters import TimeConverter
@@ -108,29 +116,26 @@ class Commands(Cog):
         }
 
         if text is not None:
-            payload["files"] = [{
-                "name": "file.txt",
-                "content": {
-                    "format": "text",
-                    "value": text
-                }
-            }]
+            payload["files"] = [
+                {"name": "file.txt", "content": {"format": "text", "value": text}}
+            ]
         elif ctx.message.attachments:
             attachment = ctx.message.attachments[0]
             content = (await attachment.read()).decode("utf-8")
-            payload["files"] = [{
-                "name": attachment.filename,
-                "content": {
-                    "format": "text",
-                    "value": content
+            payload["files"] = [
+                {
+                    "name": attachment.filename,
+                    "content": {"format": "text", "value": content},
                 }
-            }]
+            ]
         else:
             await ctx.send(":x: Please specify text or upload an file.")
             return
 
         async with self.bot.session.post(
-            "https://api.paste.gg/v1/pastes", headers={"Content-Type": "application/json"}, data=json.dumps(payload)
+            "https://api.paste.gg/v1/pastes",
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(payload),
         ) as resp:
             key = (await resp.json())["result"]["id"]
             file_paste = "https://paste.gg/" + key
@@ -180,8 +185,7 @@ class Commands(Cog):
 
         embed = discord.Embed(color=discord.Color.blurple())
         embed.add_field(name="Original Link", value=link, inline=False)
-        embed.add_field(name="Shortened Link",
-                        value=shortened_link, inline=False)
+        embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
         await ctx.send(embed=embed)
 
     @command(aliases=("poll",))
@@ -238,8 +242,7 @@ class Commands(Cog):
                 break
             duration = relativedelta(final_time, datetime.utcnow())
 
-            embed.set_field_at(0, name="**Countdown**",
-                               value=humanize_time(duration))
+            embed.set_field_at(0, name="**Countdown**", value=humanize_time(duration))
             await message.edit(embed=embed)
 
             await asyncio.sleep(1)
