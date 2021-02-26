@@ -1,10 +1,12 @@
 import random
 
 import discord
+from discord.ext import tasks
 from discord.ext.commands import Cog, Context, command
 
 from bot import Bot, config
 
+from .blackjack import Blackjack, Blackjack_players
 from .connect4 import Connect4
 from .hangman import HangmanGame
 from .tic_tac_toe import TTT_Game
@@ -13,6 +15,47 @@ from .tic_tac_toe import TTT_Game
 class Games(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
+
+        self.blackjack_list = []
+        self.blackjack_updater.start()
+
+        self._in_game = {}
+        self._hit = {}
+
+    def cog_unload(self) -> None:
+        self.blackjack_updater.cancel()
+
+    @tasks.loop(seconds=5)
+    async def blackjack_updater(self) -> None:
+        new = []
+        for black in self.blackjack_list:
+            if black.current_state == 1:
+                await black.updater()
+            elif black.current_state == -1:
+                continue
+            new.append(black)
+        self.blackjack_list = new
+
+    @command(ignore_extra=True)
+    async def blackjack(self, ctx: Context, cost: int = 5) -> None:
+        """
+        Rules: if it's your turn, press the button corresponding to the column in which you want to place the card.
+        If you want to split (play on one more column, up to a max of 3, press :regional_indicator_3: ).  If you want to
+        stop, press :x:.
+        To win, you must score more than the dealer, but no more than 21 (each card's value is its pip value,
+        except for faces, which are worth 10 points, and the Ace, which is worth either 1 or 11).
+        An Ace plus a face is called a blackjack and beats a 21
+        """
+        if cost < 0:
+            await ctx.send("You can't bet negative money")
+
+        players, money_dict = await Blackjack_players(ctx.author, 100, cost, delete_message_after=True).prompt(ctx)
+
+        if not players:
+            await ctx.send("Nobody wants to play")
+            return
+
+        await Blackjack(players, money_dict, cost, clear_reactions_after=True).prompt(ctx)
 
     @command(aliases=["8ball"])
     async def ball8(self, ctx: Context, *, question: str) -> None:

@@ -1,3 +1,4 @@
+import asyncio
 import re
 import typing as t
 
@@ -67,3 +68,46 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
         embeds_list.append(embed)
 
     return embeds_list
+
+
+async def confirmation(
+    ctx,
+    description: str,
+    title: str,
+    color=discord.Color.blurple(),
+    footer: t.Optional[str] = None,
+):
+    emojis = {"✅": True, "❌": False}
+
+    embed = discord.Embed(
+        title=title, description=description, color=color)
+
+    if footer is not None:
+        embed.set_footer(text=footer)
+
+    message = await ctx.send(embed=embed)
+    user = ctx.author
+
+    for emoji in emojis:
+        await message.add_reaction(emoji)
+
+    try:
+        reaction, user = await self.wait_for(
+            "reaction_add",
+            check=lambda r, u: (r.message.id == message.id)
+            and (u.id == user.id)
+            and (r.emoji in emojis),
+            timeout=30,
+        )
+    except asyncio.TimeoutError:
+        confirmed = None
+        return
+    finally:
+        try:
+            await message.clear_reactions()
+            await message.delete()
+        except discord.Forbidden:
+            pass
+
+    confirmed = emojis[reaction.emoji]
+    return confirmed
