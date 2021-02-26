@@ -115,8 +115,7 @@ class HangmanGame:
                 color = Color.dark_red()
             guess_embed = Embed(description=description, color=color)
             await self.channel.send(embed=guess_embed, delete_after=5)
-        embed.set_footer(
-            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
+        embed.set_footer(text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)
         else:
