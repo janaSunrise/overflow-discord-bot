@@ -1,8 +1,6 @@
 from sqlalchemy import BigInteger, Column, Integer
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.databases import DatabaseBase, get_datatype_int, on_conflict
+from bot.databases import DatabaseBase
 
 
 class LinkLock(DatabaseBase):

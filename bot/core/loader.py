@@ -4,8 +4,6 @@ import pkgutil
 import types
 import typing as t
 
-from loguru import logger
-
 from bot import cogs, databases
 
 
