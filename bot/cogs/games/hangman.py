@@ -66,10 +66,9 @@ class HangmanGame:
                 return 1
             self.tries -= 1
             return 0
-        else:
-            if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
-                return False
-            return 2
+        if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
+            return False
+        return 2
 
     @property
     def display_word(self) -> str:
