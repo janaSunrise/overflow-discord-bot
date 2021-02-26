@@ -64,14 +64,12 @@ class HangmanGame:
 
             if guess in self.word:
                 return 1
-            else:
-                self.tries -= 1
-                return 0
+            self.tries -= 1
+            return 0
         else:
             if guess == f"{config.COMMAND_PREFIX}HANGEXIT":
                 return False
-            else:
-                return 2
+            return 2
 
     @property
     def display_word(self) -> str:
@@ -135,10 +133,9 @@ class HangmanGame:
         """
         if set(self.word).issubset(set(self.guesses)):
             return 1
-        elif self.tries <= 0:
+        if self.tries <= 0:
             return 2
-        else:
-            return 0
+        return 0
 
     async def play(self) -> None:
         """Start the main game loop."""

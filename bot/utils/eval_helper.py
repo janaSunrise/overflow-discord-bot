@@ -24,11 +24,10 @@ def _to_tio_string(couple: tuple) -> bytes:
     name, obj = couple
     if not obj:
         return b""
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         content = [f"V{name}", str(len(obj))] + obj
         return to_bytes("\x00".join(content) + "\x00")
-    else:
-        return to_bytes(f"F{name}\x00{len(to_bytes(obj))}\x00{obj}\x00")
+    return to_bytes(f"F{name}\x00{len(to_bytes(obj))}\x00{obj}\x00")
 
 
 class Tio:
@@ -182,7 +181,7 @@ class EvalHelper:
                 if response.status == 404:
                     await ctx.send("Nothing found. Check your link")
                     return
-                elif response.status != 200:
+                if response.status != 200:
                     await ctx.send(
                         f"An error occurred (status code: {response.status}). "
                         f"Retry later."
