@@ -5,7 +5,8 @@ import discord
 import sqlalchemy as alchemy
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, declared_attr
+from sqlalchemy.ext.declarative import (DeclarativeMeta, declarative_base,
+                                        declared_attr)
 from sqlalchemy.sql.base import ImmutableColumnCollection
 
 from bot.utils.utils import camel_to_snake
@@ -35,7 +36,8 @@ class CustomBase:
             return camel_to_snake(self.__name__)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key) for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key)
+                for key in self.__table__.columns.keys()}
         return data
 
 
