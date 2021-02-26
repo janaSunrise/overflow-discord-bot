@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 import textwrap
 import time
@@ -99,17 +100,44 @@ class Commands(Cog):
         await message.edit(embed=embed)
 
     @command()
-    async def paste(self, ctx: Context, *, text: str) -> None:
+    async def paste(self, ctx: Context, *, text: str = None) -> None:
         """Creates a Paste out of the text specified."""
+        payload = {
+            "name": "Overflow paste",
+            "description": "Paste generation using paste command",
+        }
+
+        if text is not None:
+            payload["files"] = [{
+                "name": "file.txt",
+                "content": {
+                    "format": "text",
+                    "value": text
+                }
+            }]
+        elif ctx.message.attachments:
+            attachment = ctx.message.attachments[0]
+            content = (await attachment.read()).decode("utf-8")
+            payload["files"] = [{
+                "name": attachment.filename,
+                "content": {
+                    "format": "text",
+                    "value": content
+                }
+            }]
+        else:
+            await ctx.send(":x: Please specify text or upload an file.")
+            return
+
         async with self.bot.session.post(
-            "https://hasteb.in/documents", data=self._clean_code(text)
+            "https://api.paste.gg/v1/pastes", headers={"Content-Type": "application/json"}, data=json.dumps(payload)
         ) as resp:
-            key = (await resp.json())["key"]
-            file_paste = "https://www.hasteb.in/" + key
+            key = (await resp.json())["result"]["id"]
+            file_paste = "https://paste.gg/" + key
 
             await ctx.send(
                 embed=discord.Embed(
-                    title="File pastes",
+                    title="File paste",
                     description=file_paste,
                     color=discord.Color.blue(),
                 )
