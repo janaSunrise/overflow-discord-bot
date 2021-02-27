@@ -63,6 +63,14 @@ This is a clean and neat way of hosting without using docker. You can follow thi
 well on your system, or it doesn't support it. Containers are resource intensive, and your PC might not
 be able to do it, this is the perfect method to get started with the self-hosting.
 
+#### Postgres
+
+You need a postgres database configured locally to run this bot.
+If you haven't done that yet, take a look at the official documentation from EDB[The company behind PG-SQL] 
+[here](https://www.postgresql.org/docs/13/tutorial-install.html)
+
+Once your done, create the databases and users accordingly, and configure it in `.env` as said in the future steps.
+
 - Clone or fork the repository, whichever suits you better.
 - Install `pipenv`, a virtual env for python. Command: **`pip install pipenv`**
 - Create the virtual environment and prepare it for usage using `pipenv update`
