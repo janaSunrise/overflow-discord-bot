@@ -1,7 +1,7 @@
 import discord
-from discord.ext.commands import Cog, Context, Greedy, RoleConverter, group, has_permissions
+from discord.ext.commands import (Cog, Context, RoleConverter, group,
+                                  has_permissions)
 
-from bot import Bot
 from bot.databases.autorole import AutoRoles
 
 
@@ -17,13 +17,13 @@ class Roles(Cog):
 
         if row is not None:
             roles = row["auto_roles"]
-            roles = '\n'.join([f"• <@&{x}>" for x in roles])
+            roles = "\n".join([f"• <@&{x}>" for x in roles])
 
             await ctx.send(
                 embed=discord.Embed(
                     title="Autorole settings",
                     description=f"Roles configured for autorole:\n{roles}",
-                    color=discord.Color.green()
+                    color=discord.Color.green(),
                 )
             )
         else:
