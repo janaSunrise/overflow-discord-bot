@@ -45,9 +45,10 @@ class AutoRoles(DatabaseBase):
         role = get_datatype_int(role)
 
         await on_conflict(
-            session, cls,
+            session,
+            cls,
             conflict_columns=["guild_id"],
-            values={"guild_id": guild_id, "auto_roles": role}
+            values={"guild_id": guild_id, "auto_roles": role},
         )
         await session.commit()
 
