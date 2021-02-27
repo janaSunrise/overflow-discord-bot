@@ -1,6 +1,7 @@
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage, TextChannelConverter, RoleConverter,
-                                  command, has_permissions)
+from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
+                                  RoleConverter, TextChannelConverter, command,
+                                  has_permissions)
 
 from bot import Bot
 

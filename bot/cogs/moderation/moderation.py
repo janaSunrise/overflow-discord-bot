@@ -5,8 +5,9 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, MemberConverter, RoleConverter,
-                                  NoPrivateMessage, command, has_permissions)
+from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
+                                  NoPrivateMessage, RoleConverter, command,
+                                  has_permissions)
 
 from bot import Bot
 from bot.core.converters import ModerationReason
