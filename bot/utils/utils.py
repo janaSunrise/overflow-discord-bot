@@ -88,7 +88,7 @@ async def confirmation(
         await message.add_reaction(emoji)
 
     try:
-        reaction, user = await self.wait_for(
+        reaction, user = await ctx.wait_for(
             "reaction_add",
             check=lambda r, u: (r.message.id == message.id)
             and (u.id == user.id)

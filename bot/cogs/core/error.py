@@ -206,7 +206,7 @@ class ErrorHandler(Cog):
                     {error_cause.msg}
                     ```
 
-                    The error occurred on **`line {error_cause.lineno} column {error_cause.colno} 
+                    The error occurred on **`line {error_cause.lineno} column {error_cause.colno}
                     (char {error_cause.pos})`**
                     """
                 )

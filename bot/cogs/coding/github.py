@@ -118,12 +118,9 @@ class Github(Cog):
     @cooldown(1, 5, type=BucketType.user)
     async def repo(self, ctx: Context, user: str, repo: str) -> None:
         """Show info about a given GitHub repository."""
-        URL = f"https://api.github.com/repos/{user}/{repo}"
-
         embed = Embed(color=Color.blue())
 
         # Fetching the data
-
         async with await self.bot.session.get(
             f"https://api.github.com/repos/{user}/{repo}"
         ) as resp:

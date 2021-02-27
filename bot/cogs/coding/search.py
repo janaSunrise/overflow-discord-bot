@@ -47,9 +47,8 @@ class Search(Cog):
         self, query: str, is_nsfw: bool = False, category: str = "web", count: int = 5
     ) -> list:
         """Use scrapestack and the Qwant API to find search results."""
-        if not is_nsfw:
-            if filter_words.search(query):
-                raise SafesearchFail("Query had NSFW.")
+        if not is_nsfw and filter_words.search(query):
+            raise SafesearchFail("Query had NSFW.")
 
         base = "https://api.qwant.com/api"
 
