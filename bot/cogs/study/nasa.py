@@ -113,8 +113,8 @@ class Nasa(Cog):
         else:
             await ctx.send("No results Found!")
 
-    @command()
-    async def epic(self, ctx: Context, max: int = 1) -> None:
+    @command(name="epic")
+    async def epic_(self, ctx: Context, max: int = 1) -> None:
         """
         Get images from DISCOVR's Earth Polychromatic Imaging Camera.
         Can specify a maximum number of images to retrieve.

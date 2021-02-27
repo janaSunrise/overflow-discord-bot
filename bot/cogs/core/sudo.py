@@ -265,5 +265,5 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 if value:
                     await ctx.send(f"```py\n{value}\n```")
                 else:
-                    self._last_result = ret
+                    self._last_eval_result = ret
                     await ctx.send(f"```py\n{value}{ret}\n```")

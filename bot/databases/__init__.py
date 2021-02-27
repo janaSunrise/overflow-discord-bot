@@ -51,10 +51,6 @@ if t.TYPE_CHECKING:
         metadata: alchemy.MetaData
         columns: ImmutableColumnCollection
 
-        def __init__(self, **kwargs: t.Any) -> None:
-            pass
-
-
 else:
     Base = _Base
 
