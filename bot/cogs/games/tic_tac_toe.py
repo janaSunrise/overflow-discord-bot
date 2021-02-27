@@ -93,8 +93,11 @@ class TTT_Game(menus.Menu):
     async def cpu_move(self) -> None:
         """Make the computer move."""
         for row in range(3):
-            if 0 in self.status[row] and 2 in (self.status[row].count(2), self.status[row].count(1)):
-                    return await self.action(row, self.status[row].index(0))
+            if 0 in self.status[row] and 2 in (
+                self.status[row].count(2),
+                self.status[row].count(1),
+            ):
+                return await self.action(row, self.status[row].index(0))
 
         for column_id in range(3):
             column = [self.status[row_id][column_id] for row_id in range(3)]
