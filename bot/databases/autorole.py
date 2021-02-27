@@ -41,14 +41,13 @@ class AutoRoles(DatabaseBase):
         guild: t.Union[str, int, discord.Guild],
         role: t.Union[str, int, discord.Role],
     ) -> None:
-        guild = get_datatype_int(guild)
+        guild_id = get_datatype_int(guild_id)
         role = get_datatype_int(role)
 
         await on_conflict(
-            session,
-            cls,
-            conflict_columns=["guild"],
-            values={"guild": guild, "auto_roles": role},
+            session, cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "auto_roles": role}
         )
         await session.commit()
 
