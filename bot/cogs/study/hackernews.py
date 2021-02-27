@@ -4,7 +4,7 @@ from textwrap import dedent
 
 import discord
 from discord.ext import tasks
-from discord.ext.commands import Cog, Context, group
+from discord.ext.commands import Cog, Context, TextChannelConverter, group
 
 from bot import Bot
 from bot.databases.hackernews_feed import HackernewsFeed
@@ -106,7 +106,7 @@ class HackerNews(Cog):
 
     @hackernews.command(manage_channels=True)
     async def subscribe(
-        self, ctx: Context, channel: t.Optional[discord.TextChannel] = None
+        self, ctx: Context, channel: t.Optional[TextChannelConverter] = None
     ) -> None:
         """Subscribe to the scheduled hacker news feed."""
         if not channel:

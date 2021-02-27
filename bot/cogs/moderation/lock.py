@@ -1,5 +1,5 @@
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
+from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage, TextChannelConverter, RoleConverter,
                                   command, has_permissions)
 
 from bot import Bot
@@ -20,8 +20,8 @@ class Lock(Cog):
     async def lock(
         self,
         ctx: Context,
-        channels: Greedy[discord.TextChannel] = None,
-        override_roles: Greedy[discord.Role] = None,
+        channels: Greedy[TextChannelConverter] = None,
+        override_roles: Greedy[RoleConverter] = None,
     ) -> None:
         """
         Lock a channel to stop people from talking and make the server under maintenance.
@@ -46,7 +46,6 @@ class Lock(Cog):
 
         if override_roles is not None:
             for role in override_roles:
-                role = discord.utils.get(guild.roles, id=role.id)
                 overwrites[role] = discord.PermissionOverwrite(
                     send_messages=True,
                 )
@@ -71,8 +70,8 @@ class Lock(Cog):
     async def unlock(
         self,
         ctx: Context,
-        channels: Greedy[discord.TextChannel] = None,
-        override_roles: Greedy[discord.Role] = None,
+        channels: Greedy[TextChannelConverter] = None,
+        override_roles: Greedy[RoleConverter] = None,
     ) -> None:
         """
         Unlock a locked channel to continue traffic.
@@ -97,7 +96,6 @@ class Lock(Cog):
 
         if override_roles is not None:
             for role in override_roles:
-                role = discord.utils.get(guild.roles, id=role.id)
                 overwrites[role] = discord.PermissionOverwrite(
                     send_messages=False,
                 )
@@ -123,14 +121,14 @@ class Lock(Cog):
         self,
         ctx: Context,
         duration: int = 0,
-        channels: Greedy[discord.TextChannel] = None,
+        channels: Greedy[TextChannelConverter] = None,
     ) -> None:
         """
         Set slowmode in 1 or more channel.
 
         Specify the duration for slowmode, or just execute the command without adding anything to remove the slowmode.
         """
-        if not 0 <= duration <= 21600:
+        if not 0 <= duration <= 60 * 60 * 6:
             await ctx.send(
                 embed=discord.Embed(
                     description=":x: The duration specified is out of bounds. Minimum 0 to remove slowmode "

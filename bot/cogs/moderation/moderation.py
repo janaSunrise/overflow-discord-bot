@@ -5,7 +5,7 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
+from discord.ext.commands import (Cog, Context, Greedy, MemberConverter, RoleConverter,
                                   NoPrivateMessage, command, has_permissions)
 
 from bot import Bot
@@ -84,7 +84,7 @@ class Moderation(Cog):
     @command()
     @has_permissions(manage_messages=True)
     async def clear(
-        self, ctx: Context, amount: int, member: discord.Member = None
+        self, ctx: Context, amount: int, member: MemberConverter = None
     ) -> None:
         """Clear messages from a specific channel. Specify a member to clear his messages only."""
         if not member:
@@ -117,7 +117,7 @@ class Moderation(Cog):
     async def dm(
         self,
         ctx: Context,
-        members: Greedy[t.Union[discord.Member, discord.Role]],
+        members: Greedy[t.Union[MemberConverter, RoleConverter]],
         *,
         text: str = None,
     ) -> None:

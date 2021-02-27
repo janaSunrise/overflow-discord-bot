@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from discord.ext.commands import Cog, Context, group, has_permissions
+from discord.ext.commands import TextChannelConverter, Cog, Context, RoleConverter, group, has_permissions
 
 from bot import Bot
 from bot.databases.announcements import Announcements as AnnouncementDB
@@ -23,30 +23,21 @@ class Announcements(Cog):
 
     @announcement.command()
     @has_permissions(manage_roles=True)
-    async def role(self, ctx: Context, role: discord.Role) -> None:
+    async def role(self, ctx: Context, role: RoleConverter) -> None:
         """Setup the announcement role."""
-        if isinstance(role, discord.Role):
-            role = role.id
-
         await AnnouncementDB.set_announcement_role(
-            self.bot.database, ctx.guild.id, role
+            self.bot.database, ctx.guild.id, role.id
         )
 
-        role = ctx.guild.get_role(role)
         await ctx.send(f"The role has been successfully set to {role.mention}")
 
     @announcement.command()
     @has_permissions(manage_channels=True)
-    async def channel(self, ctx: Context, channel: discord.TextChannel) -> None:
+    async def channel(self, ctx: Context, channel: TextChannelConverter) -> None:
         """Setup the announcement channel."""
-        if isinstance(channel, discord.TextChannel):
-            channel = channel.id
-
         await AnnouncementDB.set_announcement_channel(
-            self.bot.database, ctx.guild.id, channel
+            self.bot.database, ctx.guild.id, channel.id
         )
-
-        channel = ctx.guild.get_channel(channel)
 
         await ctx.send(f"The channel has been successfully set to {channel.mention}")
 
