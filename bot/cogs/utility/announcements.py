@@ -1,7 +1,8 @@
 import typing as t
 
 import discord
-from discord.ext.commands import TextChannelConverter, Cog, Context, RoleConverter, group, has_permissions
+from discord.ext.commands import (Cog, Context, RoleConverter,
+                                  TextChannelConverter, group, has_permissions)
 
 from bot import Bot
 from bot.databases.announcements import Announcements as AnnouncementDB
