@@ -6,7 +6,7 @@ from bot.databases.autorole import AutoRoles
 
 
 class Roles(Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
     @group(invoke_without_command=True)
@@ -47,3 +47,22 @@ class Roles(Cog):
             await ctx.send(f"{role.mention} will be now auto assigned.")
         else:
             await ctx.send("Role already in the autorole list.")
+
+    @autorole.command()
+    async def remove(self, ctx: Context, role: RoleConverter = None) -> None:
+        """Add a remove to the autorole list."""
+        if not role:
+            await ctx.send(":x: Specify a role to be removed from the autorole list.")
+
+        row = await AutoRoles.get_roles(self.bot.database, ctx.guild.id)
+
+        roles = []
+        if row is not None:
+            roles += row["auto_roles"]
+
+        if role.id in roles:
+            roles.remove(role.id)
+            await AutoRoles.set_role(self.bot.database, ctx.guild.id, roles)
+            await ctx.send(f"{role.mention} will not be auto assigned anymore.")
+        else:
+            await ctx.send("Role is not in the autorole list.")
