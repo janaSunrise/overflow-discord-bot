@@ -39,7 +39,7 @@ class AutoRoles(DatabaseBase):
         cls,
         session: AsyncSession,
         guild_id: t.Union[str, int, discord.Guild],
-        role: t.List[t.Union[str, int, discord.Role]],
+        role: t.Union[str, int, discord.Role],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
         role = get_datatype_int(role)
