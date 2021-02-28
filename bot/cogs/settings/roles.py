@@ -1,3 +1,5 @@
+import textwrap
+
 import discord
 from discord.ext.commands import (Cog, Context, RoleConverter, group,
                                   has_permissions)
@@ -10,6 +12,63 @@ from bot.databases.autorole import AutoRoles
 class Roles(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @group(invoke_without_command=True, aliases=["role-config", "role-conf", "role-cfg"])
+    @has_permissions(manage_roles=True)
+    async def role_config(self, ctx: Context) -> None:
+        """Role configuration settings for a guild."""
+        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
+
+        if row is not None:
+            mute_role = ctx.guild.get_role(row["mute_role"])
+            default_role = ctx.guild.get_role(row["default_role"])
+
+            mod_role = "\n".join([f"• <@&{x}>" for x in row["mod_role"]])
+
+            await ctx.send(
+                embed=discord.Embed(
+                    title="Role settings configuration",
+                    description=textwrap.dedent(
+                        f"""
+                        ❯ **Moderator roles:**
+                        {mod_role}
+                        
+                        ❯ Mute role: {mute_role.mention}
+                        ❯ Default role: {default_role.mention}
+                        """
+                    ),
+                    color=discord.Color.blue()
+                )
+            )
+        else:
+            await ctx.send("No role configuration is added for this guild.")
+
+    @role_config.command()
+    async def default(self, ctx: Context, role: RoleConverter = None) -> None:
+        """Configure the default role for this server. If left empty, `@everyone` is configured as the default role."""
+        if not role:
+            role = ctx.guild.default_role
+
+        await RolesDB.set_role(self.bot.database, "default_role", ctx.guild, role.id)
+        await ctx.send("Successfully configured the default role.")
+
+    @role_config.command()
+    async def mute(self, ctx: Context, role: RoleConverter = None) -> None:
+        """Configure the muted role for the server."""
+        if not role:
+            await ctx.send(":x: Specify a role to configured as the mute role.")
+
+        await RolesDB.set_role(self.bot.database, "mute_role", ctx.guild, role.id)
+        await ctx.send("Successfully configured the mute role.")
+
+    @role_config.command(aliases=["mod", "staff"])
+    async def moderator(self, ctx: Context, role: RoleConverter = None) -> None:
+        """Configure the muted role for the server."""
+        if not role:
+            await ctx.send(":x: Specify a role to configured as the moderator role.")
+
+        await RolesDB.set_role(self.bot.database, "mod_role", ctx.guild, [role.id])
+        await ctx.send("Successfully configured the moderator role.")
 
     @group(invoke_without_command=True)
     @has_permissions(manage_roles=True)
