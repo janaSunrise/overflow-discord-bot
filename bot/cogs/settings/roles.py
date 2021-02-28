@@ -1,19 +1,20 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, RoleConverter, group,
-                                  has_permissions)
+from discord.ext.commands import Cog, Context, RoleConverter, group, has_permissions
 
 from bot import Bot
-from bot.databases.roles import Roles as RolesDB
 from bot.databases.autorole import AutoRoles
+from bot.databases.roles import Roles as RolesDB
 
 
 class Roles(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    @group(invoke_without_command=True, aliases=["role-config", "role-conf", "role-cfg"])
+    @group(
+        invoke_without_command=True, aliases=["role-config", "role-conf", "role-cfg"]
+    )
     @has_permissions(manage_roles=True)
     async def role_config(self, ctx: Context) -> None:
         """Role configuration settings for a guild."""
@@ -37,7 +38,7 @@ class Roles(Cog):
                         ❯ Default role: {default_role.mention}
                         """
                     ),
-                    color=discord.Color.blue()
+                    color=discord.Color.blue(),
                 )
             )
         else:
