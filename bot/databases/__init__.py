@@ -51,6 +51,7 @@ if t.TYPE_CHECKING:
         metadata: alchemy.MetaData
         columns: ImmutableColumnCollection
 
+
 else:
     Base = _Base
 
