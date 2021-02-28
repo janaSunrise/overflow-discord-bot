@@ -42,7 +42,7 @@ class Roles(DatabaseBase):
         session: AsyncSession,
         role_type: str,
         guild_id: t.Union[str, int, discord.Guild],
-        role: t.Union[str, int, discord.Role],
+        role: t.Union[str, int, discord.Role, t.List[discord.Role]],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
         role = get_datatype_int(role)

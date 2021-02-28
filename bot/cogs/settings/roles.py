@@ -3,6 +3,7 @@ from discord.ext.commands import (Cog, Context, RoleConverter, group,
                                   has_permissions)
 
 from bot import Bot
+from bot.databases.roles import Roles as RolesDB
 from bot.databases.autorole import AutoRoles
 
 
@@ -16,7 +17,7 @@ class Roles(Cog):
         """Configuration settings for autorole."""
         row = await AutoRoles.get_roles(self.bot.database, ctx.guild.id)
 
-        if row is not None:
+        if row is not None and row["auto_roles"] != []:
             roles = row["auto_roles"]
             roles = "\n".join([f"• <@&{x}>" for x in roles])
 
@@ -67,3 +68,9 @@ class Roles(Cog):
             await ctx.send(f"{role.mention} will not be auto assigned anymore.")
         else:
             await ctx.send("Role is not in the autorole list.")
+
+    @autorole.command()
+    async def clear(self, ctx: Context, role: RoleConverter = None) -> None:
+        """Remove all the autoroles configured."""
+        await AutoRoles.set_role(self.bot.database, ctx.guild.id, [])
+        await ctx.send(f"Autoroles list cleared.")
