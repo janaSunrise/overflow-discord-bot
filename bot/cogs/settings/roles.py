@@ -82,7 +82,7 @@ class Roles(Cog):
 
             await ctx.send(
                 embed=discord.Embed(
-                    title="Autorole settings",
+                    title="Autorole configuration settings",
                     description=f"Roles configured for autorole:\n{roles}",
                     color=discord.Color.green(),
                 )
