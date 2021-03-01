@@ -1,3 +1,4 @@
+import difflib
 import textwrap
 import typing as t
 from collections import namedtuple
@@ -147,6 +148,16 @@ class HelpCommand(BaseHelpCommand):
             command_attrs={
                 "help": "Shows help for given command / all commands"}
         )
+
+    def command_not_found(self, string):
+        ctx = self.context
+        output = f"No command called `{string}` found."
+
+        close_matches = difflib.get_close_matches(string, ctx.bot.all_commands.keys(), n=1)
+        if close_matches:
+            output += f"\nDid you mean `{close_matches[0]}`?"
+
+        return output
 
     async def _describe_command(self, command: Command) -> t.Tuple[str, str, str, str]:
         """
