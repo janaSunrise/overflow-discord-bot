@@ -24,6 +24,9 @@ class Roles(Cog):
             mute_role = ctx.guild.get_role(row["mute_role"])
             default_role = ctx.guild.get_role(row["default_role"])
 
+            if not default_role:
+                await RolesDB.set_role(self.bot.database, "default_role", ctx.guild, ctx.guild.default_role.id)
+
             mod_role = "\n".join([f"• <@&{x}>" for x in row["mod_role"]])
 
             await ctx.send(

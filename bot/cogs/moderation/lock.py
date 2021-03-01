@@ -4,6 +4,7 @@ from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
                                   has_permissions)
 
 from bot import Bot
+from bot.databases.roles import Roles as RolesDB
 
 
 class Lock(Cog):
@@ -29,13 +30,19 @@ class Lock(Cog):
 
         Specify the override roles so that the specified roles can talk.
         """
+        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
+        if row is not None and row["default_role"] is not None:
+            default_role = ctx.guild.get_role(row["default_role"])
+        else:
+            default_role = ctx.guild.default_role
+
         guild = ctx.guild
 
         if not channels:
             channels = [ctx.channel]
 
         overwrites = {
-            guild.default_role: discord.PermissionOverwrite(send_messages=False),
+            default_role: discord.PermissionOverwrite(send_messages=False),
             guild.me: discord.PermissionOverwrite(
                 read_messages=True,
                 send_messages=True,
@@ -79,13 +86,19 @@ class Lock(Cog):
 
         Specify the override roles so that the specified roles cannot talk.
         """
+        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
+        if row is not None and row["default_role"] is not None:
+            default_role = ctx.guild.get_role(row["default_role"])
+        else:
+            default_role = ctx.guild.default_role
+
         guild = ctx.guild
 
         if not channels:
             channels = [ctx.channel]
 
         overwrites = {
-            guild.default_role: discord.PermissionOverwrite(send_messages=True),
+            default_role: discord.PermissionOverwrite(send_messages=True),
             guild.me: discord.PermissionOverwrite(
                 read_messages=True,
                 send_messages=True,
@@ -113,7 +126,7 @@ class Lock(Cog):
 
         if channels != [ctx.channel]:
             await ctx.send(
-                f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}."
+                f"Unlocked {channel_count} channel{'s' if channel_count > 1 else ''}."
             )
 
     @command()
