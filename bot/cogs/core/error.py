@@ -2,6 +2,7 @@ import json
 import textwrap
 import typing as t
 
+import discord
 from discord import Color, Embed
 from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
                                   BucketType, Cog, CommandOnCooldown, Context,
@@ -10,7 +11,7 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
                                   MaxConcurrencyReached, MissingPermissions,
                                   MissingRole, NoPrivateMessage, NotOwner,
                                   NSFWChannelRequired, PrivateMessageOnly,
-                                  UnexpectedQuoteError, errors)
+                                  UnexpectedQuoteError, errors, menus)
 from loguru import logger
 
 from bot import Bot
@@ -168,6 +169,21 @@ class ErrorHandler(Cog):
             )
             return
 
+        elif isinstance(error, errors.NotPermitted):
+            await self.error_embed(ctx, f"❌ You don't have permission to use that command here")
+            return
+
+        if isinstance(error, errors.PermittedVoiceNotConnected):
+            await self.error_embed(ctx, f"I'm not in a voice channel.Please use `{ctx.prefix}join` first")
+            return
+
+        if isinstance(error, errors.NotPermittedVoiceNotConnected):
+            await self.error_embed(
+                ctx,
+                f"I'm not in a voice channel.Please ask someone with permission to use `{ctx.prefix}join` first"
+            )
+            return
+
         elif isinstance(error, errors.CheckFailure):
             if isinstance(error, NotOwner):
                 msg = "❌ This command is only for the bot owners."
@@ -221,6 +237,39 @@ class ErrorHandler(Cog):
                     )
 
                 await self.error_embed(ctx, description=msg)
+
+            elif isinstance(error.original, discord.HTTPException) and error.original.code == 50034:
+                await self.error_embed(
+                    ctx,
+                    f"❌ You can only bulk delete messages that are under 14 days old"
+                )
+                return
+
+            elif isinstance(error.original, menus.CannotEmbedLinks):
+                await self.error_embed(
+                    ctx,
+                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links."
+                )
+                return
+
+            elif isinstance(error.original, menus.CannotAddReactions):
+                await ctx.embed_reply(
+                    "I need to be able to add reactions to show menus. Please give me permission to Add Reactions"
+                )
+                return
+
+            elif isinstance(error.original, menus.CannotReadMessageHistory):
+                await self.error_embed(
+                    "I need to be able to read message history to show menus. Please give me permission to Read "
+                    "Message History"
+                )
+                return
+
+            elif isinstance(error.original, (discord.Forbidden, menus.CannotSendMessages)):
+                logger.warning(
+                    f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
+                )
+                return
 
             elif error_cause is not None:
                 await self.error_embed(
