@@ -1,4 +1,5 @@
 import base64
+import difflib
 import hashlib
 import textwrap
 
@@ -82,12 +83,10 @@ class Conversion(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            matches = "\n".join(
-                [supported for supported in self.hash_algos if algo in supported][:10]
-            )
-            message = f"`{algorithm}` not available."
-            if matches:
-                message += f" Did you mean:\n{matches}"
+            close_matches = difflib.get_close_matches(algo, self.hash_algos, n=1)
+            message = f"`{algo}` not available."
+            if close_matches:
+                message += f"\nDid you mean `{close_matches[0]}`?"
             await ctx.send(message)
             return
 
