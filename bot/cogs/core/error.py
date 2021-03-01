@@ -4,14 +4,27 @@ import typing as t
 
 import discord
 from discord import Color, Embed
-from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
-                                  BucketType, Cog, CommandOnCooldown, Context,
-                                  DisabledCommand, ExpectedClosingQuoteError,
-                                  InvalidEndOfQuotedStringError,
-                                  MaxConcurrencyReached, MissingPermissions,
-                                  MissingRole, NoPrivateMessage, NotOwner,
-                                  NSFWChannelRequired, PrivateMessageOnly,
-                                  UnexpectedQuoteError, errors, menus)
+from discord.ext import menus
+from discord.ext.commands import (
+    BotMissingPermissions,
+    BotMissingRole,
+    BucketType,
+    Cog,
+    CommandOnCooldown,
+    Context,
+    DisabledCommand,
+    ExpectedClosingQuoteError,
+    InvalidEndOfQuotedStringError,
+    MaxConcurrencyReached,
+    MissingPermissions,
+    MissingRole,
+    NoPrivateMessage,
+    NotOwner,
+    NSFWChannelRequired,
+    PrivateMessageOnly,
+    UnexpectedQuoteError,
+    errors,
+)
 from loguru import logger
 
 from bot import Bot
