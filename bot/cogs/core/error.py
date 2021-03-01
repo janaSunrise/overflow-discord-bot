@@ -180,25 +180,6 @@ class ErrorHandler(Cog):
             )
             return
 
-        elif isinstance(error, errors.NotPermitted):
-            await self.error_embed(
-                ctx, f"❌ You don't have permission to use that command here"
-            )
-            return
-
-        if isinstance(error, errors.PermittedVoiceNotConnected):
-            await self.error_embed(
-                ctx, f"I'm not in a voice channel.Please use `{ctx.prefix}join` first"
-            )
-            return
-
-        if isinstance(error, errors.NotPermittedVoiceNotConnected):
-            await self.error_embed(
-                ctx,
-                f"I'm not in a voice channel.Please ask someone with permission to use `{ctx.prefix}join` first",
-            )
-            return
-
         elif isinstance(error, errors.CheckFailure):
             if isinstance(error, NotOwner):
                 msg = "❌ This command is only for the bot owners."
