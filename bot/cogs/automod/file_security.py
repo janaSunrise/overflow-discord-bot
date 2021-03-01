@@ -9,7 +9,7 @@ from loguru import logger
 
 from bot import Bot
 
-FILE_EMBED_DESCRIPTION = f"""
+FILE_EMBED_DESCRIPTION = """
     Woops, your message got zapped by our spam filter.
     We currently don't allow binary / unknown attachments or any source files, so here are some tips you can use:
 

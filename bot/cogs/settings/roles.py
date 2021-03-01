@@ -142,4 +142,4 @@ class Roles(Cog):
     async def clear(self, ctx: Context, role: RoleConverter = None) -> None:
         """Remove all the autoroles configured."""
         await AutoRoles.set_role(self.bot.database, ctx.guild.id, [])
-        await ctx.send(f"Autoroles list cleared.")
+        await ctx.send("Autoroles list cleared.")
