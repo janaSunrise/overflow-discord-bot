@@ -4,6 +4,7 @@ import typing as t
 
 import discord
 from discord import Color, Embed
+from discord.ext import menus
 from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
                                   BucketType, Cog, CommandOnCooldown, Context,
                                   DisabledCommand, ExpectedClosingQuoteError,
@@ -12,7 +13,6 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
                                   MissingRole, NoPrivateMessage, NotOwner,
                                   NSFWChannelRequired, PrivateMessageOnly,
                                   UnexpectedQuoteError, errors)
-from discord.ext import menus
 from loguru import logger
 
 from bot import Bot
@@ -224,17 +224,20 @@ class ErrorHandler(Cog):
 
                 await self.error_embed(ctx, description=msg)
 
-            elif isinstance(error.original, discord.HTTPException) and error.original.code == 50034:
+            elif (
+                isinstance(error.original, discord.HTTPException)
+                and error.original.code == 50034
+            ):
                 await self.error_embed(
                     ctx,
-                    f"❌ You can only bulk delete messages that are under 14 days old"
+                    f"❌ You can only bulk delete messages that are under 14 days old",
                 )
                 return
 
             elif isinstance(error.original, menus.CannotEmbedLinks):
                 await self.error_embed(
                     ctx,
-                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links."
+                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links.",
                 )
                 return
 
@@ -251,7 +254,9 @@ class ErrorHandler(Cog):
                 )
                 return
 
-            elif isinstance(error.original, (discord.Forbidden, menus.CannotSendMessages)):
+            elif isinstance(
+                error.original, (discord.Forbidden, menus.CannotSendMessages)
+            ):
                 logger.warning(
                     f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
                 )

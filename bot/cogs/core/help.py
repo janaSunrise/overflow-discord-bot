@@ -153,7 +153,9 @@ class HelpCommand(BaseHelpCommand):
         ctx = self.context
         output = f"No command called `{string}` found."
 
-        close_matches = difflib.get_close_matches(string, ctx.bot.all_commands.keys(), n=1)
+        close_matches = difflib.get_close_matches(
+            string, ctx.bot.all_commands.keys(), n=1
+        )
         if close_matches:
             output += f"\nDid you mean `{close_matches[0]}`?"
 
