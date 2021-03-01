@@ -230,7 +230,7 @@ class ErrorHandler(Cog):
             ):
                 await self.error_embed(
                     ctx,
-                    f"❌ You can only bulk delete messages that are under 14 days old",
+                    "❌ You can only bulk delete messages that are under 14 days old",
                 )
                 return
 
