@@ -17,8 +17,7 @@ from discord.ext import commands, menus
 from loguru import logger
 
 from bot import config
-from bot.utils.errors import (IncorrectChannelError, InvalidRepeatMode,
-                              NoChannelProvided)
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot.utils.spotify_parse import SpotifyTrack, play
 from bot.utils.utils import format_time, progress_bar
 
@@ -124,8 +123,7 @@ class Player(wavelink.Player):
                 return await self.do_next()
 
             yt_track = results[0]
-            track = Track(yt_track.id, yt_track.info,
-                          requester=track.requester)
+            track = Track(yt_track.id, yt_track.info, requester=track.requester)
 
         await self.play(track)
         self.waiting = False
@@ -402,10 +400,13 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        player: Player = self.bot.wavelink.get_player(
-            member.guild.id, cls=Player)
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
 
-        if not member.bot and after.channel is None and not [m for m in before.channel.members if not m.bot]:
+        if (
+            not member.bot
+            and after.channel is None
+            and not [m for m in before.channel.members if not m.bot]
+        ):
             await player.teardown()
 
     @wavelink.WavelinkMixin.listener()
@@ -428,8 +429,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if member.bot:
             return
 
-        player: Player = self.bot.wavelink.get_player(
-            member.guild.id, cls=Player)
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
 
         if not player.channel_id or not player.context:
             player.node.players.pop(member.guild.id)
@@ -474,8 +474,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise IncorrectChannelError
 
         if (
-            ctx.command.name in ["connect", "play",
-                                 "equalizer", "volume", "repeat"]
+            ctx.command.name in ["connect", "play", "equalizer", "volume", "repeat"]
             and not player.context
         ):
             return
@@ -490,13 +489,13 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             return
 
         if player.is_connected and ctx.author not in channel.members:
-                await ctx.send(
-                    embed=discord.Embed(
-                        description=f"{ctx.author.mention}, you must be in `{channel.name}` to use voice commands.",
-                        color=discord.Color.red(),
-                    )
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"{ctx.author.mention}, you must be in `{channel.name}` to use voice commands.",
+                    color=discord.Color.red(),
                 )
-                raise IncorrectChannelError
+            )
+            raise IncorrectChannelError
 
     def required(self, ctx: commands.Context):
         """Method which returns required votes based on amount of members in a channel."""
@@ -506,7 +505,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         channel = self.bot.get_channel(int(player.channel_id))
         required = math.ceil((len(channel.members) - 1) / 2.5)
 
-        if ctx.command.name in ["stop", "skip"] and len(channel.members) == 3:  # TODO: Add more commands.
+        if (
+            ctx.command.name in ["stop", "skip"] and len(channel.members) == 3
+        ):  # TODO: Add more commands.
             required = 2
         return required
 
