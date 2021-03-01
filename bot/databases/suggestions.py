@@ -1,7 +1,7 @@
 import typing as t
 
 from discord import Guild
-from sqlalchemy import Boolean, BigInteger, Column, Integer, String
+from sqlalchemy import BigInteger, Boolean, Column, Integer, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.databases import DatabaseBase, get_datatype_int
@@ -10,8 +10,7 @@ from bot.databases import DatabaseBase, get_datatype_int
 class SuggestionID(DatabaseBase):
     __tablename__ = "suggestion_id"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     next_id = Column(Integer, default=0)
 
     @classmethod
@@ -21,8 +20,7 @@ class SuggestionID(DatabaseBase):
         guild_id = get_datatype_int(guild)
 
         row = await session.run_sync(
-            lambda session: session.query(
-                cls).filter_by(guild_id=guild_id).first()
+            lambda session: session.query(cls).filter_by(guild_id=guild_id).first()
         )
 
         row.next_id += 1
