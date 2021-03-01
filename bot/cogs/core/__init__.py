@@ -2,6 +2,7 @@ from collections import Counter
 
 from bot import Bot
 
+from .events import Events
 from .error import ErrorHandler
 from .help import Help
 from .sudo import Sudo
@@ -12,6 +13,7 @@ def setup(bot: Bot) -> None:
     if not hasattr(bot, "socket_stats"):
         bot.socket_stats = Counter()
 
+    bot.add_cog(Events(bot))
     bot.add_cog(ErrorHandler(bot))
     bot.add_cog(Help(bot))
     bot.add_cog(Sudo(bot))

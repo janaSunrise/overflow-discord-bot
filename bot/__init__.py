@@ -104,14 +104,6 @@ class Bot(AutoShardedBot):
                     f"Cog {extension} failed to load with {type(exc)}: {exc!r}"
                 )
 
-    async def on_guild_join(self, guild: discord.Guild) -> None:
-        """Log message on guild join."""
-        logger.info(f"[GUILD] Joined {guild.name}")
-
-    async def on_guild_remove(self, guild: discord.Guild) -> None:
-        """Log message on guild remove."""
-        logger.info(f"[GUILD] Left {guild.name}")
-
     async def on_ready(self) -> None:
         if self.initial_call:
             self.initial_call = False
