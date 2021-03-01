@@ -34,10 +34,10 @@ class Events(Cog):
             roles = row["auto_roles"]
 
             for role in roles:
-                role_obj = await guild.get_role(role)
+                role_obj = guild.get_role(role)
 
                 if not role_obj:
                     continue
-                await member.add_roles(role)
+                await member.add_roles(role_obj)
         else:
             return
