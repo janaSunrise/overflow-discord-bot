@@ -4,14 +4,27 @@ import typing as t
 
 import discord
 from discord import Color, Embed
-from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
-                                  BucketType, Cog, CommandOnCooldown, Context,
-                                  DisabledCommand, ExpectedClosingQuoteError,
-                                  InvalidEndOfQuotedStringError,
-                                  MaxConcurrencyReached, MissingPermissions,
-                                  MissingRole, NoPrivateMessage, NotOwner,
-                                  NSFWChannelRequired, PrivateMessageOnly,
-                                  UnexpectedQuoteError, errors, menus)
+from discord.ext.commands import (
+    BotMissingPermissions,
+    BotMissingRole,
+    BucketType,
+    Cog,
+    CommandOnCooldown,
+    Context,
+    DisabledCommand,
+    ExpectedClosingQuoteError,
+    InvalidEndOfQuotedStringError,
+    MaxConcurrencyReached,
+    MissingPermissions,
+    MissingRole,
+    NoPrivateMessage,
+    NotOwner,
+    NSFWChannelRequired,
+    PrivateMessageOnly,
+    UnexpectedQuoteError,
+    errors,
+    menus,
+)
 from loguru import logger
 
 from bot import Bot
@@ -33,8 +46,7 @@ class ErrorHandler(Cog):
     ) -> None:
         """Utility method to send error embeds easily."""
         await ctx.send(
-            embed=Embed(title=title, description=description,
-                        color=Color.red())
+            embed=Embed(title=title, description=description, color=Color.red())
         )
 
     async def command_syntax_error(
@@ -44,8 +56,7 @@ class ErrorHandler(Cog):
         command = ctx.command
         parent = command.full_parent_name
 
-        command_name = str(
-            command) if not parent else f"{parent} {command.name}"
+        command_name = str(command) if not parent else f"{parent} {command.name}"
         command_syntax = f"```{command_name} {command.signature}```"
 
         aliases = [
@@ -170,17 +181,21 @@ class ErrorHandler(Cog):
             return
 
         elif isinstance(error, errors.NotPermitted):
-            await self.error_embed(ctx, f"❌ You don't have permission to use that command here")
+            await self.error_embed(
+                ctx, f"❌ You don't have permission to use that command here"
+            )
             return
 
         if isinstance(error, errors.PermittedVoiceNotConnected):
-            await self.error_embed(ctx, f"I'm not in a voice channel.Please use `{ctx.prefix}join` first")
+            await self.error_embed(
+                ctx, f"I'm not in a voice channel.Please use `{ctx.prefix}join` first"
+            )
             return
 
         if isinstance(error, errors.NotPermittedVoiceNotConnected):
             await self.error_embed(
                 ctx,
-                f"I'm not in a voice channel.Please ask someone with permission to use `{ctx.prefix}join` first"
+                f"I'm not in a voice channel.Please ask someone with permission to use `{ctx.prefix}join` first",
             )
             return
 
@@ -238,17 +253,20 @@ class ErrorHandler(Cog):
 
                 await self.error_embed(ctx, description=msg)
 
-            elif isinstance(error.original, discord.HTTPException) and error.original.code == 50034:
+            elif (
+                isinstance(error.original, discord.HTTPException)
+                and error.original.code == 50034
+            ):
                 await self.error_embed(
                     ctx,
-                    f"❌ You can only bulk delete messages that are under 14 days old"
+                    f"❌ You can only bulk delete messages that are under 14 days old",
                 )
                 return
 
             elif isinstance(error.original, menus.CannotEmbedLinks):
                 await self.error_embed(
                     ctx,
-                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links."
+                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links.",
                 )
                 return
 
@@ -265,7 +283,9 @@ class ErrorHandler(Cog):
                 )
                 return
 
-            elif isinstance(error.original, (discord.Forbidden, menus.CannotSendMessages)):
+            elif isinstance(
+                error.original, (discord.Forbidden, menus.CannotSendMessages)
+            ):
                 logger.warning(
                     f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
                 )
