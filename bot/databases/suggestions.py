@@ -10,7 +10,8 @@ from bot.databases import DatabaseBase, get_datatype_int
 class SuggestionID(DatabaseBase):
     __tablename__ = "suggestion_id"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     next_id = Column(Integer, default=0)
 
     @classmethod
@@ -20,7 +21,8 @@ class SuggestionID(DatabaseBase):
         guild_id = get_datatype_int(guild)
 
         row = await session.run_sync(
-            lambda session: session.query(cls).filter_by(guild_id=guild_id).first()
+            lambda session: session.query(
+                cls).filter_by(guild_id=guild_id).first()
         )
 
         row.next_id += 1
@@ -34,7 +36,8 @@ class Suggestion(DatabaseBase):
     __tablename__ = "suggestion"
 
     suggestion_id = Column(BigInteger, primary_key=True, nullable=False)
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     user_id = Column(BigInteger, nullable=False, unique=True)
     text = Column(String)
 
