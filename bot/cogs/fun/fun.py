@@ -56,8 +56,7 @@ class Fun(Cog):
         ) as response:
             if response.status == 200:
                 json = await response.json()
-                embed = discord.Embed(
-                    name="random.cat", colour=discord.Color.blurple())
+                embed = discord.Embed(name="random.cat", colour=discord.Color.blurple())
                 embed.set_image(url=json["link"])
                 await ctx.send(embed=embed)
             else:

@@ -4,6 +4,7 @@ import typing as t
 
 import discord
 from discord import Color, Embed
+from discord.ext import menus
 from discord.ext.commands import (
     BotMissingPermissions,
     BotMissingRole,
@@ -23,7 +24,6 @@ from discord.ext.commands import (
     PrivateMessageOnly,
     UnexpectedQuoteError,
     errors,
-    menus,
 )
 from loguru import logger
 
