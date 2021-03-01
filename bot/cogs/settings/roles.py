@@ -1,7 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, RoleConverter, group, has_permissions
+from discord.ext.commands import (Cog, Context, RoleConverter, group,
+                                  has_permissions)
 
 from bot import Bot
 from bot.databases.autorole import AutoRoles
@@ -25,7 +26,12 @@ class Roles(Cog):
             default_role = ctx.guild.get_role(row["default_role"])
 
             if not default_role:
-                await RolesDB.set_role(self.bot.database, "default_role", ctx.guild, ctx.guild.default_role.id)
+                await RolesDB.set_role(
+                    self.bot.database,
+                    "default_role",
+                    ctx.guild,
+                    ctx.guild.default_role.id,
+                )
 
             mod_role = "\n".join([f"• <@&{x}>" for x in row["mod_role"]])
 
@@ -136,4 +142,4 @@ class Roles(Cog):
     async def clear(self, ctx: Context, role: RoleConverter = None) -> None:
         """Remove all the autoroles configured."""
         await AutoRoles.set_role(self.bot.database, ctx.guild.id, [])
-        await ctx.send(f"Autoroles list cleared.")
+        await ctx.send("Autoroles list cleared.")
