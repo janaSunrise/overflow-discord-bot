@@ -2,8 +2,8 @@ from collections import Counter
 
 from bot import Bot
 
-from .events import Events
 from .error import ErrorHandler
+from .events import Events
 from .help import Help
 from .sudo import Sudo
 
