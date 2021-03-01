@@ -9,8 +9,7 @@ from loguru import logger
 
 from bot import Bot
 
-FILE_EMBED_DESCRIPTION = (
-    f"""
+FILE_EMBED_DESCRIPTION = f"""
     Woops, your message got zapped by our spam filter.
     We currently don't allow binary / unknown attachments or any source files, so here are some tips you can use:
 
@@ -22,13 +21,29 @@ FILE_EMBED_DESCRIPTION = (
 
     • If you're showing code, you can use codeblocks or use a pasting service like [mystb.in](https://mystb.in) or [paste.gg](https://paste.gg)
     """
-)
 
 WHITELIST_TYPES = (
-    ".3gp", ".3g2", ".avi", ".bmp", ".m4v", ".mkv",
-    ".mov", ".mp4", ".mpg", ".wmv", ".gif", ".jpg",
-    ".jpeg", ".png", ".svg", ".psd", ".ai", ".aep",
-    ".mp3", ".wav", ".ogg"
+    ".3gp",
+    ".3g2",
+    ".avi",
+    ".bmp",
+    ".m4v",
+    ".mkv",
+    ".mov",
+    ".mp4",
+    ".mpg",
+    ".wmv",
+    ".gif",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".svg",
+    ".psd",
+    ".ai",
+    ".aep",
+    ".mp3",
+    ".wav",
+    ".ogg",
 )
 
 
@@ -46,10 +61,12 @@ class FileSecurity(Cog):
             except (discord.NotFound, ConnectionError):
                 continue
 
-            file_list_json.append({
-                "name": attachment.filename,
-                "content": {"format": "text", "value": value}
-            })
+            file_list_json.append(
+                {
+                    "name": attachment.filename,
+                    "content": {"format": "text", "value": value},
+                }
+            )
 
         if len(file_list_json) == 0:
             return
@@ -57,14 +74,14 @@ class FileSecurity(Cog):
         payload = {
             "name": "Overflow paste service.",
             "description": "Overflow file sec cog.",
-            "files": file_list_json
+            "files": file_list_json,
         }
 
         with suppress(discord.NotFound, ConnectionError):
             response = await self.bot.session.post(
                 "https://api.paste.gg/v1/pastes",
                 headers={"Content-Type": "application/json"},
-                data=json.dumps(payload)
+                data=json.dumps(payload),
             )
 
         if response.status != 201:
@@ -80,7 +97,7 @@ class FileSecurity(Cog):
 
         if message.author.permissions_in(message.channel).manage_messages:
             return
-        
+
         attachments = []
         for attachment in message.attachments:
             extension = splitext(attachment.filename.lower())[1]
@@ -92,9 +109,13 @@ class FileSecurity(Cog):
         if len(attachments) == 0:
             return
 
-        logger.info(f"User <@{message.author.id}> posted a message on {message.guild.id} with protected "
-                    "attachments.")
-        embed = discord.Embed(description=FILE_EMBED_DESCRIPTION, color=discord.Color.dark_blue())
+        logger.info(
+            f"User <@{message.author.id}> posted a message on {message.guild.id} with protected "
+            "attachments."
+        )
+        embed = discord.Embed(
+            description=FILE_EMBED_DESCRIPTION, color=discord.Color.dark_blue()
+        )
 
         with suppress(discord.NotFound, ConnectionError):
             await message.delete()
@@ -106,7 +127,7 @@ class FileSecurity(Cog):
                 paste_embed = discord.Embed(
                     color=discord.Color.gold(),
                     description=f"We uploaded the paste version of the files for you. The Paste(s) of the file(s) can "
-                                f"be found at {file_pastes}",
-                    title="Auto File Pastes!"
+                    f"be found at {file_pastes}",
+                    title="Auto File Pastes!",
                 )
                 await message.channel.send(embed=paste_embed)
