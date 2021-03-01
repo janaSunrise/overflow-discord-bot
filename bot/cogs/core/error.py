@@ -11,7 +11,8 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
                                   MaxConcurrencyReached, MissingPermissions,
                                   MissingRole, NoPrivateMessage, NotOwner,
                                   NSFWChannelRequired, PrivateMessageOnly,
-                                  UnexpectedQuoteError, errors, menus)
+                                  UnexpectedQuoteError, errors)
+from discord.ext import menus
 from loguru import logger
 
 from bot import Bot
@@ -166,21 +167,6 @@ class ErrorHandler(Cog):
             await self.error_embed(
                 ctx,
                 description=f"❌ The command `{ctx.command}` can not be used in private messages.",
-            )
-            return
-
-        elif isinstance(error, errors.NotPermitted):
-            await self.error_embed(ctx, f"❌ You don't have permission to use that command here")
-            return
-
-        if isinstance(error, errors.PermittedVoiceNotConnected):
-            await self.error_embed(ctx, f"I'm not in a voice channel.Please use `{ctx.prefix}join` first")
-            return
-
-        if isinstance(error, errors.NotPermittedVoiceNotConnected):
-            await self.error_embed(
-                ctx,
-                f"I'm not in a voice channel.Please ask someone with permission to use `{ctx.prefix}join` first"
             )
             return
 

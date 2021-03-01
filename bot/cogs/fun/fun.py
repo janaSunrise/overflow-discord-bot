@@ -171,6 +171,50 @@ class Fun(Cog):
             await ctx.send(embed=embed)
 
     @command()
+    async def year(self, ctx: Context) -> None:
+        """Get a random interesting math fact."""
+        async with self.bot.session.get("http://numbersapi.com/random/year?json") as r:
+            res = await r.json()
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random Year Fact!",
+                description=f"• Fact: {res['text']}" f"\n• Year: {res['number']}",
+            )
+            await ctx.send(embed=embed)
+
+    @command()
+    async def idea(self, ctx: Context) -> None:
+        url = "http://itsthisforthat.com/api.php"
+
+        async with self.bot.session.get(url, params="json") as resp:
+            data = await resp.json(content_type="text/javascript")
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random idea!",
+                description=f"{data['this']} for {data['that']}",
+            )
+            await ctx.send(embed=embed)
+
+    @command()
+    async def insult(self, ctx: Context) -> None:
+        url = "http://quandyfactory.com/insult/json"
+        async with self.bot.session.get(url) as resp:
+            if resp.status == 500:
+                embed = discord.Embed(
+                    color=discord.Color.red(),
+                    description=f"{ctx.bot.error_emoji} API Error: {resp.status} {resp.reason}",
+                )
+                await ctx.send(embed=embed)
+                return
+            data = await resp.json()
+            embed = discord.Embed(
+                color=discord.Color.blue(),
+                title="→ Random insult!",
+                description=data["insult"],
+            )
+            await ctx.send(embed=embed)
+
+    @command()
     async def advice(self, ctx: Context) -> None:
         """Get a random advice."""
         async with self.bot.session.get("https://api.adviceslip.com/advice") as r:
