@@ -10,8 +10,8 @@ services:
       - common-shared-network
     environment:
       POSTGRES_DB: overflow
-      POSTGRES_USER: overflow
-      POSTGRES_PASSWORD: overflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
 
   lavalink:
     image: fredboat/lavalink:master-v3
