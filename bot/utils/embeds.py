@@ -19,7 +19,7 @@ def moderation_embed(
     description = dedent(
         f"""
     User: {user.mention} [`{user.id}`]
-    Reason Specified: {reason}
+    Reason: {reason}
 
     Moderator: {ctx.author} [`{ctx.author.id}`]
     """
