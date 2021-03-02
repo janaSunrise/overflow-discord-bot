@@ -149,7 +149,9 @@ class SwearFilter(Cog):
     async def remove(self, ctx: Context, word: str = None) -> None:
         """Remove a word from the swear filter list."""
         if not word:
-            await ctx.send(":x: Specify a word to be removed from the swear filter list.")
+            await ctx.send(
+                ":x: Specify a word to be removed from the swear filter list."
+            )
 
         row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
         word = word.lower()

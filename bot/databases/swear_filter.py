@@ -94,10 +94,10 @@ class SwearFilter(DatabaseBase):
 
     @classmethod
     async def set_words(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            words: t.List[str],
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        words: t.List[str],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
