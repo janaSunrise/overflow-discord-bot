@@ -83,6 +83,29 @@ class Moderation(Cog):
         await member.ban(reason=reason)
 
     @command()
+    @has_permissions(ban_members=True)
+    async def ban(
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
+    ) -> None:
+        """Ban and unban a member from your server."""
+        if "softban" not in reason:
+            reason = "[SOFTBANNED]" + reason
+
+        embed = moderation_embed(
+            ctx, action="ban", user=member, reason=reason, color=discord.Color.gold()
+        )
+        embed.timestamp = datetime.utcnow()
+        embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
+
+        await ctx.send(embed=embed)
+        await member.ban(reason=reason)
+        await member.unban(reason=reason)
+
+    @command()
     @has_permissions(manage_messages=True)
     async def clear(
         self, ctx: Context, amount: int, member: MemberConverter = None

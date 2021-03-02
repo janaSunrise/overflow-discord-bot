@@ -8,7 +8,6 @@ from bot import Bot
 
 class Fun(Cog):
     """A cog designed for fun based commands."""
-
     def __init__(self, bot: Bot):
         self.bot = bot
         self.user_agent = {"user-agent": "overflow discord bot"}
