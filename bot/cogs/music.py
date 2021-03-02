@@ -550,6 +550,41 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
         )
 
+    @commands.command()
+    async def find(self, ctx: commands.Context, *, query: str) -> None:
+        player: Player = self.bot.wavelink.get_player(
+            guild_id=ctx.guild.id, cls=Player, context=ctx
+        )
+
+        raw_query = query
+        if not query.startswith("ytsearch:") and not query.startswith("scsearch:"):
+            query = "ytsearch:" + query
+
+        tracks = await self.bot.wavelink.get_tracks(query)
+        if not tracks:
+            await ctx.send(
+                "No songs were found with that query. Please try again.",
+            )
+            return
+
+        output = ""
+        for index, track in enumerate(tracks[:10], start=1):
+            track_title = track.title
+            track_uri = track.uri
+            output += f"`{index}.` [{track_title}]({track_uri})\n"
+
+        embed = discord.Embed(
+            title=f"Search results for {raw_query}",
+            color=discord.Color.blurple(),
+            description=output,
+        )
+        embed.set_footer(
+            text=f"{self.bot.user.name} music player",
+            icon_url=ctx.bot.user.avatar_url_as(static_format="png"),
+        )
+
+        await ctx.send(embed=embed)
+
     @commands.command(aliases=["p"])
     async def play(self, ctx: commands.Context, *, query: str):
         """Play or queue a song with the given query."""
