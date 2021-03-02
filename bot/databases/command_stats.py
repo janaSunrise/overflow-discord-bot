@@ -10,8 +10,7 @@ from bot.databases import DatabaseBase, on_conflict
 class CommandStats(DatabaseBase):
     __tablename__ = "command_stats"
 
-    command = Column(String, primary_key=True,
-                      nullable=False, unique=True)
+    command = Column(String, primary_key=True, nullable=False, unique=True)
     usage_count = Column(BigInteger, nullable=False, default=0)
 
     def dict(self) -> t.Dict[str, t.Any]:
@@ -29,9 +28,15 @@ class CommandStats(DatabaseBase):
         return [row.dict() for row in rows]
 
     @classmethod
-    async def get_command_stat(cls, session: AsyncSession, command_name: str) -> t.Optional[t.List[dict]]:
+    async def get_command_stat(
+        cls, session: AsyncSession, command_name: str
+    ) -> t.Optional[t.List[dict]]:
         try:
-            row = await session.run_sync(lambda session: session.query(cls).filter_by(command=command_name).first())
+            row = await session.run_sync(
+                lambda session: session.query(cls)
+                .filter_by(command=command_name)
+                .first()
+            )
         except NoResultFound:
             return None
 
@@ -40,10 +45,7 @@ class CommandStats(DatabaseBase):
 
     @classmethod
     async def set_command_stats(
-            cls,
-            session: AsyncSession,
-            command: str,
-            usage_count: int
+        cls, session: AsyncSession, command: str, usage_count: int
     ) -> None:
         await on_conflict(
             session,
