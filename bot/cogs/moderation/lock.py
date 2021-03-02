@@ -17,6 +17,15 @@ class Lock(Cog):
 
         raise NoPrivateMessage
 
+    async def get_default_role(self, ctx: Context) -> discord.Role:
+        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
+        if row is not None and row["default_role"] is not None:
+            default_role = ctx.guild.get_role(row["default_role"])
+        else:
+            default_role = ctx.guild.default_role
+
+        return default_role
+
     @command()
     @has_permissions(manage_channels=True)
     async def lock(
@@ -30,11 +39,7 @@ class Lock(Cog):
 
         Specify the override roles so that the specified roles can talk.
         """
-        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
-        if row is not None and row["default_role"] is not None:
-            default_role = ctx.guild.get_role(row["default_role"])
-        else:
-            default_role = ctx.guild.default_role
+        default_role = await self.get_default_role(ctx)
 
         guild = ctx.guild
 
@@ -86,14 +91,8 @@ class Lock(Cog):
 
         Specify the override roles so that the specified roles cannot talk.
         """
-        row = await RolesDB.get_roles(self.bot.database, ctx.guild.id)
-        if row is not None and row["default_role"] is not None:
-            default_role = ctx.guild.get_role(row["default_role"])
-        else:
-            default_role = ctx.guild.default_role
-
+        default_role = await self.get_default_role(ctx)
         guild = ctx.guild
-
         if not channels:
             channels = [ctx.channel]
 
