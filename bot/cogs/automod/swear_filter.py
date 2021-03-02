@@ -29,7 +29,7 @@ class SwearFilter(Cog):
 
         await ctx.send(
             embed=discord.Embed(
-                title="Role settings configuration",
+                title="Swear filter settings configuration",
                 description=textwrap.dedent(
                     f"""
                     • Manual mode: {row["manual_on"]}
