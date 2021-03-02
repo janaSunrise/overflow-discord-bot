@@ -10,7 +10,7 @@ from datetime import datetime
 
 import humanize
 import psutil
-from discord import Color, DiscordException, Embed
+from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
@@ -111,6 +111,71 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     async def reload(self, ctx: Context, extension: t.Optional[str]) -> None:
         """Unload and then load a cog."""
         await self._manage_cog(ctx, "reload", extension)
+
+    @sudo.command(aliases=["status"])
+    async def botstatus(
+            self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]
+    ) -> None:
+        """Change the status of the bot.
+        `botstatus playing <new status>` - Change playing status
+        `botstatus watching <new status>` - Change watching status
+        `botstatus listening <new status>` - Change listening status
+        """
+        statuses = ["playing", "watching", "listening"]
+        if status.lower() not in statuses:
+            await ctx.send("Invalid status type!")
+
+        if status.lower() == "playing":
+            try:
+                await self.bot.change_presence(
+                    activity=Game(type=0, name=status_info),
+                    status=Status.online
+                )
+                await ctx.send(f"Successfully changed playing status to **{status_info}**")
+            except DiscordException:
+                await ctx.send(
+                    embed=Embed(
+                        title="Exception",
+                        description=f"```py\n{traceback.format_exc()}\n```",
+                        color=Color.blue()
+                    )
+                )
+
+        elif status.lower() == "watching":
+            try:
+                await self.bot.change_presence(
+                    activity=Activity(
+                        type=ActivityType.watching,
+                        name=status_info
+                    )
+                )
+                await ctx.send(f"Successfully changed watching status to **{status_info}**")
+            except DiscordException:
+                await ctx.send(
+                    embed=Embed(
+                        title="Exception",
+                        description=f"```py\n{traceback.format_exc()}\n```",
+                        color=Color.blue()
+                    )
+                )
+
+        elif status.lower() == "listening":
+            try:
+                await self.bot.change_presence(
+                    activity=Activity(
+                        type=ActivityType.listening,
+                        name=status_info
+                    )
+                )
+                await ctx.send(f"Successfully changed listening status to **{status_info}**")
+            except DiscordException:
+                await ctx.send(
+                    embed=Embed(
+                        title="Exception",
+                        description=f"```py\n{traceback.format_exc()}\n```",
+                        color=Color.blue()
+                    )
+                )
 
     @sudo.command()
     async def socketstats(self, ctx: Context) -> None:

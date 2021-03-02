@@ -1,5 +1,6 @@
 import json
 import textwrap
+import traceback
 import typing as t
 
 import discord
@@ -246,13 +247,15 @@ class ErrorHandler(Cog):
                 return
 
             elif isinstance(error.original, menus.CannotAddReactions):
-                await ctx.embed_reply(
+                await self.error_embed(
+                    ctx,
                     "I need to be able to add reactions to show menus. Please give me permission to Add Reactions"
                 )
                 return
 
             elif isinstance(error.original, menus.CannotReadMessageHistory):
                 await self.error_embed(
+                    ctx,
                     "I need to be able to read message history to show menus. Please give me permission to Read "
                     "Message History"
                 )
@@ -279,7 +282,7 @@ class ErrorHandler(Cog):
                         """
                     ),
                 )
-                logger.error(error_cause)
+                logger.error(traceback.format_exc())
             return
 
         await self.error_embed(
@@ -295,4 +298,4 @@ class ErrorHandler(Cog):
             ),
         )
 
-        logger.error(error)
+        logger.error(traceback.format_exc())
