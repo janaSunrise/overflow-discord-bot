@@ -114,7 +114,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
     @sudo.command(aliases=["status"])
     async def botstatus(
-            self, ctx: Context, status: str, status_info: t.Literal["playing", "watching", "listening"]
+            self, ctx: Context, status: str, *, status_info: str
     ) -> None:
         """Change the status of the bot.
         `botstatus playing <new status>` - Change playing status
@@ -124,6 +124,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         statuses = ["playing", "watching", "listening"]
         if status.lower() not in statuses:
             await ctx.send("Invalid status type!")
+            return
 
         if status.lower() == "playing":
             try:
