@@ -87,7 +87,13 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 else:
                     await ctx.send("❌ Invalid process for extensions")
             except DiscordException:
-                await ctx.send(f"```py\n{traceback.format_exc()}\n```")
+                await ctx.send(
+                    embed=Embed(
+                        title="Exception",
+                        description=f"```py\n{traceback.format_exc()}\n```",
+                        color=Color.blue()
+                    )
+                )
             else:
                 await ctx.send("✅")
 
