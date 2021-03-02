@@ -1,7 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, group, guild_only,
+                                  has_permissions)
 
 from bot import Bot
 from bot.databases.swear_filter import SwearFilter as SwearFilterDB
@@ -106,7 +107,9 @@ class SwearFilter(Cog):
             )
             return
 
-        if ctx.author != ctx.guild.owner or await ctx.guild.fetch_member(ctx.guild.owner_id):
+        if ctx.author != ctx.guild.owner or await ctx.guild.fetch_member(
+            ctx.guild.owner_id
+        ):
             await ctx.send("This command is available to guild owners only.")
             return
 

@@ -12,7 +12,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SwearFilter(DatabaseBase):
     __tablename__ = "swear_filter"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     manual_on = Column(Boolean, nullable=False, default=False)
     autoswear = Column(Boolean, nullable=False, default=False)
     notification = Column(Boolean, nullable=False, default=False)
@@ -25,7 +26,7 @@ class SwearFilter(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
     ) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
@@ -42,7 +43,10 @@ class SwearFilter(DatabaseBase):
 
     @classmethod
     async def set_filter_mode(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild], mode: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        mode: bool,
     ):
         guild_id = get_datatype_int(guild_id)
 
@@ -56,7 +60,10 @@ class SwearFilter(DatabaseBase):
 
     @classmethod
     async def set_auto_mode(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild], mode: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        mode: bool,
     ):
         guild_id = get_datatype_int(guild_id)
 
@@ -70,7 +77,10 @@ class SwearFilter(DatabaseBase):
 
     @classmethod
     async def set_notification(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild], mode: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        mode: bool,
     ):
         guild_id = get_datatype_int(guild_id)
 
