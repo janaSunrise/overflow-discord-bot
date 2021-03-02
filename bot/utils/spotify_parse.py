@@ -7,7 +7,7 @@ from discord.ext.commands import Context
 
 
 class SpotifyTrack:
-    def __init__(self, track: spotify.Track, requester):
+    def __init__(self, track: spotify.Track, requester) -> None:
         self.title = track.name
         self.artists = ", ".join(artist.name for artist in track.artists)
         self.description = f"{self.title} - {self.artists}"
@@ -58,6 +58,7 @@ async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, reque
     for track in tracks:
         if not track:
             continue
+
         await player.queue.put(SpotifyTrack(track, requester))
 
     if not player.is_playing:

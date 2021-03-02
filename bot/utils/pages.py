@@ -12,9 +12,13 @@ class EmbedPages(ListPageSource):
 
     async def format_page(self, menu: Menu, embed: Embed) -> Embed:
         """Return the stored embed for current page."""
+        max_pages = self.get_max_pages()
+        if max_pages > 1:
+            embed.set_footer(text=f"Page {menu.current_page + 1} of {max_pages}.")
         return embed
 
     async def start(self, ctx: Context, **menupages_kwargs) -> None:
+        """Start the pagination."""
         pages = MenuPages(source=self, **menupages_kwargs)
         await pages.start(ctx)
 

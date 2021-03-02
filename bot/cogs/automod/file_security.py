@@ -1,5 +1,3 @@
-import json
-import typing as t
 from contextlib import suppress
 from os.path import splitext
 
@@ -8,6 +6,7 @@ from discord.ext.commands import Cog
 from loguru import logger
 
 from bot import Bot
+from bot.utils.attachments import file_uploader
 
 FILE_EMBED_DESCRIPTION = """
     Woops, your message got zapped by our spam filter.
@@ -51,45 +50,6 @@ class FileSecurity(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def file_uploader(self, attachments: list) -> t.Optional[str]:
-        file_list_json = []
-
-        for attachment in attachments:
-            try:
-                content = await attachment.read()
-                value = content.decode("utf-8")
-            except (discord.NotFound, ConnectionError):
-                continue
-
-            file_list_json.append(
-                {
-                    "name": attachment.filename,
-                    "content": {"format": "text", "value": value},
-                }
-            )
-
-        if len(file_list_json) == 0:
-            return
-
-        payload = {
-            "name": "Overflow paste service.",
-            "description": "Overflow file sec cog.",
-            "files": file_list_json,
-        }
-
-        with suppress(discord.NotFound, ConnectionError):
-            response = await self.bot.session.post(
-                "https://api.paste.gg/v1/pastes",
-                headers={"Content-Type": "application/json"},
-                data=json.dumps(payload),
-            )
-
-        if response.status != 201:
-            return
-
-        key = (await response.json())["result"]["id"]
-        return f"https://www.paste.gg/{key}"
-
     @Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         if not message.attachments or not message.guild:
@@ -121,7 +81,7 @@ class FileSecurity(Cog):
             await message.delete()
             await message.channel.send(f"Hey {message.author.mention}!", embed=embed)
 
-            file_pastes = await self.file_uploader(attachments)
+            file_pastes = await file_uploader(attachments)
 
             if file_pastes is not None:
                 paste_embed = discord.Embed(

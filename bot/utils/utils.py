@@ -19,14 +19,14 @@ def camel_to_snake(camel: str) -> str:
     return snake.lower()
 
 
-def format_time(time):
+def format_time(time: int) -> str:
     hours, remainder = divmod(time / 1000, 3600)
     minutes, seconds = divmod(remainder, 60)
 
     return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
 
-def progress_bar(current, total):
+def progress_bar(current: int, total: int) -> str:
     barsize = 12
     num = int(current / total * barsize)
     return "▬" * num + "▭" + "―" * (barsize - num)
@@ -36,7 +36,7 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     BRACKETED = re.compile(r"(\[(.+?)\])")
     embeds_list = []
 
-    def cleanup_definition(definition: str, *, regex: str = BRACKETED) -> str:
+    def cleanup_definition(definition: str, *, regex: t.Pattern = BRACKETED) -> str:
         """Cleanup the definition."""
 
         def repl(message) -> str:
@@ -73,7 +73,7 @@ async def confirmation(
     title: str,
     color=discord.Color.blurple(),
     footer: t.Optional[str] = None,
-):
+) -> t.Optional[bool]:
     emojis = {"✅": True, "❌": False}
 
     embed = discord.Embed(title=title, description=description, color=color)

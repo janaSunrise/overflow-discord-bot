@@ -17,7 +17,6 @@ TIME_REGEX = re.compile(
 
 class ModerationReason(Converter):
     """Ensuring that the reason for moderation commands is within the specified limit of 512."""
-
     async def convert(self, ctx: Context, argument: str) -> str:
         if not argument or argument == "":
             reason = f"Action carried out by {ctx.author} [{ctx.author.id}]"
@@ -35,6 +34,12 @@ class ModerationReason(Converter):
 
 
 class TimeConverter(Converter):
+    """
+    Time delta converter using regex.
+
+    This parses the time from the string specified.
+    For example, 4h2s will be parsed into a relativedelta
+    """
     async def convert(self, ctx: Context, duration: str) -> relativedelta:
         time_group = TIME_REGEX.fullmatch(duration)
 

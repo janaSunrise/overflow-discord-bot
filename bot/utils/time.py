@@ -2,6 +2,7 @@ from dateutil.relativedelta import relativedelta
 
 
 def humanize_time(time_delta: relativedelta, min_unit: str = "seconds") -> str:
+    """Convert a relative delta into human readable time."""
     time_dict = {
         "years": time_delta.years,
         "months": time_delta.months,
@@ -13,7 +14,6 @@ def humanize_time(time_delta: relativedelta, min_unit: str = "seconds") -> str:
         "microseconds": time_delta.microseconds,
     }
 
-    time_str = ""
     time_list = []
 
     for unit, value in time_dict.items():

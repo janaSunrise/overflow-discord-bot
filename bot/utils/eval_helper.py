@@ -32,7 +32,6 @@ def _to_tio_string(couple: tuple) -> bytes:
 
 class Tio:
     """Helper class for eval command."""
-
     def __init__(
         self,
         language: str,
@@ -96,6 +95,7 @@ class EvalHelper:
             "https://hastebin.com",
             "https://gist.github.com",
             "https://gist.githubusercontent.com",
+            "https://paste.gg"
         )
         self.max_file_size = 20000
         self.truncated_error = "The output exceeded 128 KiB and was truncated."

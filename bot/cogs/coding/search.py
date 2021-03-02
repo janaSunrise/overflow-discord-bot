@@ -78,7 +78,6 @@ class Search(Cog):
         is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, "is_nsfw") else False
 
         async with ctx.typing():
-            # Searches
             try:
                 results = await self._search_logic(query, is_nsfw, category)
             except SafesearchFail:

@@ -10,4 +10,5 @@ class IncorrectChannelError(CommandError):
 
 
 class InvalidRepeatMode(CommandError):
+    """When the repeat mode for the music cog specified is invalid."""
     pass

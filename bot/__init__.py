@@ -63,7 +63,7 @@ class Bot(AutoShardedBot):
             client_secret=config.spotify_client_secret,
         )
 
-    async def is_owner(self, user: discord.User):
+    async def is_owner(self, user: discord.User) -> bool:
         if user.id in config.devs:
             return True
 
@@ -78,14 +78,11 @@ class Bot(AutoShardedBot):
         try:
             async with engine.begin() as conn:
                 await conn.run_sync(DatabaseBase.metadata.create_all)
-
         except InvalidPasswordError as exc:
             logger.critical("The database password entered is invalid.")
             raise exc
-
         except ConnectionRefusedError:
             logger.error("Database connection refused. Trying again.")
-
             await asyncio.sleep(3)
             return await self.init_db()
 
@@ -105,6 +102,7 @@ class Bot(AutoShardedBot):
                 )
 
     async def on_ready(self) -> None:
+        """Functions called when the bot is ready and connected."""
         if self.initial_call:
             self.initial_call = False
             await self.load_extensions()

@@ -8,10 +8,12 @@ from bot import cogs, databases
 
 
 def get_module_name(name: str) -> str:
+    """Get the cog name from the module."""
     return name.split(".")[-1]
 
 
 def is_a_cog(module: types.ModuleType) -> bool:
+    """Check if the module has a setup function, which implies it's a cog."""
     imported = importlib.import_module(module.name)
     return inspect.isfunction(getattr(imported, "setup", None))
 
@@ -19,6 +21,7 @@ def is_a_cog(module: types.ModuleType) -> bool:
 def get_modules_list(
     package: types.ModuleType, check: t.Optional[types.FunctionType] = None
 ) -> t.List[str]:
+    """Get the list of the submodules from the specified package."""
     modules = []
 
     for submodule in pkgutil.walk_packages(package.__path__, f"{package.__name__}."):
