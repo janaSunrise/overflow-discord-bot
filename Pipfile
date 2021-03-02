@@ -26,3 +26,6 @@ asyncpg = "*"
 
 [scripts]
 start = "python -m bot"
+
+[pipenv]
+allow_prereleases = true
