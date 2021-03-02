@@ -39,7 +39,7 @@ class SwearFilter(Cog):
                 description=textwrap.dedent(
                     f"""
                     • Manual mode: {SwearFilter.get_human_readable_word(row["manual_on"])}
-                    • Auto swear detection: {SwearFilter.get_human_readable_word(row["autoswear"])} 
+                    • Auto swear detection: {SwearFilter.get_human_readable_word(row["autoswear"])}
                     • Owner notification: {SwearFilter.get_human_readable_word(row["notification"])}
                     • Word list: `{row["words"]}`
                     """

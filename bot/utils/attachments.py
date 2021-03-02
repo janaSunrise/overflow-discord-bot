@@ -5,7 +5,7 @@ from contextlib import suppress
 import discord
 
 
-async def file_uploader(self, attachments: list) -> t.Optional[str]:
+async def file_uploader(attachments: list) -> t.Optional[str]:
     file_list_json = []
 
     for attachment in attachments:
