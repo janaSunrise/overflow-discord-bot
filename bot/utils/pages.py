@@ -14,7 +14,8 @@ class EmbedPages(ListPageSource):
         """Return the stored embed for current page."""
         max_pages = self.get_max_pages()
         if max_pages > 1:
-            embed.set_footer(text=f"Page {menu.current_page + 1} of {max_pages}.")
+            embed.set_footer(
+                text=f"Page {menu.current_page + 1} of {max_pages}.")
         return embed
 
     async def start(self, ctx: Context, **menupages_kwargs) -> None:
