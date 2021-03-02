@@ -116,3 +116,54 @@ class SwearFilter(Cog):
         else:
             await SwearFilterDB.set_notification(self.bot.database, ctx.guild.id, False)
             await ctx.send("Automatic swear notification disabled.")
+
+    @swear_filter.group(aliases=["word"], invoke_without_command=True)
+    async def words(self, ctx: Context) -> None:
+        """Configuration for the swear words."""
+        await ctx.send_help(ctx.command)
+
+    @words.command()
+    async def add(self, ctx: Context, word: str = None) -> None:
+        """Add a word to the swear filter list."""
+        if not word:
+            await ctx.send(":x: Specify a word to be added to the swear filter list.")
+
+        row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
+        word = word.lower()
+
+        words = []
+        if row is not None:
+            words += row["words"]
+
+        if word not in words:
+            words.append(word)
+            await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, words)
+            await ctx.send(f"`{word}` successfully added to the swear filter list.")
+        else:
+            await ctx.send("Word is already in the swear filter list.")
+
+    @words.command()
+    async def remove(self, ctx: Context, word: str = None) -> None:
+        """Remove a word from the swear filter list."""
+        if not word:
+            await ctx.send(":x: Specify a word to be removed from the swear filter list.")
+
+        row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
+        word = word.lower()
+
+        words = []
+        if row is not None:
+            words += row["words"]
+
+        if word in words:
+            words.remove(word)
+            await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, words)
+            await ctx.send(f"`{word}` successfully removed the swear filter list.")
+        else:
+            await ctx.send("Word is not in the swear filter list.")
+
+    @words.command()
+    async def clear(self, ctx: Context) -> None:
+        """Remove all the swear words configured."""
+        await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, [])
+        await ctx.send("Swear filter wordlist cleared.")

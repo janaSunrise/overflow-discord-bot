@@ -81,3 +81,20 @@ class SwearFilter(DatabaseBase):
             values={"guild_id": guild_id, "notification": mode},
         )
         await session.commit()
+
+    @classmethod
+    async def set_words(
+            cls,
+            session: AsyncSession,
+            guild_id: t.Union[str, int, discord.Guild],
+            words: t.List[str],
+    ) -> None:
+        guild_id = get_datatype_int(guild_id)
+
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "words": words},
+        )
+        await session.commit()

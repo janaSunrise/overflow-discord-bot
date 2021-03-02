@@ -139,7 +139,7 @@ class Roles(Cog):
             await ctx.send("Role is not in the autorole list.")
 
     @autorole.command()
-    async def clear(self, ctx: Context, role: RoleConverter = None) -> None:
+    async def clear(self, ctx: Context) -> None:
         """Remove all the autoroles configured."""
         await AutoRoles.set_role(self.bot.database, ctx.guild.id, [])
         await ctx.send("Autoroles list cleared.")
