@@ -12,6 +12,12 @@ class SwearFilter(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
+    @staticmethod
+    def get_human_readable_word(expression: bool) -> str:
+        if expression:
+            return "Enabled"
+        return "Disabled"
+
     @group(aliases=["swear-filter"], invoke_without_command=True)
     @guild_only()
     @has_permissions(ban_members=True)
@@ -32,9 +38,9 @@ class SwearFilter(Cog):
                 title="Swear filter settings configuration",
                 description=textwrap.dedent(
                     f"""
-                    • Manual mode: {row["manual_on"]}
-                    • Auto swear detection: {row["autoswear"]} 
-                    • Owner notification: {row["notification"]}
+                    • Manual mode: {SwearFilter.get_human_readable_word(row["manual_on"])}
+                    • Auto swear detection: {SwearFilter.get_human_readable_word(row["autoswear"])} 
+                    • Owner notification: {SwearFilter.get_human_readable_word(row["notification"])}
                     • Word list: `{row["words"]}`
                     """
                 ),
