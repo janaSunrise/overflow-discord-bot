@@ -16,6 +16,7 @@ from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 
 from bot import Bot, config
+from bot.databases.command_stats import CommandStats
 
 
 class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
@@ -335,3 +336,42 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 else:
                     self._last_eval_result = ret
                     await ctx.send(f"```py\n{value}{ret}\n```")
+
+    @sudo.command(aliases=["command-stats", "cmd-stats"])
+    async def command_stats(self, ctx: Context) -> None:
+        rows = await CommandStats.get_command_stats(self.bot.database)
+
+        embed = Embed(
+            title="Usage stats",
+            colour=Color.blue(),
+        )
+        embed.set_author(
+            name=ctx.author.display_name,
+            icon_url=str(ctx.author.avatar_url),
+        )
+        records = sorted(
+            rows,
+            key=lambda elem: elem["usage_count"],
+            reverse=True,
+        )[:10]
+
+        for record in records:
+            embed.add_field(
+                name=record["command"],
+                value=record["usage_count"],
+                inline=False,
+            )
+        await ctx.send(embed=embed)
+
+    @Cog.listener("on_command_completion")
+    async def stats_listener(self, ctx: Context) -> None:
+        """Log usage of the bot."""
+        if await ctx.bot.is_owner(ctx.author):
+            return
+
+        record = await CommandStats.get_command_stat(self.bot.database, ctx.command.name)
+
+        if record:
+            await CommandStats.set_command_stats(self.bot.database, ctx.command.name, record["usage_count"] + 1)
+        else:
+            await CommandStats.set_command_stats(self.bot.database, ctx.command.name, 1)
