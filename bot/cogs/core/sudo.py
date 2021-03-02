@@ -91,7 +91,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                     embed=Embed(
                         title="Exception",
                         description=f"```py\n{traceback.format_exc()}\n```",
-                        color=Color.blue()
+                        color=Color.blue(),
                     )
                 )
             else:
@@ -113,9 +113,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         await self._manage_cog(ctx, "reload", extension)
 
     @sudo.command(aliases=["status"])
-    async def botstatus(
-            self, ctx: Context, status: str, *, status_info: str
-    ) -> None:
+    async def botstatus(self, ctx: Context, status: str, *, status_info: str) -> None:
         """Change the status of the bot.
         `botstatus playing <new status>` - Change playing status
         `botstatus watching <new status>` - Change watching status
@@ -129,52 +127,51 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         if status.lower() == "playing":
             try:
                 await self.bot.change_presence(
-                    activity=Game(type=0, name=status_info),
-                    status=Status.online
+                    activity=Game(type=0, name=status_info), status=Status.online
                 )
-                await ctx.send(f"Successfully changed playing status to **{status_info}**")
+                await ctx.send(
+                    f"Successfully changed playing status to **{status_info}**"
+                )
             except DiscordException:
                 await ctx.send(
                     embed=Embed(
                         title="Exception",
                         description=f"```py\n{traceback.format_exc()}\n```",
-                        color=Color.blue()
+                        color=Color.blue(),
                     )
                 )
 
         elif status.lower() == "watching":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(
-                        type=ActivityType.watching,
-                        name=status_info
-                    )
+                    activity=Activity(type=ActivityType.watching, name=status_info)
                 )
-                await ctx.send(f"Successfully changed watching status to **{status_info}**")
+                await ctx.send(
+                    f"Successfully changed watching status to **{status_info}**"
+                )
             except DiscordException:
                 await ctx.send(
                     embed=Embed(
                         title="Exception",
                         description=f"```py\n{traceback.format_exc()}\n```",
-                        color=Color.blue()
+                        color=Color.blue(),
                     )
                 )
 
         elif status.lower() == "listening":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(
-                        type=ActivityType.listening,
-                        name=status_info
-                    )
+                    activity=Activity(type=ActivityType.listening, name=status_info)
                 )
-                await ctx.send(f"Successfully changed listening status to **{status_info}**")
+                await ctx.send(
+                    f"Successfully changed listening status to **{status_info}**"
+                )
             except DiscordException:
                 await ctx.send(
                     embed=Embed(
                         title="Exception",
                         description=f"```py\n{traceback.format_exc()}\n```",
-                        color=Color.blue()
+                        color=Color.blue(),
                     )
                 )
 
@@ -222,8 +219,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
-        embed.add_field(name="**❯ Shard info**",
-                        value=shard_info, inline=False)
+        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
