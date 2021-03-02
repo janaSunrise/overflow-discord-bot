@@ -15,7 +15,7 @@ class AutoRoles(DatabaseBase):
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
 
-    auto_roles = Column(ARRAY(BigInteger))
+    auto_roles = Column(ARRAY(BigInteger), default=[])
 
     @classmethod
     async def get_roles(

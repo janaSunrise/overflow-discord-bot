@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import traceback
 import typing as t
 from datetime import datetime
 
@@ -101,6 +102,7 @@ class Bot(AutoShardedBot):
                 logger.error(
                     f"Cog {extension} failed to load with {type(exc)}: {exc!r}"
                 )
+                logger.error(traceback.format_exc())
 
     async def on_ready(self) -> None:
         """Functions called when the bot is ready and connected."""

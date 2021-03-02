@@ -18,5 +18,5 @@ class ModLock(DatabaseBase):
 
     __tablename__ = "mod_lock"
 
-    guild = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     lock_code = Column(Integer, nullable=False)

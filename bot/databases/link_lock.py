@@ -18,5 +18,5 @@ class LinkLock(DatabaseBase):
 
     __tablename__ = "link_lock"
 
-    guild = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     lock_code = Column(Integer, nullable=False)
