@@ -8,7 +8,6 @@ discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
 wavelink = "*"
 "discord.py" = {extras = ["voice"], version = "*"}
 html2text = "*"
-aiosqlite = "*"
 python-dateutil = "*"
 beautifulsoup4 = "*"
 psutil = "*"
@@ -19,8 +18,8 @@ jishaku = {git = "https://github.com/Gorialis/jishaku"}
 aiohttp = "*"
 pyyaml = "*"
 loguru = "*"
-sqlalchemy = "==1.4.0b3"
 asyncpg = "*"
+sqlalchemy = {git = "https://github.com/sqlalchemy/sqlalchemy"}
 
 [dev-packages]
 

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ea7421819c6f75302dd017e894bf6658a8ea67466a75bdac68b7518ea390055e"
+            "sha256": "498aabde1e62b1918db12bfbd66e704d2fcfb2aabf3fd6f004a415bbc603276b"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -56,14 +56,6 @@
             ],
             "index": "pypi",
             "version": "==3.7.4"
-        },
-        "aiosqlite": {
-            "hashes": [
-                "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231",
-                "sha256:f0e6acc24bc4864149267ac82fb46dfb3be4455f99fe21df82609cc6e6baee51"
-            ],
-            "index": "pypi",
-            "version": "==0.17.0"
         },
         "astunparse": {
             "hashes": [
@@ -453,38 +445,8 @@
             "ref": "2b5e75e562deda01327adcbfe8ce7cede14d8cf2"
         },
         "sqlalchemy": {
-            "hashes": [
-                "sha256:008bd2e4691ea7a5eef674747c8a720531699f41fdd20fcf996bdaaa1f7d02e1",
-                "sha256:0cf76a1f78031a7e654c50e614b4244785bae04c72f181fbb609daa26f894390",
-                "sha256:1e9791475a2f3b50f56ed4bfca8b17c8c334f0e0f8cb5898480be994a76bd446",
-                "sha256:2bcac2674c8214da6ee034cf310f9c63192536b6dd42adad7972c43ae56f483e",
-                "sha256:3d945e870ff405856331fd7f36b43562946271a1c744d8c062597552f864e2eb",
-                "sha256:3f109d22bcfc06837507b04f73deb1401446cf830c213ef1d6eb00af89c5562a",
-                "sha256:48db9563a8a304e0177711df9abdad30aecbc13571671c9a79906d0f42c03a19",
-                "sha256:4db46538d8f0bb7d3d01dea1cd884204bdba3a833ec7e91379cb6ebdb9bd6fc0",
-                "sha256:52a908eeb27418f8b39d7b4e863b1aa455ed5c34b6fd6fefd80577e08e55c1ed",
-                "sha256:53988d51bafa98602394cc9a9b71400ac43ea000661387fe5446928ca50dfc2c",
-                "sha256:5898e0a7c838923b846ac71564ff6d6ed20baf6ad91c8d146c13ac374237574c",
-                "sha256:58cb52aab1325c3000a2d9eddaf71a6d91533f94eb5c855a93a35a20ce44d430",
-                "sha256:61c3f81d4bdf3a8cb68ba0e3e0d407448cc709e38a2d15e8087ce4a69246a0e3",
-                "sha256:7fdaa459c241cba353e3d95eda9403d45f633ce5a807cf4eb28c018de8b52cde",
-                "sha256:89b503fcc07da9fbd194746c28a9fc0fa7230f50f361ad080336ad751de6302a",
-                "sha256:9e12ce96e22818fda7157d2b926084178f478df7cc4d3abb8cebae031c7076ec",
-                "sha256:a1f4213790f5bd5c3b4dcedad248d982d540d7671a6bb454c6271cb46bb3d665",
-                "sha256:aafc24c63503e3df845fc4d0bbc2757a4f11c725410637bb4f8b0aced319dba7",
-                "sha256:b2754f5e82e7a61b3600dc1b5dc7b7a7229acc2cda3f028f29ba569f9a9b601b",
-                "sha256:c17f02dde5ee05956bc3fe8320f3cf5c44a11aa9ab334623729cebecdf70afef",
-                "sha256:d34098841a62bf679da480bce711fdebe6ebcf04e951b4d83362100ad2f7e0bf",
-                "sha256:defbaf1b2cbac118a88a6379d435b1d953df8af3d4bc46c1c73bb6cd81e88728",
-                "sha256:e2223e8ce2e079a8022915c568cfff4eb31235139db49b4eb5cb1db6b4ecf656",
-                "sha256:e6b43b28d5d5cbf271ea6468c387b4c0a786bfd1d5f580be387b5b3e4355a7ca",
-                "sha256:f2de1336b228f227e36fb9549756dbb0791beadd36fa74b8bc2aa8db8c7e36b9",
-                "sha256:f84b800b40e3ce612975a23385b36f9d8506fe7d511d3d4c2363e1a3304c8b07",
-                "sha256:fc00578bdf373b339e186fc0e9bc2692d8e03d25e785be8f24475b0833e9a055",
-                "sha256:fff48978d3b670b054c25ad6b7a834b3723ac055d5593552053812b74fee4377"
-            ],
-            "index": "pypi",
-            "version": "==1.4.0b3"
+            "git": "https://github.com/sqlalchemy/sqlalchemy",
+            "ref": "5024ed693927f2ae2cd1b487b4e0397f115d1c32"
         },
         "typing-extensions": {
             "hashes": [
