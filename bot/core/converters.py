@@ -25,10 +25,9 @@ class ModerationReason(Converter):
             reason = f"{argument} by <@!{ctx.author.id}>"
 
             if len(reason) > 512:
-                shorten_size = len(argument) - \
-                    (512 - len(reason) + len(argument))
+                reason_max = 512 - len(reason) + len(argument)
                 raise BadArgument(
-                    f"Your reason is too long! Please shorten it by {shorten_size}"
+                    f"Your reason is too long! Please shorten it by ({len(argument)}/{reason_max})"
                 )
 
         return reason
