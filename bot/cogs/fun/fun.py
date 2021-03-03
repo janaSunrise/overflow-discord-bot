@@ -8,6 +8,7 @@ from bot import Bot
 
 class Fun(Cog):
     """A cog designed for fun based commands."""
+
     def __init__(self, bot: Bot):
         self.bot = bot
         self.user_agent = {"user-agent": "overflow discord bot"}
@@ -115,9 +116,7 @@ class Fun(Cog):
     @command(aliases=["shitjoke", "badjoke"])
     async def dadjoke(self, ctx: Context) -> None:
         """A simple shitty dad joke generator."""
-        headers = {
-            "Accept": "application/json"
-        }
+        headers = {"Accept": "application/json"}
         async with self.bot.session.get(
             "https://icanhazdadjoke.com", headers=headers
         ) as joke:
