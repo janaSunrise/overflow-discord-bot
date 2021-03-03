@@ -10,7 +10,8 @@ from datetime import datetime
 
 import humanize
 import psutil
-from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
+from discord import (Activity, ActivityType, Color, DiscordException, Embed,
+                     Game, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
@@ -145,7 +146,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         elif status.lower() == "watching":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(type=ActivityType.watching, name=status_info)
+                    activity=Activity(
+                        type=ActivityType.watching, name=status_info)
                 )
                 await ctx.send(
                     f"Successfully changed watching status to **{status_info}**"
@@ -162,7 +164,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         elif status.lower() == "listening":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(type=ActivityType.listening, name=status_info)
+                    activity=Activity(
+                        type=ActivityType.listening, name=status_info)
                 )
                 await ctx.send(
                     f"Successfully changed listening status to **{status_info}**"
@@ -220,7 +223,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
-        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
+        embed.add_field(name="**❯ Shard info**",
+                        value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
@@ -372,6 +376,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         record = await CommandStats.get_command_stats(self.bot.database, ctx.command.name)
 
         if record:
-            await CommandStats.set_command_stats(self.bot.database, ctx.command.name, record["usage_count"] + 1)
+            await CommandStats.set_command_stats(
+                self.bot.database, ctx.command.name, record["usage_count"] + 1
+            )
         else:
             await CommandStats.set_command_stats(self.bot.database, ctx.command.name, 1)
