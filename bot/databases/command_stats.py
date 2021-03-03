@@ -14,8 +14,7 @@ class CommandStats(DatabaseBase):
     usage_count = Column(BigInteger, nullable=False, default=0)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key) for key in self.__table__.columns.keys()}
         return data
 
     @classmethod
@@ -28,7 +27,9 @@ class CommandStats(DatabaseBase):
         return [row.dict() for row in rows]
 
     @classmethod
-    async def get_command_stats(cls, session: AsyncSession, command_name: str) -> t.Optional[t.List[dict]]:
+    async def get_command_stats(
+        cls, session: AsyncSession, command_name: str
+    ) -> t.Optional[t.List[dict]]:
         try:
             row = await session.run_sync(
                 lambda session: session.query(cls)
