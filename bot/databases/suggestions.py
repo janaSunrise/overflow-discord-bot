@@ -32,6 +32,22 @@ class SuggestionID(DatabaseBase):
         return next_id
 
 
+class SuggestionConfig(DatabaseBase):
+    __tablename__ = "suggestion_config"
+
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
+    channel_id = Column(BigInteger, unique=True)
+    limit = Column(BigInteger)
+
+
+class SuggestionUser(DatabaseBase):
+    __tablename__ = "suggestion_user"
+    user_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    anonymous = Column(Boolean, default=False)
+    dm_notification = Column(Boolean, default=False)
+
+
 class Suggestion(DatabaseBase):
     __tablename__ = "suggestion"
 
@@ -39,11 +55,4 @@ class Suggestion(DatabaseBase):
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
     user_id = Column(BigInteger, nullable=False, unique=True)
-    text = Column(String)
-
-
-class SuggestionUser(DatabaseBase):
-    __tablename__ = "suggestion_user"
-    user_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
-    anonymous = Column(Boolean)
-    dm_notification = Column(Boolean)
+    suggestion = Column(String)
