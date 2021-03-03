@@ -277,7 +277,7 @@ class ErrorHandler(Cog):
                 await self.error_embed(
                     ctx,
                     f"I am missing permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in "
-                    f"{ctx.guild.name}."
+                    f"{ctx.guild.name}.",
                 )
                 logger.warning(
                     f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
