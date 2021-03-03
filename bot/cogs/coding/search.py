@@ -11,16 +11,7 @@ from discord.ext.commands.errors import CommandInvokeError
 
 from bot import Bot, config
 
-with open("bot/assets/filter_words.txt", "r") as f:
-    filter_words = f.readlines()
-
-REGEXP = ""
-for filter_word in filter_words:
-    filter_word = filter_word.replace("\n", "")
-    REGEXP += f"{filter_word}|"
-REGEXP = REGEXP[:-1]
-
-filter_words = re.compile(REGEXP, re.I)
+filter_words = config.filter_words
 
 
 class SafesearchFail(CommandError):

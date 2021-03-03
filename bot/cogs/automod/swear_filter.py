@@ -4,7 +4,7 @@ import discord
 from discord.ext.commands import (Cog, Context, group, guild_only,
                                   has_permissions)
 
-from bot import Bot
+from bot import Bot, config
 from bot.databases.swear_filter import SwearFilter as SwearFilterDB
 
 
@@ -113,9 +113,7 @@ class SwearFilter(Cog):
             )
             return
 
-        if ctx.author != ctx.guild.owner or await ctx.guild.fetch_member(
-            ctx.guild.owner_id
-        ):
+        if ctx.author.id != ctx.guild.owner.id:
             await ctx.send("This command is available to guild owners only.")
             return
 
@@ -178,3 +176,58 @@ class SwearFilter(Cog):
         """Remove all the swear words configured."""
         await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, [])
         await ctx.send("Swear filter wordlist cleared.")
+
+    @Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        if message.author.bot:
+            return
+
+        if not message.guild:
+            return
+
+        if message.author.guild_permissions.administrator:
+            return
+
+        if message.channel.is_nsfw() or message.author.guild_permissions.manage_roles:
+            return
+
+        status = await SwearFilterDB.get_config(self.bot.database, message.guild.id)
+
+        if not status:
+            return
+
+        owner = message.guild.owner or await message.guild.fetch_member(
+            message.guild.owner_id
+        )
+
+        if status["autoswear"]:
+            if config.filter_words.search(word := message.content.lower()):
+                await message.delete()
+                await message.channel.send(
+                    f"Sorry {message.author.mention}! I removed your message, as it contained a restricted "
+                    f"word.",
+                    delete_after=10
+                )
+
+                if status["notification"]:
+                    await owner.send(
+                        f"{message.author} send a forbidden swear word `{word}` in your server"
+                        f"`[{message.guild.name}]`"
+                    )
+                return
+
+        if status["manual_on"]:
+            for word in status["words"]:
+                if word in message.content.lower().split(r"\s+"):
+                    await message.delete()
+                    await message.channel.send(
+                        f"Sorry {message.author.mention}! I removed your message, as it contained a restricted "
+                        f"word.",
+                        delete_after=10
+                    )
+
+                    if status["notification"]:
+                        await owner.send(
+                            f"{message.author} send a forbidden swear word `{word}` in your server"
+                            f"`[{message.guild.name}]`"
+                        )

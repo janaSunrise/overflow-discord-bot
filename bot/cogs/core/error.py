@@ -274,6 +274,11 @@ class ErrorHandler(Cog):
             elif isinstance(
                 error.original, (discord.Forbidden, menus.CannotSendMessages)
             ):
+                await self.error_embed(
+                    ctx,
+                    f"I am missing permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in "
+                    f"{ctx.guild.name}."
+                )
                 logger.warning(
                     f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
                 )
