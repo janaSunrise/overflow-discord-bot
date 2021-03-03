@@ -1,8 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, group, guild_only,
-                                  has_permissions)
+from discord.ext.commands import Cog, Context, group, guild_only, has_permissions
 
 from bot import Bot, config
 from bot.databases.swear_filter import SwearFilter as SwearFilterDB
@@ -206,7 +205,7 @@ class SwearFilter(Cog):
                 await message.channel.send(
                     f"Sorry {message.author.mention}! I removed your message, as it contained a restricted "
                     f"word.",
-                    delete_after=10
+                    delete_after=10,
                 )
 
                 if status["notification"]:
@@ -223,7 +222,7 @@ class SwearFilter(Cog):
                     await message.channel.send(
                         f"Sorry {message.author.mention}! I removed your message, as it contained a restricted "
                         f"word.",
-                        delete_after=10
+                        delete_after=10,
                     )
 
                     if status["notification"]:
