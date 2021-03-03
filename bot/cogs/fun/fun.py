@@ -115,13 +115,15 @@ class Fun(Cog):
     @command(aliases=["shitjoke", "badjoke"])
     async def dadjoke(self, ctx: Context) -> None:
         """A simple shitty dad joke generator."""
+        headers = {
+            "Accept": "application/json"
+        }
         async with self.bot.session.get(
-            "https://icanhazdadjoke.com", headers=self.dadjoke
+            "https://icanhazdadjoke.com", headers=headers
         ) as joke:
             if joke.status == 200:
-                res = await joke.text()
-                res = res.encode("utf-8").decode("utf-8")
-                await ctx.send(res)
+                res = await joke.json()
+                await ctx.send(res["joke"])
             else:
                 await ctx.send(f"No dad joke. [STATUS : {joke.status}]")
 
