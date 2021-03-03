@@ -339,7 +339,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
     @sudo.command(aliases=["command-stats", "cmd-stats"])
     async def command_stats(self, ctx: Context) -> None:
-        rows = await CommandStats.get_command_stats(self.bot.database)
+        rows = await CommandStats.get_stats(self.bot.database)
 
         embed = Embed(
             title="Usage stats",
@@ -357,8 +357,8 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
 
         for record in records:
             embed.add_field(
-                name=record["command"],
-                value=record["usage_count"],
+                name=f"• {record['command']}",
+                value=f"Usage count: {record['usage_count']}",
                 inline=False,
             )
         await ctx.send(embed=embed)
@@ -369,7 +369,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         if await ctx.bot.is_owner(ctx.author):
             return
 
-        record = await CommandStats.get_command_stat(self.bot.database, ctx.command.name)
+        record = await CommandStats.get_command_stats(self.bot.database, ctx.command.name)
 
         if record:
             await CommandStats.set_command_stats(self.bot.database, ctx.command.name, record["usage_count"] + 1)
