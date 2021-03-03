@@ -172,7 +172,11 @@ class Lock(Cog):
 
     @command(name="maintenance-lock", aliases=["maintenancelock", "m-lock"])
     @has_permissions(administrator=True)
-    async def maintenance_lock(self, ctx: Context, override_roles: Greedy[RoleConverter] = None) -> None:
+    async def maintenance_lock(
+            self,
+            ctx: Context,
+            override_roles: Greedy[RoleConverter] = None
+    ) -> None:
         """
         Disable default role's permission to send message on all channels.
 
@@ -211,7 +215,11 @@ class Lock(Cog):
 
     @command(name="maintenance-unlock", aliases=["maintenanceunlock", "m-unlock"])
     @has_permissions(administrator=True)
-    async def maintenance_unlock(self, ctx: Context, override_roles: Greedy[RoleConverter] = None) -> None:
+    async def maintenance_unlock(
+            self,
+            ctx: Context,
+            override_roles: Greedy[RoleConverter] = None
+    ) -> None:
         """
         Enable default role's permission to send message on all channels.
 
