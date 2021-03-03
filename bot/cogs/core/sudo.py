@@ -369,9 +369,13 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         if await ctx.bot.is_owner(ctx.author):
             return
 
-        record = await CommandStats.get_command_stats(self.bot.database, ctx.command.name)
+        record = await CommandStats.get_command_stats(
+            self.bot.database, ctx.command.name
+        )
 
         if record:
-            await CommandStats.set_command_stats(self.bot.database, ctx.command.name, record["usage_count"] + 1)
+            await CommandStats.set_command_stats(
+                self.bot.database, ctx.command.name, record["usage_count"] + 1
+            )
         else:
             await CommandStats.set_command_stats(self.bot.database, ctx.command.name, 1)
