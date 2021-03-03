@@ -169,3 +169,81 @@ class Lock(Cog):
             await ctx.send(
                 f"✅ Disabled slowmode for {channel_count} channel{'s' if channel_count > 1 else ''}."
             )
+
+    @command(name="maintenance-lock", aliases=["maintenancelock", "m-lock"])
+    @has_permissions(administrator=True)
+    async def maintenance_lock(self, ctx: Context, override_roles: Greedy[RoleConverter] = None) -> None:
+        """
+        Disable default role's permission to send message on all channels.
+
+        Specify the override roles so that the specified roles can talk or connect to VC.
+        """
+        channel_count = 0
+        default_role = await self.get_default_role(ctx)
+        guild = ctx.guild
+
+        overwrites = {
+            default_role: discord.PermissionOverwrite(send_messages=False, connect=False),
+            guild.me: discord.PermissionOverwrite(
+                read_messages=True,
+                send_messages=True,
+                manage_messages=True,
+                add_reactions=True,
+                manage_channels=True,
+            ),
+        }
+
+        if override_roles is not None:
+            for role in override_roles:
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=True,
+                    connect=True
+                )
+
+        for channel in ctx.guild.channels:
+            await channel.edit(
+                overwrites=overwrites, reason=f"Reason: Server Under Maintenance | Requested by {ctx.author}."
+            )
+            channel_count += 1
+
+        await ctx.send(
+            f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}. Server Under Maintenance.")
+
+    @command(name="maintenance-unlock", aliases=["maintenanceunlock", "m-unlock"])
+    @has_permissions(administrator=True)
+    async def maintenance_unlock(self, ctx: Context, override_roles: Greedy[RoleConverter] = None) -> None:
+        """
+        Enable default role's permission to send message on all channels.
+
+        Specify the override roles so that the specified roles can talk or connect to VC.
+        """
+        channel_count = 0
+        default_role = await self.get_default_role(ctx)
+        guild = ctx.guild
+
+        overwrites = {
+            default_role: discord.PermissionOverwrite(send_messages=True, connect=True),
+            guild.me: discord.PermissionOverwrite(
+                read_messages=True,
+                send_messages=True,
+                manage_messages=True,
+                add_reactions=True,
+                manage_channels=True,
+            ),
+        }
+
+        if override_roles is not None:
+            for role in override_roles:
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=False,
+                    connect=False
+                )
+
+        for channel in ctx.guild.channels:
+            await channel.edit(
+                overwrites=overwrites, reason=f"Reason: Server Maintenance Lifted | Requested by {ctx.author}."
+            )
+            channel_count += 1
+
+        await ctx.send(
+            f"Unlocked {channel_count} channel{'s' if channel_count > 1 else ''}. Server Maintenance lifted.")
