@@ -1,15 +1,24 @@
 import asyncio
-import typing as t
 import re
+import typing as t
 from collections import Counter
 from contextlib import suppress
 from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
-                                  NoPrivateMessage, RoleConverter, command,
-                                  has_permissions, group, guild_only)
+from discord.ext.commands import (
+    Cog,
+    Context,
+    Greedy,
+    MemberConverter,
+    NoPrivateMessage,
+    RoleConverter,
+    command,
+    group,
+    guild_only,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.core.converters import ModerationReason
@@ -56,15 +65,14 @@ class Moderation(Cog):
 
         message = await ctx.send(
             f"Hey {ctx.author.mention}!",
-            embed=discord.Embed(description=description,
-                                color=discord.Color.green()),
+            embed=discord.Embed(description=description, color=discord.Color.green()),
         )
         await asyncio.sleep(4)
         await message.delete()
 
     async def do_removal(self, ctx, limit, predicate, *, before=None, after=None):
         if limit > 2000:
-            return await ctx.send(f'Too many messages to search given ({limit}/2000)')
+            return await ctx.send(f"Too many messages to search given ({limit}/2000)")
 
         if before is None:
             before = ctx.message
@@ -75,26 +83,28 @@ class Moderation(Cog):
             after = discord.Object(id=after)
 
         try:
-            deleted = await ctx.channel.purge(limit=limit, before=before, after=after, check=predicate)
+            deleted = await ctx.channel.purge(
+                limit=limit, before=before, after=after, check=predicate
+            )
         except discord.HTTPException as e:
-            return await ctx.send(f'Error: {e} (try a smaller search?)')
+            return await ctx.send(f"Error: {e} (try a smaller search?)")
 
         spammers = Counter(m.author.display_name for m in deleted)
         deleted = len(deleted)
         messages = [f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
         if deleted:
-            messages.append('')
+            messages.append("")
             spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
-            messages.extend(f'**{name}**: {count}' for name, count in spammers)
+            messages.extend(f"**{name}**: {count}" for name, count in spammers)
 
-        to_send = '\n'.join(messages)
+        to_send = "\n".join(messages)
 
         if len(to_send) > 2000:
-            await ctx.send(f'Successfully removed {deleted} messages.', delete_after=10)
+            await ctx.send(f"Successfully removed {deleted} messages.", delete_after=10)
         else:
             await ctx.send(to_send, delete_after=10)
 
-    @group(aliases=['advanced-purge', 'advanced-clear', 'advanced-clean'])
+    @group(aliases=["advanced-purge", "advanced-clear", "advanced-clean"])
     @guild_only()
     @has_permissions(manage_messages=True)
     async def advanced_clear(self, ctx):
@@ -115,10 +125,14 @@ class Moderation(Cog):
     @advanced_clear.command()
     async def images(self, ctx: Context, search: int = 100) -> None:
         """Removes messages that have embeds or attachments."""
-        await self.do_removal(ctx, search, lambda e: len(e.embeds) or len(e.attachments))
+        await self.do_removal(
+            ctx, search, lambda e: len(e.embeds) or len(e.attachments)
+        )
 
     @advanced_clear.command()
-    async def user(self, ctx: Context, member: discord.Member, search: int = 100) -> None:
+    async def user(
+        self, ctx: Context, member: discord.Member, search: int = 100
+    ) -> None:
         """Removes all messages by the member."""
         await self.do_removal(ctx, search, lambda e: e.author == member)
 
@@ -126,33 +140,36 @@ class Moderation(Cog):
     async def contains(self, ctx: Context, *, substr: str) -> None:
         """Removes all messages containing a substring.Must be atleast 3 characters long."""
         if len(substr) < 3:
-            await ctx.send('The substring length must be at least 3 characters.')
+            await ctx.send("The substring length must be at least 3 characters.")
         else:
             await self.do_removal(ctx, 100, lambda e: substr in e.content)
 
-    @advanced_clear.command(name='bot', aliases=['bots'])
+    @advanced_clear.command(name="bot", aliases=["bots"])
     async def _bot(self, ctx: Context, prefix: str = None, search: int = 100) -> None:
         """Removes a bot user's messages and messages with their optional prefix."""
+
         def predicate(m: t.Any) -> t.Any:
-            return (m.webhook_id is None and m.author.bot) or (prefix and m.content.startswith(prefix))
+            return (m.webhook_id is None and m.author.bot) or (
+                prefix and m.content.startswith(prefix)
+            )
 
         await self.do_removal(ctx, search, predicate)
 
-    @advanced_clear.command(name='emoji', aliases=['emojis'])
+    @advanced_clear.command(name="emoji", aliases=["emojis"])
     async def _emoji(self, ctx: Context, search: int = 100) -> None:
         """Removes all messages containing custom emoji."""
-        custom_emoji = re.compile(r'<a?:[a-zA-Z0-9\_]+:([0-9]+)>')
+        custom_emoji = re.compile(r"<a?:[a-zA-Z0-9\_]+:([0-9]+)>")
 
         def predicate(m):
             return custom_emoji.search(m.content)
 
         await self.do_removal(ctx, search, predicate)
 
-    @advanced_clear.command(name='reactions')
+    @advanced_clear.command(name="reactions")
     async def _reactions(self, ctx: Context, search: int = 100) -> None:
         """Removes all reactions from messages that have them."""
         if search > 2000:
-            await ctx.send(f'Too many messages to search for ({search} / 2000)')
+            await ctx.send(f"Too many messages to search for ({search} / 2000)")
             return
 
         total_reactions = 0
@@ -161,16 +178,16 @@ class Moderation(Cog):
                 total_reactions += sum(r.count for r in message.reactions)
                 await message.clear_reactions()
 
-        await ctx.send(f'Successfully removed {total_reactions} reactions.')
+        await ctx.send(f"Successfully removed {total_reactions} reactions.")
 
     @command()
     @has_permissions(kick_members=True)
     async def kick(
-            self,
-            ctx: Context,
-            member: MemberConverter,
-            *,
-            reason: ModerationReason = "No reason specified.",
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
     ) -> None:
         """Kick a member from your server."""
         if not isinstance(member, discord.Member):
@@ -200,11 +217,11 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     async def ban(
-            self,
-            ctx: Context,
-            member: MemberConverter,
-            *,
-            reason: ModerationReason = "No reason specified.",
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
     ) -> None:
         """Ban a member from your server."""
         embed = moderation_embed(
@@ -219,11 +236,11 @@ class Moderation(Cog):
     @command()
     @has_permissions(ban_members=True)
     async def softban(
-            self,
-            ctx: Context,
-            member: MemberConverter,
-            *,
-            reason: ModerationReason = "No reason specified.",
+        self,
+        ctx: Context,
+        member: MemberConverter,
+        *,
+        reason: ModerationReason = "No reason specified.",
     ) -> None:
         """Ban and unban a member from your server."""
         if "softban" not in reason:
