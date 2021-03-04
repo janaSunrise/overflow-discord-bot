@@ -14,6 +14,7 @@ from discord.ext.commands import (
     MemberConverter,
     NoPrivateMessage,
     RoleConverter,
+    UserConverter,
     command,
     group,
     guild_only,
@@ -225,7 +226,7 @@ class Moderation(Cog):
     ) -> None:
         """Ban a member from your server."""
         embed = moderation_embed(
-            ctx, action="ban", user=member, reason=reason, color=discord.Color.gold()
+            ctx, action="bann", user=member, reason=reason, color=discord.Color.gold()
         )
         embed.timestamp = datetime.utcnow()
         embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
@@ -247,7 +248,7 @@ class Moderation(Cog):
             reason = "[SOFTBANNED] " + reason
 
         embed = moderation_embed(
-            ctx, action="ban", user=member, reason=reason, color=discord.Color.gold()
+            ctx, action="bann", user=member, reason=reason, color=discord.Color.gold()
         )
         embed.timestamp = datetime.utcnow()
         embed.set_thumbnail(url=member.avatar_url_as(format="png", size=256))
@@ -255,6 +256,31 @@ class Moderation(Cog):
         await ctx.send(embed=embed)
         await member.ban(reason=reason)
         await member.unban(reason=reason)
+
+    @command()
+    @has_permissions(ban_members=True)
+    async def unban(self, ctx: Context, *, user: UserConverter, reason: str = "Not specified.") -> None:
+        try:
+            await ctx.guild.unban(user)
+
+            embed = moderation_embed(
+                ctx, action="unbann", user=user, reason=reason, color=discord.Color.gold()
+            )
+            embed.timestamp = datetime.utcnow()
+            embed.set_thumbnail(url=user.avatar_url_as(format="png", size=256))
+            await ctx.send(embed=embed)
+        except discord.NotFound:
+            embed = discord.Embed(
+                title="Ban not Found!",
+                description=dedent(
+                    f"""
+                    There are no active bans on discord for {user.mention}.
+                    He isn't banned here.
+                    """
+                ),
+                color=discord.Color.red(),
+            )
+            await ctx.send(embed=embed)
 
     @command()
     @has_permissions(kick_members=True)

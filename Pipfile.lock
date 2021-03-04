@@ -446,7 +446,7 @@
         },
         "sqlalchemy": {
             "git": "https://github.com/sqlalchemy/sqlalchemy",
-            "ref": "5024ed693927f2ae2cd1b487b4e0397f115d1c32"
+            "ref": "a63b23392fc31766e32b8650127d9006ee189a0f"
         },
         "typing-extensions": {
             "hashes": [

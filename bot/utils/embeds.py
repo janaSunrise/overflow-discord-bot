@@ -3,7 +3,7 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import Context, MemberConverter
+from discord.ext.commands import Context, MemberConverter, UserConverter
 
 from bot.core.converters import ModerationReason
 
@@ -11,7 +11,7 @@ from bot.core.converters import ModerationReason
 def moderation_embed(
     ctx: Context,
     action: str,
-    user: t.Union[discord.Member, MemberConverter],
+    user: t.Union[discord.Member, MemberConverter, discord.User, UserConverter],
     reason: t.Union[str, ModerationReason],
     color: discord.Color = discord.Color.blue(),
 ) -> discord.Embed:
