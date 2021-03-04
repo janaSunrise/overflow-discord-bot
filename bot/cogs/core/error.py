@@ -1,6 +1,5 @@
 import json
 import textwrap
-import traceback
 import typing as t
 
 import discord
@@ -194,6 +193,51 @@ class ErrorHandler(Cog):
             await self.error_embed(ctx, description=msg)
             return
 
+        elif (
+                isinstance(error.original, discord.HTTPException)
+                and error.original.code == 50034
+        ):
+            await self.error_embed(
+                ctx,
+                "❌ You can only bulk delete messages that are under 14 days old",
+            )
+            return
+
+        elif isinstance(error.original, menus.CannotEmbedLinks):
+            await self.error_embed(
+                ctx,
+                "I need to be able to send embeds to show menus. Please give me permission to Embed Links.",
+            )
+            return
+
+        elif isinstance(error.original, menus.CannotAddReactions):
+            await self.error_embed(
+                ctx,
+                "I need to be able to add reactions to show menus. Please give me permission to Add Reactions",
+            )
+            return
+
+        elif isinstance(error.original, menus.CannotReadMessageHistory):
+            await self.error_embed(
+                ctx,
+                "I need to be able to read message history to show menus. Please give me permission to Read "
+                "Message History",
+            )
+            return
+
+        elif isinstance(
+                error.original, (discord.Forbidden, menus.CannotSendMessages)
+        ):
+            await self.error_embed(
+                ctx,
+                f"I am missing permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in "
+                f"{ctx.guild.name}.",
+            )
+            logger.warning(
+                f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
+            )
+            return
+
         error_messages = {
             NSFWChannelRequired: f"The command `{ctx.command}` can only be ran in a NSFW channel.",
             DisabledCommand: f"The command `{ctx.command}` has been disabled.",
@@ -239,52 +283,7 @@ class ErrorHandler(Cog):
 
                 await self.error_embed(ctx, description=msg)
 
-            elif (
-                isinstance(error.original, discord.HTTPException)
-                and error.original.code == 50034
-            ):
-                await self.error_embed(
-                    ctx,
-                    "❌ You can only bulk delete messages that are under 14 days old",
-                )
-                return
-
-            elif isinstance(error.original, menus.CannotEmbedLinks):
-                await self.error_embed(
-                    ctx,
-                    "I need to be able to send embeds to show menus. Please give me permission to Embed Links.",
-                )
-                return
-
-            elif isinstance(error.original, menus.CannotAddReactions):
-                await self.error_embed(
-                    ctx,
-                    "I need to be able to add reactions to show menus. Please give me permission to Add Reactions",
-                )
-                return
-
-            elif isinstance(error.original, menus.CannotReadMessageHistory):
-                await self.error_embed(
-                    ctx,
-                    "I need to be able to read message history to show menus. Please give me permission to Read "
-                    "Message History",
-                )
-                return
-
-            elif isinstance(
-                error.original, (discord.Forbidden, menus.CannotSendMessages)
-            ):
-                await self.error_embed(
-                    ctx,
-                    f"I am missing permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in "
-                    f"{ctx.guild.name}.",
-                )
-                logger.warning(
-                    f"Missing Permissions for {ctx.command.qualified_name} in #{ctx.channel.name} in {ctx.guild.name}"
-                )
-                return
-
-            elif error_cause is not None:
+            if error_cause is not None:
                 await self.error_embed(
                     ctx,
                     title="Unhandled Error",
@@ -297,7 +296,11 @@ class ErrorHandler(Cog):
                         """
                     ),
                 )
-                logger.error(traceback.format_exc())
+                logger.error(
+                    f"Exception {error_cause.__repr__()} has occurred from "
+                    f"the message({ctx.message.content}) invoked by {ctx.author.id} in {ctx.guild.name}[{ctx.guild.id}]"
+                )
+            raise error_cause
             return
 
         await self.error_embed(
@@ -312,5 +315,7 @@ class ErrorHandler(Cog):
                 """
             ),
         )
-
-        logger.error(traceback.format_exc())
+        logger.error(
+            f"Exception {error.__repr__()} has occurred from "
+            f"the message({ctx.message.content}) invoked by {ctx.author.id} in {ctx.guild.name}[{ctx.guild.id}]"
+        )
