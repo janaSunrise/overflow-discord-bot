@@ -253,3 +253,94 @@ class Lookup(Cog):
 
         await ctx.send(embed=embed)
 
+    @command()
+    async def icon(self, ctx: Context) -> None:
+        """
+        Displays a servers icon.
+        `guild`: The server of which to get the icon for. Can be it's ID or Name. Defaults to the current server.
+        """
+        guild = ctx.guild
+
+        if not guild.icon:
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'The server `{guild}` does not have an icon.',
+                    color=discord.Color.red()
+                )
+            )
+            return
+
+        embed = discord.Embed(
+            title=f"{guild.name}'s icon",
+            description=f'''
+               [PNG]({guild.icon_url_as(format="png")})
+               [JPEG]({guild.icon_url_as(format="jpeg")})
+               [WEBP]({guild.icon_url_as(format="webp")})
+               ''',
+            color=discord.Color.blue()
+        )
+        embed.set_image(url=str(guild.icon_url_as(format='png')))
+
+        if guild.is_icon_animated():
+            embed.description += f'\n[GIF]({guild.icon_url_as(format="gif")})'
+            embed.set_image(url=str(guild.icon_url_as(size=1024, format='gif')))
+
+        await ctx.send(embed=embed)
+
+    @command()
+    async def banner(self, ctx: Context):
+        """
+        Displays a servers banner.
+        `guild`: The server of which to get the banner for. Can be it's ID or Name. Defaults to the current server.
+        """
+        guild = ctx.guild
+
+        if not guild.banner:
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'The server `{guild}` does not have an banner.',
+                    color=discord.Color.red()
+                )
+            )
+            return
+
+        embed = discord.Embed(
+            title=f"{guild.name}'s banner",
+            description=f'''
+               [PNG]({guild.banner_url_as(format="png")})
+               [JPEG]({guild.banner_url_as(format="jpeg")})
+               [WEBP]({guild.banner_url_as(format="webp")})''',
+            colour=discord.Color.blue(),
+        )
+        embed.set_image(url=str(guild.banner_url_as(format='png')))
+
+        await ctx.send(embed=embed)
+        return
+
+    @command()
+    async def splash(self, ctx: Context):
+        """
+        Displays a servers splash.
+        `guild`: The server of which to get the splash for. Can be it's ID or Name. Defaults to the current server.
+        """
+        guild = ctx.guild
+
+        if not guild.splash:
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f'The server `{guild}` does not have an splash icon.',
+                    color=discord.Color.red()
+                )
+            )
+            return
+
+        embed = discord.Embed(color=discord.Color.blurple(), title=f"{guild.name}'s splash")
+        embed.description = f'''
+               [PNG]({guild.splash_url_as(format="png")})
+               [JPEG]({guild.splash_url_as(format="jpeg")})
+               [WEBP]({guild.splash_url_as(format="webp")})
+           '''
+        embed.set_image(url=str(guild.splash_url_as(format='png')))
+
+        return await ctx.send(embed=embed)
+
