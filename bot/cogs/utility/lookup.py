@@ -5,7 +5,8 @@ from textwrap import dedent
 
 import discord
 import humanize
-from discord.ext.commands import Cog, Context, MemberConverter, UserConverter, command
+from discord.ext.commands import (Cog, Context, MemberConverter, UserConverter,
+                                  command)
 
 from bot import Bot
 
@@ -20,33 +21,35 @@ class Lookup(Cog):
             discord.Status.offline: "Offline",
         }
         self.features = {
-            'VIP_REGIONS': 'Has VIP voice regions',
-            'VANITY_URL': 'Can have vanity invite',
-            'INVITE_SPLASH': 'Can have invite splash',
-            'VERIFIED': 'Is verified server',
-            'PARTNERED': 'Is partnered server',
-            'MORE_EMOJI': 'Can have 50+ emoji',
-            'DISCOVERABLE': 'Is discoverable',
-            'FEATURABLE': 'Is featurable',
-            'COMMERCE': 'Can have store channels',
-            'PUBLIC': 'Is public',
-            'NEWS': 'Can have news channels',
-            'BANNER': 'Can have banner',
-            'ANIMATED_ICON': 'Can have animated icon',
-            'PUBLIC_DISABLED': 'Can not be public',
-            'WELCOME_SCREEN_ENABLED': 'Can have welcome screen',
-            'MEMBER_VERIFICATION_GATE_ENABLED': 'Member verification enabled.',
-            'PREVIEW_ENABLED': 'Guild can be previewed.'
+            "VIP_REGIONS": "Has VIP voice regions",
+            "VANITY_URL": "Can have vanity invite",
+            "INVITE_SPLASH": "Can have invite splash",
+            "VERIFIED": "Is verified server",
+            "PARTNERED": "Is partnered server",
+            "MORE_EMOJI": "Can have 50+ emoji",
+            "DISCOVERABLE": "Is discoverable",
+            "FEATURABLE": "Is featurable",
+            "COMMERCE": "Can have store channels",
+            "PUBLIC": "Is public",
+            "NEWS": "Can have news channels",
+            "BANNER": "Can have banner",
+            "ANIMATED_ICON": "Can have animated icon",
+            "PUBLIC_DISABLED": "Can not be public",
+            "WELCOME_SCREEN_ENABLED": "Can have welcome screen",
+            "MEMBER_VERIFICATION_GATE_ENABLED": "Member verification enabled.",
+            "PREVIEW_ENABLED": "Guild can be previewed.",
         }
 
-    def get_user_embed(self, user: t.Union[UserConverter, MemberConverter]) -> discord.Embed:
+    def get_user_embed(
+        self, user: t.Union[UserConverter, MemberConverter]
+    ) -> discord.Embed:
         """Create an embed with detailed info about given user"""
         embed = discord.Embed(
-            title=f"{user}'s stats and information.",
-            color=user.color
+            title=f"{user}'s stats and information.", color=user.color
         )
 
-        created_time = datetime.strftime(user.created_at, "%A %d %B %Y at %H:%M")
+        created_time = datetime.strftime(
+            user.created_at, "%A %d %B %Y at %H:%M")
 
         # -- User info section --
 
@@ -71,7 +74,8 @@ class Lookup(Cog):
             if user.nick:
                 member_info += f"Nickname: {user.nick}"
 
-            joined_time = datetime.strftime(user.joined_at, "%A %d %B %Y at %H:%M")
+            joined_time = datetime.strftime(
+                user.joined_at, "%A %d %B %Y at %H:%M")
             member_info += f"Joined server: {joined_time}"
 
             roles = [role.mention for role in user.roles[1:]]
@@ -83,7 +87,9 @@ class Lookup(Cog):
             member_info += f"\nMain roles: \n{role_order}"
 
         else:
-            member_info = "No server related info, this user is not a member of this server."
+            member_info = (
+                "No server related info, this user is not a member of this server."
+            )
 
         # -- Status section --
 
@@ -108,21 +114,13 @@ class Lookup(Cog):
         else:
             status_info += "\nDevice: PC :desktop:"
 
+        embed.add_field(name="❯ General information",
+                        value=user_info, inline=False)
         embed.add_field(
-            name="❯ General information",
-            value=user_info,
-            inline=False
+            name="❯ Server related information", value=member_info, inline=False
         )
-        embed.add_field(
-            name="❯ Server related information",
-            value=member_info,
-            inline=False
-        )
-        embed.add_field(
-            name="❯ Status information",
-            value=status_info,
-            inline=True
-        )
+        embed.add_field(name="❯ Status information",
+                        value=status_info, inline=True)
         embed.set_thumbnail(url=user.avatar_url)
         embed.set_footer(text=f"UserID: {user.id}")
 
@@ -130,25 +128,30 @@ class Lookup(Cog):
 
     def get_server_embed(self, guild: discord.Guild) -> discord.Embed:
         """Get the information Embed from a guild."""
-        region = guild.region.name.title().replace('Vip', 'VIP').replace('_', '-').replace('Us-', 'US-')
+        region = (
+            guild.region.name.title()
+            .replace("Vip", "VIP")
+            .replace("_", "-")
+            .replace("Us-", "US-")
+        )
 
         if guild.region == discord.VoiceRegion.hongkong:
-            region = 'Hong Kong'
+            region = "Hong Kong"
 
         if guild.region == discord.VoiceRegion.southafrica:
-            region = 'South Africa'
+            region = "South Africa"
 
         features = []
         for feature, description in self.features.items():
             if feature in guild.features:
-                features.append(f'✅ | {description}')
+                features.append(f"✅ | {description}")
             else:
-                features.append(f'❌ | {description}')
+                features.append(f"❌ | {description}")
 
         embed = discord.Embed(
             title=f"{guild.name}'s stats and information.",
             description=guild.description if guild.description else None,
-            color=discord.Color.blurple()
+            color=discord.Color.blurple(),
         )
         embed.add_field(
             name="❯ General information",
@@ -167,7 +170,7 @@ class Lookup(Cog):
                 Member count: **`{guild.member_count}`**
                 """
             ),
-            inline=False
+            inline=False,
         )
 
         embed.add_field(
@@ -217,7 +220,11 @@ class Lookup(Cog):
         await ctx.send(embed=self.get_server_embed(ctx.guild))
 
     @command(aliases=["user"])
-    async def userinfo(self, ctx: Context, user: t.Optional[t.Union[MemberConverter, UserConverter]] = None) -> None:
+    async def userinfo(
+        self,
+        ctx: Context,
+        user: t.Optional[t.Union[MemberConverter, UserConverter]] = None,
+    ) -> None:
         """
         Get information about you, or a specified member.
         `user` can be a user Mention, Name, or ID.
@@ -246,7 +253,11 @@ class Lookup(Cog):
             {self.STATUSES[discord.Status.offline]} | **`{member_by_status["offline"]}`**
             """
         )
-        embed = discord.Embed(title="Member count", description=ctx.guild.member_count, color=discord.Color.blue())
+        embed = discord.Embed(
+            title="Member count",
+            description=ctx.guild.member_count,
+            color=discord.Color.blue(),
+        )
         embed.add_field(name="❯ Member Status", value=status, inline=False)
         embed.add_field(name="❯ Member Type", value=member_type, inline=False)
         embed.set_author(name=f"Server : {ctx.guild.name}")
@@ -264,26 +275,27 @@ class Lookup(Cog):
         if not guild.icon:
             await ctx.send(
                 embed=discord.Embed(
-                    description=f'The server `{guild}` does not have an icon.',
-                    color=discord.Color.red()
+                    description=f"The server `{guild}` does not have an icon.",
+                    color=discord.Color.red(),
                 )
             )
             return
 
         embed = discord.Embed(
             title=f"{guild.name}'s icon",
-            description=f'''
+            description=f"""
                [PNG]({guild.icon_url_as(format="png")})
                [JPEG]({guild.icon_url_as(format="jpeg")})
                [WEBP]({guild.icon_url_as(format="webp")})
-               ''',
-            color=discord.Color.blue()
+               """,
+            color=discord.Color.blue(),
         )
-        embed.set_image(url=str(guild.icon_url_as(format='png')))
+        embed.set_image(url=str(guild.icon_url_as(format="png")))
 
         if guild.is_icon_animated():
             embed.description += f'\n[GIF]({guild.icon_url_as(format="gif")})'
-            embed.set_image(url=str(guild.icon_url_as(size=1024, format='gif')))
+            embed.set_image(
+                url=str(guild.icon_url_as(size=1024, format="gif")))
 
         await ctx.send(embed=embed)
 
@@ -298,21 +310,21 @@ class Lookup(Cog):
         if not guild.banner:
             await ctx.send(
                 embed=discord.Embed(
-                    description=f'The server `{guild}` does not have an banner.',
-                    color=discord.Color.red()
+                    description=f"The server `{guild}` does not have an banner.",
+                    color=discord.Color.red(),
                 )
             )
             return
 
         embed = discord.Embed(
             title=f"{guild.name}'s banner",
-            description=f'''
+            description=f"""
                [PNG]({guild.banner_url_as(format="png")})
                [JPEG]({guild.banner_url_as(format="jpeg")})
-               [WEBP]({guild.banner_url_as(format="webp")})''',
+               [WEBP]({guild.banner_url_as(format="webp")})""",
             colour=discord.Color.blue(),
         )
-        embed.set_image(url=str(guild.banner_url_as(format='png')))
+        embed.set_image(url=str(guild.banner_url_as(format="png")))
 
         await ctx.send(embed=embed)
         return
@@ -328,19 +340,20 @@ class Lookup(Cog):
         if not guild.splash:
             await ctx.send(
                 embed=discord.Embed(
-                    description=f'The server `{guild}` does not have an splash icon.',
-                    color=discord.Color.red()
+                    description=f"The server `{guild}` does not have an splash icon.",
+                    color=discord.Color.red(),
                 )
             )
             return
 
-        embed = discord.Embed(color=discord.Color.blurple(), title=f"{guild.name}'s splash")
-        embed.description = f'''
+        embed = discord.Embed(
+            color=discord.Color.blurple(), title=f"{guild.name}'s splash"
+        )
+        embed.description = f"""
                [PNG]({guild.splash_url_as(format="png")})
                [JPEG]({guild.splash_url_as(format="jpeg")})
                [WEBP]({guild.splash_url_as(format="webp")})
-           '''
-        embed.set_image(url=str(guild.splash_url_as(format='png')))
+           """
+        embed.set_image(url=str(guild.splash_url_as(format="png")))
 
         return await ctx.send(embed=embed)
-
