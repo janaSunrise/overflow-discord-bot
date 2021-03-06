@@ -73,7 +73,8 @@ class Games(Cog):
         elif reply_type == 3:
             answer = random.choice(config.BALL_REPLIES["error"])
 
-        embed = discord.Embed(title="Magic 8-ball", color=discord.Color.blurple())
+        embed = discord.Embed(title="Magic 8-ball",
+                              color=discord.Color.blurple())
         embed.add_field(name="Question", value=question)
         embed.add_field(name="Answer", value=answer)
 
