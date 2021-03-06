@@ -86,7 +86,8 @@ class Conversion(Cog):
         algo = algorithm.lower()
 
         if algo not in self.hash_algos:
-            close_matches = difflib.get_close_matches(algo, self.hash_algos, n=1)
+            close_matches = difflib.get_close_matches(
+                algo, self.hash_algos, n=1)
             message = f"`{algo}` not available."
             if close_matches:
                 message += f"\nDid you mean `{close_matches[0]}`?"
@@ -172,6 +173,7 @@ class Conversion(Cog):
         embed.set_author(name="Character Info")
 
         if len(characters) > 1:
-            embed.add_field(name="Raw", value=f"`{''.join(rawlist)}`", inline=False)
+            embed.add_field(
+                name="Raw", value=f"`{''.join(rawlist)}`", inline=False)
 
         await ctx.send(embed=embed)

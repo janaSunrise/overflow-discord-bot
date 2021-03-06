@@ -142,6 +142,7 @@ class HelpPages(EmbedPages):
 
 class HelpCommand(BaseHelpCommand):
     """The help command implementation."""
+
     def __init__(self):
         super().__init__(
             command_attrs={

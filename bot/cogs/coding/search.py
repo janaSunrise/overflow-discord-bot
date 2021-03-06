@@ -87,7 +87,8 @@ class Search(Cog):
                 return await ctx.send(f"No results found for `{query_display}`.")
 
             # Gets the first entry's data
-            first_title = self.tomd.handle(results[0]["title"]).rstrip("\n").strip("<>")
+            first_title = self.tomd.handle(
+                results[0]["title"]).rstrip("\n").strip("<>")
             first_url = results[0]["url"]
             first_desc = self.tomd.handle(results[0]["desc"]).rstrip("\n")
 
@@ -117,8 +118,10 @@ class Search(Cog):
                 msg,
             )
 
-            embed = Embed(title="Search Results", description=msg, color=Color.blue())
-            embed.set_footer(text=f"Showing {count} results for {query_display}.")
+            embed = Embed(title="Search Results",
+                          description=msg, color=Color.blue())
+            embed.set_footer(
+                text=f"Showing {count} results for {query_display}.")
 
             await ctx.send(embed=embed)
 
@@ -188,14 +191,17 @@ class Search(Cog):
             embed.add_field(
                 name="Popularity Rank", value=anime["attributes"]["popularityRank"]
             )
-            embed.add_field(name="Age Rating", value=anime["attributes"]["ageRating"])
+            embed.add_field(name="Age Rating",
+                            value=anime["attributes"]["ageRating"])
             embed.add_field(name="Status", value=anime["attributes"]["status"])
             embed.add_field(
                 name="Aired", value=f"{anime['attributes']['startDate']}{thing}"
             )
-            embed.add_field(name="Episodes", value=anime["attributes"]["episodeCount"])
+            embed.add_field(name="Episodes",
+                            value=anime["attributes"]["episodeCount"])
             embed.add_field(name="Type", value=anime["attributes"]["showType"])
-            embed.set_thumbnail(url=anime["attributes"]["posterImage"]["original"])
+            embed.set_thumbnail(
+                url=anime["attributes"]["posterImage"]["original"])
             embed.set_footer(
                 text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar_url
             )
@@ -281,8 +287,10 @@ class Search(Cog):
                     name="Chapters", value=manga["attributes"]["chapterCount"]
                 )
 
-            embed.add_field(name="Type", value=manga["attributes"]["mangaType"])
-            embed.set_thumbnail(url=manga["attributes"]["posterImage"]["original"])
+            embed.add_field(
+                name="Type", value=manga["attributes"]["mangaType"])
+            embed.set_thumbnail(
+                url=manga["attributes"]["posterImage"]["original"])
 
             try:
                 await ctx.send(f"**{title}** - <{url}>", embed=embed)

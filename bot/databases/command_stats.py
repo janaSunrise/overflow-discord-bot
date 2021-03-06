@@ -14,7 +14,8 @@ class CommandStats(DatabaseBase):
     usage_count = Column(BigInteger, nullable=False, default=0)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key) for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key)
+                for key in self.__table__.columns.keys()}
         return data
 
     @classmethod

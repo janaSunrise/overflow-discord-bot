@@ -173,9 +173,7 @@ class Lock(Cog):
     @command(name="maintenance-lock", aliases=["maintenancelock", "m-lock"])
     @has_permissions(administrator=True)
     async def maintenance_lock(
-            self,
-            ctx: Context,
-            override_roles: Greedy[RoleConverter] = None
+        self, ctx: Context, override_roles: Greedy[RoleConverter] = None
     ) -> None:
         """
         Disable default role's permission to send message on all channels.
@@ -187,7 +185,9 @@ class Lock(Cog):
         guild = ctx.guild
 
         overwrites = {
-            default_role: discord.PermissionOverwrite(send_messages=False, connect=False),
+            default_role: discord.PermissionOverwrite(
+                send_messages=False, connect=False
+            ),
             guild.me: discord.PermissionOverwrite(
                 read_messages=True,
                 send_messages=True,
@@ -200,25 +200,24 @@ class Lock(Cog):
         if override_roles is not None:
             for role in override_roles:
                 overwrites[role] = discord.PermissionOverwrite(
-                    send_messages=True,
-                    connect=True
+                    send_messages=True, connect=True
                 )
 
         for channel in ctx.guild.channels:
             await channel.edit(
-                overwrites=overwrites, reason=f"Reason: Server Under Maintenance | Requested by {ctx.author}."
+                overwrites=overwrites,
+                reason=f"Reason: Server Under Maintenance | Requested by {ctx.author}.",
             )
             channel_count += 1
 
         await ctx.send(
-            f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}. Server Under Maintenance.")
+            f"Locked down {channel_count} channel{'s' if channel_count > 1 else ''}. Server Under Maintenance."
+        )
 
     @command(name="maintenance-unlock", aliases=["maintenanceunlock", "m-unlock"])
     @has_permissions(administrator=True)
     async def maintenance_unlock(
-            self,
-            ctx: Context,
-            override_roles: Greedy[RoleConverter] = None
+        self, ctx: Context, override_roles: Greedy[RoleConverter] = None
     ) -> None:
         """
         Enable default role's permission to send message on all channels.
@@ -243,15 +242,16 @@ class Lock(Cog):
         if override_roles is not None:
             for role in override_roles:
                 overwrites[role] = discord.PermissionOverwrite(
-                    send_messages=False,
-                    connect=False
+                    send_messages=False, connect=False
                 )
 
         for channel in ctx.guild.channels:
             await channel.edit(
-                overwrites=overwrites, reason=f"Reason: Server Maintenance Lifted | Requested by {ctx.author}."
+                overwrites=overwrites,
+                reason=f"Reason: Server Maintenance Lifted | Requested by {ctx.author}.",
             )
             channel_count += 1
 
         await ctx.send(
-            f"Unlocked {channel_count} channel{'s' if channel_count > 1 else ''}. Server Maintenance lifted.")
+            f"Unlocked {channel_count} channel{'s' if channel_count > 1 else ''}. Server Maintenance lifted."
+        )
