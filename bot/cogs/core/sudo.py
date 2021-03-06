@@ -225,7 +225,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         process = psutil.Process()
         with process.oneshot():
             memory_usage = process.memory_full_info().uss / 1024 ** 2
-            cpu_usage = process.cpu_percent() / psutil.cpu_count()
+            cpu_usage = psutil.cpu_percent()
 
             mem = process.memory_full_info()
             name = process.name()
@@ -249,6 +249,25 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 value=value,
                 inline=False,
             )
+
+        uname = platform.uname()
+        system = textwrap.dedent(
+            f"""
+            • System: **`{uname.system}`**
+            • Node Name: **`{uname.node}`**
+            
+            • Release: **`{uname.release}`**
+            • Version: **`{uname.version}`**
+            
+            • Machine: **`{uname.machine}`**
+            • Processor: **`{uname.processor}`**            
+            """
+        )
+        embed.add_field(
+            name="**❯ System info**",
+            value=system,
+            inline=False,
+        )
 
         embed.set_author(
             name=f"{self.bot.user.name}'s Stats", icon_url=self.bot.user.avatar_url
