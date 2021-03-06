@@ -78,7 +78,8 @@ class Lookup(Cog):
                 user.joined_at, "%A %d %B %Y at %H:%M")
             member_info += f"Joined server: {joined_time}"
 
-            roles = [role.mention for role in user.roles[1:]]
+            roles = [role.mention for role in user.roles[:10]]
+            roles.reverse()
 
             member_info += f"\n\nTop Role: {user.top_role.mention}"
 

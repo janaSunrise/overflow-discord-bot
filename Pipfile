@@ -20,6 +20,7 @@ pyyaml = "*"
 loguru = "*"
 asyncpg = "*"
 sqlalchemy = {git = "https://github.com/sqlalchemy/sqlalchemy"}
+asyncpraw = "*"
 
 [dev-packages]
 
