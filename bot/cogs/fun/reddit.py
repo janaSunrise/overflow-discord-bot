@@ -1,9 +1,9 @@
-import random
 import os
+import random
 
-from discord.ext.commands import Cog, Context, group, is_nsfw
 from asyncpraw import Reddit as RedditAPI
 from asyncpraw.exceptions import MissingRequiredAttributeException
+from discord.ext.commands import Cog, Context, group, is_nsfw
 from loguru import logger
 
 from bot import Bot
@@ -13,6 +13,7 @@ from bot.utils.embeds import reddit_embed
 
 class Reddit(Cog):
     """Reddit, the front page of the Internet."""
+
     def __init__(self, bot: Bot) -> None:
         try:
             self.reddit_client = RedditAPI(
@@ -22,7 +23,8 @@ class Reddit(Cog):
                 username=os.getenv("REDDIT_USERNAME"),
             )
         except MissingRequiredAttributeException:
-            logger.error("Reddit cog requires correct environment variables to run.")
+            logger.error(
+                "Reddit cog requires correct environment variables to run.")
             self.cog_unload()
         self.bot = bot
 
@@ -42,7 +44,10 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if (
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
+        ):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -56,7 +61,10 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if (
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
+        ):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -71,7 +79,10 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if (
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
+        ):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -84,7 +95,10 @@ class Reddit(Cog):
         )
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if (
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
+        ):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -98,7 +112,10 @@ class Reddit(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
+        if (
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
+        ):
             await ctx.send(randompost.url)
 
     @reddit.command()
@@ -122,7 +139,9 @@ class Reddit(Cog):
                     await ctx.send(embed=embed)
 
             else:
-                await ctx.send("**STOP!** , **NSFW** commands can only be used in NSFW channels")
+                await ctx.send(
+                    "**STOP!** , **NSFW** commands can only be used in NSFW channels"
+                )
         else:
             if "https://v.redd.it/" in randompost.url:
                 await ctx.send(randompost.title)
@@ -155,7 +174,9 @@ class Reddit(Cog):
                     embed = await reddit_embed(subreddit, randompost)
                     await ctx.send(embed=embed)
             else:
-                await ctx.send("**STOP!** , **NSFW** commands can only be used in NSFW channels")
+                await ctx.send(
+                    "**STOP!** , **NSFW** commands can only be used in NSFW channels"
+                )
         else:
             if "https://v.redd.it/" in randompost.url:
                 await ctx.send(randompost.title)

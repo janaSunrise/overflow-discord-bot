@@ -281,6 +281,6 @@ subreddits_list = {
         "chemistry",
         "nasa",
         "EverythingScience",
-        "spaceporn"
+        "spaceporn",
     ),
 }
