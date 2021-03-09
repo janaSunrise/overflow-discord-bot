@@ -54,5 +54,5 @@ class CodeInfoSource(ListPageSource):
             embed.set_footer(text=self.footer)
 
         if max_pages > 1:
-            embed.set_footer(text=f"Page {menu.current_page + 1}/{max_pages}")
+            embed.set_footer(text=f"{self.footer} | Page {menu.current_page + 1}/{max_pages}")
         return embed

@@ -3,6 +3,7 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
+from asyncpraw import Reddit as RedditAPI
 from discord.ext.commands import Context, MemberConverter, UserConverter
 
 from bot.core.converters import ModerationReason
@@ -31,4 +32,69 @@ def moderation_embed(
         color=color,
         timestamp=datetime.utcnow(),
     )
+    return embed
+
+
+async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> discord.Embed:
+    """Make a reddit post an embed."""
+    embed = discord.Embed(colour=discord.Color.green(), url=randompost.url)
+
+    if 0 < len(randompost.title) < 256:
+        embed.title = randompost.title
+    elif len(randompost.title) > 256:
+        embed.title = f"{randompost.title[:200]}..."
+
+    if 0 < len(randompost.selftext) < 2048:
+        embed.description = randompost.selftext
+    elif len(randompost.selftext) > 2048:
+        embed.description = f"{randompost.selftext[:2000]} | Read more..."
+
+    if not randompost.url.startswith("https://v.redd.it/") or randompost.url.startswith("https://youtube.com/"):
+        IMGUR_LINKS = (
+            "https://imgur.com/", "https://i.imgur.com/", "http://i.imgur.com/",
+            "http://imgur.com", "https://m.imgur.com"
+        )
+        ACCEPTED_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif")
+
+        url = randompost.url
+
+        if url.startswith(IMGUR_LINKS):
+            if url.endswith(".mp4"):
+                url = url[:-3] + "gif"
+
+            elif url.endswith(".gifv"):
+                url = url[:-1]
+
+            elif url.endswith(ACCEPTED_EXTENSIONS):
+                url = url
+
+            else:
+                url = url + ".png"
+
+        elif url.startswith("https://gfycat.com/"):
+            url_cut = url.replace("https://gfycat.com/", "")
+
+            url = f"https://thumbs.gfycat.com/{url_cut}-size_restricted.gif"
+
+        elif url.endswith(ACCEPTED_EXTENSIONS):
+            url = url
+
+        embed.set_image(url=url)
+
+    comments = await randompost.comments()
+    embed.set_footer(text=f"👍 {randompost.score} | 💬 {len(comments)}")
+
+    await randompost.author.load()
+    embed.set_author(
+        name=f"u/{randompost.author.name}",
+        icon_url=randompost.author.icon_img,
+        url=f"https://www.reddit.com/user/{randompost.author.name}",
+    )
+
+    embed.add_field(
+        name="SubReddit",
+        value=f"[r/{subreddit}](https://www.reddit.com/r/{subreddit}/)",
+        inline=False,
+    )
+
     return embed
