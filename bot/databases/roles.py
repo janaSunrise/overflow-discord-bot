@@ -12,7 +12,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Roles(DatabaseBase):
     __tablename__ = "roles"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
 
     mod_role = Column(ARRAY(BigInteger))
     mute_role = Column(BigInteger)
@@ -26,7 +27,8 @@ class Roles(DatabaseBase):
 
         try:
             row = await session.run_sync(
-                lambda session: session.query(cls).filter_by(guild_id=guild_id).first()
+                lambda session: session.query(
+                    cls).filter_by(guild_id=guild_id).first()
             )
         except NoResultFound:
             return None
@@ -54,5 +56,6 @@ class Roles(DatabaseBase):
         await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None) for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
         return data
