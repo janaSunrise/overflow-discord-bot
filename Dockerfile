@@ -7,8 +7,8 @@ ENV PIPENV_HIDE_EMOJIS=1 \
     PIPENV_NO_CACHE_DIR=false
 
 # Get the dependencies ready
-RUN apt-get -y --no-install-recommends update \
-    && apt-get install git --no-install-recommends -y \
+RUN apt-get -y update \
+    && apt-get install git netcat -y \
     && rm -rf /root/.cache/pip/* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -27,5 +27,5 @@ RUN pipenv install --system --deploy
 COPY . .
 
 # Start the container
-ENTRYPOINT ["python"]
-CMD ["-m", "bot"]
+ENTRYPOINT ["sh"]
+CMD ["wait-for-bot.sh"]
