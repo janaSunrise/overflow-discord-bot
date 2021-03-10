@@ -35,7 +35,9 @@ def moderation_embed(
     return embed
 
 
-async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> discord.Embed:
+async def reddit_embed(
+    subreddit: str, randompost: RedditAPI.submission
+) -> discord.Embed:
     """Make a reddit post an embed."""
     embed = discord.Embed(colour=discord.Color.green(), url=randompost.url)
 
@@ -49,10 +51,15 @@ async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> disc
     elif len(randompost.selftext) > 2048:
         embed.description = f"{randompost.selftext[:2000]} | Read more..."
 
-    if not randompost.url.startswith("https://v.redd.it/") or randompost.url.startswith("https://youtube.com/"):
+    if not randompost.url.startswith("https://v.redd.it/") or randompost.url.startswith(
+        "https://youtube.com/"
+    ):
         IMGUR_LINKS = (
-            "https://imgur.com/", "https://i.imgur.com/", "http://i.imgur.com/",
-            "http://imgur.com", "https://m.imgur.com"
+            "https://imgur.com/",
+            "https://i.imgur.com/",
+            "http://i.imgur.com/",
+            "http://imgur.com",
+            "https://m.imgur.com",
         )
         ACCEPTED_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif")
 
