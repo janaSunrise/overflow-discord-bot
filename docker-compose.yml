@@ -41,6 +41,9 @@ services:
       LAVALINK_PASSWORD: youshallnotpass
     env_file:
       - .env
+    links:
+      - postgres
+      - lavalink
     restart: on-failure
     networks:
       - common-shared-network
