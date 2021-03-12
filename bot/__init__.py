@@ -1,4 +1,5 @@
 import asyncio
+import collections
 import sys
 import traceback
 import typing as t
@@ -50,6 +51,10 @@ class Bot(AutoShardedBot):
         # -- Sessions config --
         self.session = None
         self.database = None
+
+        # -- Counters config --
+        self.bot_counters = collections.defaultdict(collections.Counter)
+        self.guild_counters = collections.defaultdict(collections.Counter)
 
         # -- Startup config --
         self.initial_call = True
