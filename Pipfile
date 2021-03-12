@@ -22,6 +22,7 @@ asyncpg = "*"
 sqlalchemy = {git = "https://github.com/sqlalchemy/sqlalchemy"}
 asyncpraw = "*"
 texttable = "*"
+alembic = "*"
 
 [dev-packages]
 
