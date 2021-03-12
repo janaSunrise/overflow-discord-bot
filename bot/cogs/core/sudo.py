@@ -323,8 +323,13 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         latencies = dict(ctx.bot.latencies)
 
         columns = (
-            'Shard', 'Guilds', 'Total Members', 'Loaded Members',
-            'Music', 'Messages', 'Latency'
+            "Shard",
+            "Guilds",
+            "Total Members",
+            "Loaded Members",
+            "Music",
+            "Messages",
+            "Latency",
         )
         shard_stats = {
             shard_id: self.get_shard_stats(ctx, shard_id)
@@ -337,12 +342,12 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         table.set_cols_valign(["t"] + ["i"] * (len(columns) - 1))
         table.header(columns)
         for shard_id, stats in sorted(shard_stats.items()):
-            stats['Latency'] = latencies.get(shard_id) or 'N/A'
+            stats["Latency"] = latencies.get(shard_id) or "N/A"
             table.add_row([shard_id] + [stats[key] for key in columns[1:]])
 
         output.append(table.draw())
-        output.append('')
-        output.append(f'discord.py: {discord_version}')
+        output.append("")
+        output.append(f"discord.py: {discord_version}")
 
         output = "\n".join(output)
         await ctx.send(f"```{output}```")
@@ -350,20 +355,19 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
     @staticmethod
     def get_shard_stats(ctx, shard_id):
         counters = collections.Counter()
-        counters['Shard'] = shard_id
+        counters["Shard"] = shard_id
 
         for guild in ctx.bot.guilds:
             if guild.shard_id != shard_id:
                 continue
             guild_counts = ctx.bot.guild_counters[guild.id]
-            counters['Guilds'] += 1
-            counters['Total Members'] += guild.member_count
-            counters['Loaded Members'] += len(guild.members)
-            counters['Messages'] += guild_counts[CounterKeys.MESSAGES_RECIEVED]
+            counters["Guilds"] += 1
+            counters["Total Members"] += guild.member_count
+            counters["Loaded Members"] += len(guild.members)
+            counters["Messages"] += guild_counts[CounterKeys.MESSAGES_RECIEVED]
 
-            if any(guild.me.id in vc.voice_states
-                   for vc in guild.voice_channels):
-                counters['Music'] += 1
+            if any(guild.me.id in vc.voice_states for vc in guild.voice_channels):
+                counters["Music"] += 1
 
         return counters
 
