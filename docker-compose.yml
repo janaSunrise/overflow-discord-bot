@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: 12345678
 
   lavalink:
-    image: fredboat/lavalink:master-v3
+    image: fredboat/lavalink:dev
     restart: on-failure
     volumes:
       - ./lavalink.yml:/opt/Lavalink/application.yml
