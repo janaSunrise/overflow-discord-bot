@@ -25,6 +25,11 @@ bot = Bot(
     case_insensitive=True,
     owner_ids=config.devs,
     heartbeat_timeout=150.0,
+    member_cache_flags=discord.MemberCacheFlags(
+        online=False,
+        joined=True,
+        voice=True
+    )
 )
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+import collections
+import enum
 import io
 import os
 import platform
@@ -10,6 +12,7 @@ from datetime import datetime
 
 import humanize
 import psutil
+import texttable
 from discord import (Activity, ActivityType, Color, DiscordException, Embed,
                      Game, Status)
 from discord import __version__ as discord_version
@@ -18,6 +21,13 @@ from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
 
 from bot import Bot, config
 from bot.databases.command_stats import CommandStats
+
+
+class CounterKeys(enum.Enum):
+    MESSAGES_RECIEVED = 0x100
+
+    def __repr__(self) -> str:
+        return self.name
 
 
 class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
@@ -305,6 +315,57 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
                 color=Color.blue(),
             )
         )
+
+    @sudo.command(aliases=["shard-stats"])
+    async def shard_stats(self, ctx: Context) -> None:
+        """Provides statistics for each shard of the bot."""
+        output = []
+        latencies = dict(ctx.bot.latencies)
+
+        columns = (
+            'Shard', 'Guilds', 'Total Members', 'Loaded Members',
+            'Music', 'Messages', 'Latency'
+        )
+        shard_stats = {
+            shard_id: self.get_shard_stats(ctx, shard_id)
+            for shard_id in latencies.keys()
+        }
+
+        table = texttable.Texttable()
+        table.set_deco(texttable.Texttable.HEADER | texttable.Texttable.VLINES)
+        table.set_cols_align(["r"] * len(columns))
+        table.set_cols_valign(["t"] + ["i"] * (len(columns) - 1))
+        table.header(columns)
+        for shard_id, stats in sorted(shard_stats.items()):
+            stats['Latency'] = latencies.get(shard_id) or 'N/A'
+            table.add_row([shard_id] + [stats[key] for key in columns[1:]])
+
+        output.append(table.draw())
+        output.append('')
+        output.append(f'discord.py: {discord_version}')
+
+        output = "\n".join(output)
+        await ctx.send(f"```{output}```")
+
+    @staticmethod
+    def get_shard_stats(ctx, shard_id):
+        counters = collections.Counter()
+        counters['Shard'] = shard_id
+
+        for guild in ctx.bot.guilds:
+            if guild.shard_id != shard_id:
+                continue
+            guild_counts = ctx.bot.guild_counters[guild.id]
+            counters['Guilds'] += 1
+            counters['Total Members'] += guild.member_count
+            counters['Loaded Members'] += len(guild.members)
+            counters['Messages'] += guild_counts[CounterKeys.MESSAGES_RECIEVED]
+
+            if any(guild.me.id in vc.voice_states
+                   for vc in guild.voice_channels):
+                counters['Music'] += 1
+
+        return counters
 
     @staticmethod
     def cleanup_code(content: str) -> str:

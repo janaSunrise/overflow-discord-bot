@@ -237,7 +237,6 @@ class InteractiveController(menus.Menu):
 
     def __init__(self, *, embed: discord.Embed, player: Player):
         super().__init__(timeout=None)
-
         self.embed = embed
         self.player = player
 
