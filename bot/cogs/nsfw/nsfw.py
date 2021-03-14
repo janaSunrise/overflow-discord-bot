@@ -1,9 +1,9 @@
 import os
 import random
 
-from discord.ext.commands import Cog, Context, group, is_nsfw
 from asyncpraw import Reddit as RedditAPI
 from asyncpraw.exceptions import MissingRequiredAttributeException
+from discord.ext.commands import Cog, Context, group, is_nsfw
 from loguru import logger
 
 from bot import Bot
@@ -553,8 +553,8 @@ class Nsfw(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-                "https://v.redd.it/" in randompost.url
-                or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url
+            or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 
