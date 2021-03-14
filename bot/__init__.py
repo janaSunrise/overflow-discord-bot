@@ -122,7 +122,7 @@ class Bot(AutoShardedBot):
         rows = await Prefix.get_prefixes(self.database)
 
         for row in rows:
-            self.prefix_dict[row["context_id"]] = row["prefix"]
+            self.prefix_dict[row["context_id"]] = [row["prefix"], self.default_prefix]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
@@ -155,7 +155,7 @@ class Bot(AutoShardedBot):
         self, message: discord.Message, not_print: bool = True
     ) -> str:
         """Get the prefix from a message."""
-        if message.content.startswith(f"{self.default_prefix}help") and not_print:
+        if not_print:
             return self.default_prefix
 
         return self.prefix_dict.get(self.get_id(message), self.default_prefix)

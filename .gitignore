@@ -26,3 +26,6 @@ logs/
 
 # MacOS generatd file
 .DS_STORE
+
+# Alembic migrations
+alembic/versions/*
