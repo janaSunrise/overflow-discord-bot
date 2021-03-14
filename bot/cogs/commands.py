@@ -88,9 +88,9 @@ class Commands(Cog):
         desc = textwrap.dedent(
             f"""
             :ping_pong: Pong!
-            Bot ping: **{duration}ms**
+            Bot Ping: **{round(self.bot.latency * 1000)}ms**
+            Message ping: **{duration}ms**
             Discord Server Ping: **{discord_ms}**
-            Speed Ping: **{round(self.bot.latency * 1000)}ms**
             """
         )
 

@@ -12,12 +12,12 @@ from datetime import datetime
 
 import humanize
 import psutil
-import texttable
 from discord import (Activity, ActivityType, Color, DiscordException, Embed,
                      Game, Status)
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
 from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
+from tabulate import tabulate
 
 from bot import Bot, config
 from bot.databases.command_stats import CommandStats
@@ -336,24 +336,15 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
             for shard_id in latencies.keys()
         }
 
-        table = texttable.Texttable()
-        table.set_deco(texttable.Texttable.HEADER | texttable.Texttable.VLINES)
-        table.set_cols_align(["r"] * len(columns))
-        table.set_cols_valign(["t"] + ["i"] * (len(columns) - 1))
-        table.header(columns)
         for shard_id, stats in sorted(shard_stats.items()):
-            stats["Latency"] = latencies.get(shard_id) or "N/A"
-            table.add_row([shard_id] + [stats[key] for key in columns[1:]])
+            stats["Latency"] = round(latencies.get(shard_id) * 1000) or "N/A"
+            output.append([shard_id] + [stats[key] for key in columns[1:]])
 
-        output.append(table.draw())
-        output.append("")
-        output.append(f"discord.py: {discord_version}")
-
-        output = "\n".join(output)
-        await ctx.send(f"```{output}```")
+        table = tabulate(output, headers=columns)
+        await ctx.send(f"```{table}```")
 
     @staticmethod
-    def get_shard_stats(ctx, shard_id):
+    def get_shard_stats(ctx: Context, shard_id: int) -> collections.Counter:
         counters = collections.Counter()
         counters["Shard"] = shard_id
 

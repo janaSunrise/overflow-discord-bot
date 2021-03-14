@@ -21,8 +21,10 @@ loguru = "*"
 asyncpg = "*"
 sqlalchemy = {git = "https://github.com/sqlalchemy/sqlalchemy"}
 asyncpraw = "*"
-texttable = "*"
 alembic = "*"
+lxml = "*"
+tabulate = "*"
+backoff = "*"
 
 [dev-packages]
 
