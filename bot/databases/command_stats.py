@@ -21,7 +21,7 @@ class CommandStats(DatabaseBase):
     @classmethod
     async def get_stats(cls, session: AsyncSession) -> t.List:
         try:
-            rows = await session.run_sync(lambda session: session.query(cls).all())
+            rows = await session.run_sync(lambda session_: session_.query(cls).all())
         except NoResultFound:
             return []
 
@@ -33,7 +33,7 @@ class CommandStats(DatabaseBase):
     ) -> t.Optional[t.List[dict]]:
         try:
             row = await session.run_sync(
-                lambda session: session.query(cls)
+                lambda session_: session_.query(cls)
                 .filter_by(command=command_name)
                 .first()
             )

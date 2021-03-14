@@ -24,7 +24,7 @@ class Announcements(DatabaseBase):
 
         try:
             row = await session.run_sync(
-                lambda session: session.query(
+                lambda session_: session_.query(
                     cls).filter_by(guild_id=guild_id).first()
             )
         except NoResultFound:
@@ -41,7 +41,7 @@ class Announcements(DatabaseBase):
 
         try:
             row = await session.run_sync(
-                lambda session: session.query(
+                lambda session_: session_.query(
                     cls).filter_by(guild_id=guild_id).first()
             )
         except NoResultFound:

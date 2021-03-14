@@ -17,7 +17,7 @@ class Prefix(DatabaseBase):
     @classmethod
     async def get_prefixes(cls, session: AsyncSession) -> t.Optional[list]:
         try:
-            rows = await session.run_sync(lambda session: session.query(cls).all())
+            rows = await session.run_sync(lambda session_: session_.query(cls).all())
         except NoResultFound:
             return []
 

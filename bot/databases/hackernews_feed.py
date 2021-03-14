@@ -23,7 +23,7 @@ class HackernewsFeed(DatabaseBase):
 
         try:
             row = await session.run_sync(
-                lambda session: session.query(
+                lambda session_: session_.query(
                     cls).filter_by(guild_id=guild_id).first()
             )
         except NoResultFound:
@@ -35,7 +35,7 @@ class HackernewsFeed(DatabaseBase):
     @classmethod
     async def get_feed_channels(cls, session: AsyncSession) -> t.Optional[list]:
         try:
-            rows = await session.run_sync(lambda session: session.query(cls).all())
+            rows = await session.run_sync(lambda session_: session_.query(cls).all())
         except NoResultFound:
             return []
 
@@ -66,10 +66,10 @@ class HackernewsFeed(DatabaseBase):
         guild_id = get_datatype_int(guild_id)
 
         row = await session.run_sync(
-            lambda session: session.query(
+            lambda session_: session_.query(
                 cls).filter_by(guild_id=guild_id).first()
         )
-        await session.run_sync(lambda session: session.delete(row))
+        await session.run_sync(lambda session_: session_.delete(row))
 
         await session.commit()
 
