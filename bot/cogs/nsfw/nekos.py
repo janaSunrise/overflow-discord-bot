@@ -377,9 +377,7 @@ class Neko(Cog):
         try:
             image = choice(url)
         except IndexError:
-            await ctx.send(
-                "This tag doesn't exist... We couldn't find anything."
-            )
+            await ctx.send("This tag doesn't exist... We couldn't find anything.")
             return
 
         image_url = image["sample_url"]
