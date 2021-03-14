@@ -1,10 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (
-    Cog, Context, group, guild_only,
-    has_permissions
-)
+from discord.ext.commands import (Cog, Context, group, guild_only,
+                                  has_permissions)
 
 from bot import Bot, config
 from bot.databases.swear_filter import SwearFilter as SwearFilterDB

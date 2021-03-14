@@ -122,7 +122,8 @@ class Bot(AutoShardedBot):
         rows = await Prefix.get_prefixes(self.database)
 
         for row in rows:
-            self.prefix_dict[row["context_id"]] = [row["prefix"], self.default_prefix]
+            self.prefix_dict[row["context_id"]] = [
+                row["prefix"], self.default_prefix]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
