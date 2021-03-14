@@ -19,6 +19,8 @@ class Neko(Cog):
             async with session.get(base + url) as response:
                 req = await response.json()
 
+        await session.close()
+
         embed = Embed(color=Color.red())
         embed.title = f"Requested by {author.name}"
         embed.set_image(url=req["data"]["response"]["url"])
@@ -373,6 +375,8 @@ class Neko(Cog):
                 f"https://yande.re/post.json?limit=20&tags={tag}"
             ) as response:
                 url = await response.json()
+
+        await session.close()
 
         try:
             image = choice(url)
