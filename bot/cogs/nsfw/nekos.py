@@ -12,7 +12,8 @@ class Neko(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def get(self, url: str, author: User) -> Embed:
+    @staticmethod
+    async def get(url: str, author: User) -> Embed:
         """Gets pictures from Neko API."""
         base = 'https://api.nekos.dev/api/v3/'
 
@@ -191,7 +192,7 @@ class Neko(Cog):
     async def yandere(self, ctx: Context) -> None:
         """Random Image From Yandere"""
         try:
-            query = ("https://yande.re/post/random")
+            query = "https://yande.re/post/random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
@@ -204,7 +205,7 @@ class Neko(Cog):
     async def konachan(self, ctx: Context) -> None:
         """Random Image From Konachan"""
         try:
-            query = ("https://konachan.com/post/random")
+            query = "https://konachan.com/post/random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
@@ -217,7 +218,7 @@ class Neko(Cog):
     async def e621(self, ctx: Context) -> None:
         """Random Image From e621"""
         try:
-            query = ("https://e621.net/post/random")
+            query = "https://e621.net/post/random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="highres").get("href")
@@ -230,7 +231,7 @@ class Neko(Cog):
     async def rule34(self, ctx: Context) -> None:
         """Random Image From rule34"""
         try:
-            query = ("http://rule34.xxx/index.php?page=post&s=random")
+            query = "http://rule34.xxx/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -243,7 +244,7 @@ class Neko(Cog):
     async def danbooru(self, ctx: Context) -> None:
         """Random Image From Danbooru"""
         try:
-            query = ("http://danbooru.donmai.us/posts/random")
+            query = "http://danbooru.donmai.us/posts/random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -256,7 +257,7 @@ class Neko(Cog):
     async def gelbooru(self, ctx: Context) -> None:
         """Random Image From Gelbooru"""
         try:
-            query = ("http://www.gelbooru.com/index.php?page=post&s=random")
+            query = "http://www.gelbooru.com/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -269,7 +270,7 @@ class Neko(Cog):
     async def tbib(self, ctx: Context) -> None:
         """Random Image From TBIB"""
         try:
-            query = ("http://www.tbib.org/index.php?page=post&s=random")
+            query = "http://www.tbib.org/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -282,7 +283,7 @@ class Neko(Cog):
     async def xbooru(self, ctx: Context) -> None:
         """Random Image From Xbooru"""
         try:
-            query = ("http://xbooru.com/index.php?page=post&s=random")
+            query = "http://xbooru.com/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -295,7 +296,7 @@ class Neko(Cog):
     async def furrybooru(self, ctx: Context) -> None:
         """Random Image From Furrybooru"""
         try:
-            query = ("http://furry.booru.org/index.php?page=post&s=random")
+            query = "http://furry.booru.org/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -308,7 +309,7 @@ class Neko(Cog):
     async def drunkenpumken(self, ctx: Context) -> None:
         """Random Image From DrunkenPumken"""
         try:
-            query = ("http://drunkenpumken.booru.org/index.php?page=post&s=random")
+            query = "http://drunkenpumken.booru.org/index.php?page=post&s=random"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -321,7 +322,7 @@ class Neko(Cog):
     async def astolfo(self, ctx: Context) -> None:
         """Random Image From UnlimitedAstolfo"""
         try:
-            query = ("http://unlimitedastolfo.works/random_image/view")
+            query = "http://unlimitedastolfo.works/random_image/view"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="main_image").get("src")
@@ -335,7 +336,7 @@ class Neko(Cog):
     async def lolibooru(self, ctx: Context) -> None:
         """Random Image From Lolibooru"""
         try:
-            query = ("https://lolibooru.moe/post/random/")
+            query = "https://lolibooru.moe/post/random/"
             page = await (await self.bot.session.get(query)).text()
             soup = BeautifulSoup(page, 'html.parser')
             image = soup.find(id="image").get("src")
@@ -355,7 +356,8 @@ class Neko(Cog):
         try:
             image = choice(url)
         except IndexError:
-            return await ctx.send("This tag doesn't exist... We couldn't find anything.")
+            await ctx.send("This tag doesn't exist... We couldn't find anything.")
+            return
 
         image_url = image['sample_url']
 
