@@ -24,10 +24,10 @@ class Neko(Cog):
         embed.set_image(url=req["data"]["response"]["url"])
         return embed
 
-    @group()
+    @group(invoke_without_subcommand=True)
     async def neko(self, ctx: Context) -> None:
         """Neko Commands Group."""
-        pass
+        await ctx.send_help(ctx.command)
 
     @neko.command()
     async def nekos(self, ctx: Context) -> None:
