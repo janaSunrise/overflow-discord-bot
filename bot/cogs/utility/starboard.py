@@ -51,7 +51,7 @@ class Starboard(Cog):
 
     @group(invoke_without_command=True)
     @guild_only()
-    @has_permissions(manage_channels=True)
+    @has_permissions(manage_channels=True, manage_messages=True)
     async def starboard(self, ctx: Context) -> None:
         """Commands for the starboard control and management."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
