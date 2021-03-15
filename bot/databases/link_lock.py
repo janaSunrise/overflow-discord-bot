@@ -29,15 +29,15 @@ class LinkLock(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
     ) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         try:
             row = await session.run_sync(
                 lambda session_: session_.query(cls)
-                    .filter_by(guild_id=guild_id)
-                    .first()
+                .filter_by(guild_id=guild_id)
+                .first()
             )
         except NoResultFound:
             return None
@@ -47,10 +47,10 @@ class LinkLock(DatabaseBase):
 
     @classmethod
     async def set_lock(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            lock_code: int,
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        lock_code: int,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
