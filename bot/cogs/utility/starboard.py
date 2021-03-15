@@ -1,7 +1,8 @@
 import textwrap
+import typing as t
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, commands, group, guild_only, has_permissions
+from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
 from bot.utils.utils import confirmation
@@ -10,6 +11,43 @@ from bot.utils.utils import confirmation
 class Starboard(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @staticmethod
+    async def emoji_string(emoji: str, guild: discord.Guild) -> str:
+        try:
+            emoji_string = str(
+                discord.utils.get(
+                    guild.emojis, id=int(emoji)
+                ) or "Deleted Emoji"
+            )
+        except Exception:
+            emoji_string = emoji
+
+        return emoji_string
+
+    @Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
+        guild_id = payload.guild_id
+
+        if guild_id is None:
+            return
+
+        channel_id = payload.channel_id
+        message_id = payload.message_id
+        user_id = payload.user_id
+
+        emoji = payload.emoji
+        emoji_name = str(emoji.id) if emoji.id is not None else emoji.name
+
+        row = await StarboardDB.get_config(self.bot.database, guild_id)
+
+        if not row:
+            return
+
+        db_emoji = str(row["sb_emoji"])
+
+        if emoji_name != db_emoji:
+            return
 
     @group(invoke_without_command=True)
     @guild_only()
@@ -35,10 +73,10 @@ class Starboard(Cog):
                 title="Starboard settings configuration",
                 description=textwrap.dedent(
                     f"""
-                    • Channel: **`{
+                    • Channel: {
                         f"<#{row['channel_id']}>" if row["channel_id"] is not None else "No channel configured!"
                         }
-                    • Emoji:
+                    • Emoji: {await self.emoji_string(row["sb_emoji"], ctx.guild)}
                     • Required stars: **`{row["required_stars"]}`**
                     • Stars to lose: **`{row["required_to_lose"]}`**
                     • Bots in starboard: **`{row["bots_in_sb"]}`**
@@ -137,3 +175,11 @@ class Starboard(Cog):
         else:
             await StarboardDB.set_bots_in_sb(self.bot.database, ctx.guild.id, False)
             await ctx.send("Bot messages won't be added to starboard anymore.")
+
+    @starboard.command()
+    async def emoji(self, ctx: Context, emoji: t.Union[str, discord.Emoji]) -> None:
+        """Set the required stars for a message to be starboard archived."""
+        emoji_name = str(emoji.id) if isinstance(emoji, discord.Emoji) else emoji
+
+        await StarboardDB.set_sb_emoji(self.bot.database, ctx.guild.id, emoji_name)
+        await ctx.send(f"Set {emoji} as the starboard emoji")
