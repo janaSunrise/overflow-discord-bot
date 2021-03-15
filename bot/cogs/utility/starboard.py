@@ -1,8 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, group
-
+from discord.ext.commands import Cog, Context, TextChannelConverter, commands, group, guild_only, has_permissions
 from bot import Bot
 from bot.utils.utils import confirmation
 from bot.databases.starboard import Starboard as StarboardDB
@@ -13,6 +12,8 @@ class Starboard(Cog):
         self.bot = bot
 
     @group(invoke_without_command=True)
+    @guild_only()
+    @has_permissions(manage_channels=True)
     async def starboard(self, ctx: Context) -> None:
         """Commands for the starboard control and management."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
@@ -70,6 +71,7 @@ class Starboard(Cog):
 
     @starboard.command()
     async def set_required_stars(self, ctx: Context, stars: int) -> None:
+        """Set the required stars for a message to be starboard archived."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if stars <= row["required_to_lose"]:
@@ -82,6 +84,7 @@ class Starboard(Cog):
 
     @starboard.command()
     async def set_required_to_lose(self, ctx: Context, stars: int) -> None:
+        """Set the number of stars to lose the starboard message."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if row["required_stars"] <= stars:
@@ -93,6 +96,7 @@ class Starboard(Cog):
 
     @starboard.command()
     async def set_on_edit(self, ctx: Context) -> None:
+        """Edit the starboard on actual message edit."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row["on_edit"]:
@@ -104,6 +108,7 @@ class Starboard(Cog):
 
     @starboard.command()
     async def set_on_delete(self, ctx: Context) -> None:
+        """Delete the starboard message if original message is deleted."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row["on_delete"]:
@@ -115,6 +120,7 @@ class Starboard(Cog):
 
     @starboard.command()
     async def starboard_bot_messages(self, ctx: Context) -> None:
+        """Can bot messages be added to starboard."""
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row["bots_in_sb"]:
