@@ -130,7 +130,7 @@ class LinkLock(Cog):
                 description=(
                     f"⚠️ {link_status} Lock is already "
                     "enabled on this server! Please use "
-                    f"**`{ctx.prefix}link-unlock`** to lift this lock!"
+                    f"**`{ctx.prefix}link-lock unlock`** to lift this lock!"
                 ),
             )
             await ctx.send(embed=embed)
@@ -164,7 +164,7 @@ class LinkLock(Cog):
                 description=(
                     f"⚠️ {link_status} Lock is already "
                     "enabled on this server! Please use "
-                    f"**`{ctx.prefix}link-unlock`** to lift this lock!"
+                    f"**`{ctx.prefix}link-lock unlock`** to lift this lock!"
                 ),
             )
             await ctx.send(embed=embed)
@@ -198,7 +198,7 @@ class LinkLock(Cog):
                 description=(
                     f"⚠️ {link_status} Lock is already "
                     "enabled on this server! Please use "
-                    f"**`{ctx.prefix}link-unlock`** to lift this lock!"
+                    f"**`{ctx.prefix}link-lock unlock`** to lift this lock!"
                 ),
             )
             await ctx.send(embed=embed)

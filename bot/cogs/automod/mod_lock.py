@@ -86,7 +86,7 @@ class ModerationLock(Cog):
                 description=(
                     f"⚠️ {lock_type} Lock is already "
                     "enabled on this server! Please use "
-                    f"**`{ctx.prefix}server-unlock`** to lift this lock!"
+                    f"**`{ctx.prefix}mod-lock unlock`** to lift this lock!"
                 ),
             )
             await ctx.send(embed=embed)
@@ -117,7 +117,7 @@ class ModerationLock(Cog):
                 description=(
                     f"⚠️ {lock_status} Lock is already "
                     "enabled on this server! Please use "
-                    f"**`{ctx.prefix}server-unlock`** to lift this lock!"
+                    f"**`{ctx.prefix}mod-lock unlock`** to lift this lock!"
                 ),
             )
             await ctx.send(embed=embed)
