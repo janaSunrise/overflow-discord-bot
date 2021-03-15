@@ -2,7 +2,9 @@ import textwrap
 import typing as t
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, TextChannelConverter, group,
+                                  guild_only, has_permissions)
+
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
 from bot.utils.utils import confirmation
@@ -16,9 +18,8 @@ class Starboard(Cog):
     async def emoji_string(emoji: str, guild: discord.Guild) -> str:
         try:
             emoji_string = str(
-                discord.utils.get(
-                    guild.emojis, id=int(emoji)
-                ) or "Deleted Emoji"
+                discord.utils.get(guild.emojis, id=int(emoji)
+                                  ) or "Deleted Emoji"
             )
         except Exception:
             emoji_string = emoji
@@ -26,7 +27,9 @@ class Starboard(Cog):
         return emoji_string
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
+    async def on_raw_reaction_add(
+        self, payload: discord.RawReactionActionEvent
+    ) -> None:
         guild_id = payload.guild_id
 
         if guild_id is None:
@@ -179,7 +182,8 @@ class Starboard(Cog):
     @starboard.command()
     async def emoji(self, ctx: Context, emoji: t.Union[str, discord.Emoji]) -> None:
         """Set the required stars for a message to be starboard archived."""
-        emoji_name = str(emoji.id) if isinstance(emoji, discord.Emoji) else emoji
+        emoji_name = str(emoji.id) if isinstance(
+            emoji, discord.Emoji) else emoji
 
         await StarboardDB.set_sb_emoji(self.bot.database, ctx.guild.id, emoji_name)
         await ctx.send(f"Set {emoji} as the starboard emoji")

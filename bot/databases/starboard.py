@@ -60,17 +60,17 @@ class Starboard(DatabaseBase):
 
     @classmethod
     async def set_sb_emoji(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            emoji: str,
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        emoji: str,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                                     .filter_by(guild_id=guild_id)
-                                     .update({"sb_emoji": emoji})
+            .filter_by(guild_id=guild_id)
+            .update({"sb_emoji": emoji})
         )
         await session.commit()
 
