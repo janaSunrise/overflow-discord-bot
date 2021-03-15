@@ -1,7 +1,9 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, commands, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, TextChannelConverter, commands,
+                                  group, guild_only, has_permissions)
+
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
 from bot.utils.utils import confirmation
