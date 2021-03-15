@@ -3,8 +3,8 @@ import textwrap
 import discord
 from discord.ext.commands import Cog, Context, TextChannelConverter, commands, group, guild_only, has_permissions
 from bot import Bot
-from bot.utils.utils import confirmation
 from bot.databases.starboard import Starboard as StarboardDB
+from bot.utils.utils import confirmation
 
 
 class Starboard(Cog):
@@ -27,7 +27,7 @@ class Starboard(Cog):
                 "bots_in_sb": False,
                 "locked": False,
                 "on_edit": True,
-                "on_delete": False
+                "on_delete": False,
             }
 
         await ctx.send(
@@ -54,15 +54,19 @@ class Starboard(Cog):
     @starboard.command()
     async def add(self, ctx: Context, channel: TextChannelConverter) -> None:
         """Register a channel as a starboard."""
-        await StarboardDB.set_starboard_channel(self.bot.database, ctx.guild.id, channel.id)
+        await StarboardDB.set_starboard_channel(
+            self.bot.database, ctx.guild.id, channel.id
+        )
         await ctx.send(f"Created starboard {channel.mention}")
 
     @starboard.command()
     async def remove(self, ctx: Context) -> None:
         """Remove a channel from being a starboard."""
         confirm = await confirmation(
-            ctx, "Do you really want to delete the starboard channel? The messages will be lost forever.",
-            "Delete starboard channel", discord.Color.gold()
+            ctx,
+            "Do you really want to delete the starboard channel? The messages will be lost forever.",
+            "Delete starboard channel",
+            discord.Color.gold(),
         )
 
         if confirm:
@@ -76,7 +80,9 @@ class Starboard(Cog):
 
         if stars <= row["required_to_lose"]:
             print(row["required_stars"], row["required_to_lose"])
-            await ctx.send("The number of stars cannot be equal to or smaller than required to lose.")
+            await ctx.send(
+                "The number of stars cannot be equal to or smaller than required to lose."
+            )
             return
 
         await StarboardDB.set_required_stars(self.bot.database, ctx.guild.id, stars)
@@ -88,7 +94,9 @@ class Starboard(Cog):
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if row["required_stars"] <= stars:
-            await ctx.send("The number of stars cannot be equal to or smaller than stars required.")
+            await ctx.send(
+                "The number of stars cannot be equal to or smaller than stars required."
+            )
             return
 
         await StarboardDB.set_required_to_lose(self.bot.database, ctx.guild.id, stars)
@@ -129,5 +137,3 @@ class Starboard(Cog):
         else:
             await StarboardDB.set_bots_in_sb(self.bot.database, ctx.guild.id, False)
             await ctx.send("Bot messages won't be added to starboard anymore.")
-
-

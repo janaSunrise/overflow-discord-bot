@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import Boolean, BigInteger, Column, String
+from sqlalchemy import BigInteger, Boolean, Column, String
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Starboard(DatabaseBase):
     __tablename__ = "starboard"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger, nullable=False, unique=True)
     sb_emoji = Column(String, default="⭐")
     required_stars = Column(BigInteger, default=3)
@@ -23,14 +24,15 @@ class Starboard(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
     ) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         try:
             row = await session.run_sync(
-                lambda session_: session_.query(
-                    cls).filter_by(guild_id=guild_id).first()
+                lambda session_: session_.query(cls)
+                .filter_by(guild_id=guild_id)
+                .first()
             )
         except NoResultFound:
             return None
@@ -40,10 +42,10 @@ class Starboard(DatabaseBase):
 
     @classmethod
     async def set_starboard_channel(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            channel_id: t.Union[str, int, discord.TextChannel]
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        channel_id: t.Union[str, int, discord.TextChannel],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
         channel_id = get_datatype_int(channel_id)
@@ -58,79 +60,88 @@ class Starboard(DatabaseBase):
 
     @classmethod
     async def set_required_stars(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            required_stars: int
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        required_stars: int,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
-            lambda session_: session_.query(cls).filter_by(guild_id=guild_id).update(
-                {"required_stars": required_stars}
-            )
+            lambda session_: session_.query(cls)
+            .filter_by(guild_id=guild_id)
+            .update({"required_stars": required_stars})
         )
         await session.commit()
 
     @classmethod
     async def set_required_to_lose(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            required_to_lose: int
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        required_to_lose: int,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
-            lambda session_: session_.query(cls).filter_by(guild_id=guild_id)
-                                     .update({"required_to_lose": required_to_lose})
+            lambda session_: session_.query(cls)
+            .filter_by(guild_id=guild_id)
+            .update({"required_to_lose": required_to_lose})
         )
         await session.commit()
 
     @classmethod
     async def set_on_delete(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            on_delete: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        on_delete: bool,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
-            lambda session_: session_.query(cls).filter_by(guild_id=guild_id).update({"on_delete": on_delete})
+            lambda session_: session_.query(cls)
+            .filter_by(guild_id=guild_id)
+            .update({"on_delete": on_delete})
         )
         await session.commit()
 
     @classmethod
     async def set_on_edit(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            on_edit: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        on_edit: bool,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
-            lambda session_: session_.query(cls).filter_by(guild_id=guild_id).update({"on_edit": on_edit})
+            lambda session_: session_.query(cls)
+            .filter_by(guild_id=guild_id)
+            .update({"on_edit": on_edit})
         )
         await session.commit()
 
     @classmethod
     async def set_bots_in_sb(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            bots_in_sb: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        bots_in_sb: bool,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
-            lambda session_: session_.query(cls).filter_by(guild_id=guild_id).update({"bots_in_sb": bots_in_sb})
+            lambda session_: session_.query(cls)
+            .filter_by(guild_id=guild_id)
+            .update({"bots_in_sb": bots_in_sb})
         )
         await session.commit()
 
     @classmethod
-    async def delete_starboard_channel(cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]) -> None:
+    async def delete_starboard_channel(
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+    ) -> None:
         row = await session.run_sync(
             lambda session_: session_.query(
                 cls).filter_by(guild_id=guild_id).first()
@@ -143,4 +154,3 @@ class Starboard(DatabaseBase):
         data = {key: getattr(self, key, None)
                 for key in self.__table__.columns.keys()}
         return data
-

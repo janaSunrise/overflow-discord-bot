@@ -26,7 +26,9 @@ class SuggestionUser(DatabaseBase):
 class Suggestion(DatabaseBase):
     __tablename__ = "suggestion"
 
-    suggestion_id = Column(BigInteger, primary_key=True, nullable=False, unique=True, autoincrement=True)
+    suggestion_id = Column(
+        BigInteger, primary_key=True, nullable=False, unique=True, autoincrement=True
+    )
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
     user_id = Column(BigInteger, nullable=False, unique=True)
