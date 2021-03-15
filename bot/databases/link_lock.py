@@ -15,9 +15,9 @@ class LinkLock(DatabaseBase):
     An innovative way to stop people from sending discord invites, links, links excluding discord invites and more.
 
     Here are the codes:
-    `0` - Lock disabled
-    `1` - Discord invite lock enabled
-    `2` - Link lock [excluding discord invite] enabled
+    `0` - Lock disabled.
+    `1` - Discord invite lock enabled.
+    `2` - Link lock [excluding discord invite] enabled.
     `3` - Link lock and discord invite lock enabled.
     """
 
