@@ -13,12 +13,23 @@ from bot.databases.link_lock import LinkLock as LinkLockDB
 class LinkLock(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+        self.lock_map = {
+            1: "Discord Invite",
+            2: "Link lock excluding discord invite",
+            3: "Link and discord invite lock"
+        }
 
     @staticmethod
     def get_codes(string: str) -> t.List[str]:
         """Get the invite codes codes from a link."""
         return re.findall(
-            r"(?:https?:\/\/)?(?:www\.)?(?:discord\.(?:gg|io|me|li)|(?:discordapp|discord)\.com\/invite)\/([a-z\-\_]+)",
+            r"(?:discord(?:[\.,]|dot)gg|"
+            r"discord(?:[\.,]|dot)com(?:\/|slash)invite|" 
+            r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|"
+            r"discord(?:[\.,]|dot)me|"
+            r"discord(?:[\.,]|dot)io"
+            r")(?:[\/]|slash)"
+            r"([a-zA-Z0-9\-]+)",
             string,
         )
 
@@ -42,15 +53,34 @@ class LinkLock(Cog):
             return
 
         if status == 2:
+            for code in self.get_codes(message.content):
+                if not await self.is_our_invite(code, message.guild):
+                    return
+
             if re.findall(
-                r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]"
-                r"+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
+                r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s("
+                r")<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
                 message.content
             ):
                 await message.channel.send(
                     f"{message.author.mention}, you are not allowed to post any links here!"
                 )
                 await message.delete()
+
+            return
+
+        if status == 3:
+            if re.findall(
+                r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]"
+                r"+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
+                message.content
+            ):
+                for code in self.get_codes(message.content):
+                    if not await self.is_our_invite(code, message.guild):
+                        await message.channel.send(
+                            f"{message.author.mention}, you are not allowed to post any links here!"
+                        )
+                        await message.delete()
             return
 
     async def get_link(self, guild_id: int) -> int:
@@ -68,8 +98,11 @@ class LinkLock(Cog):
         """Set the mod lock mode."""
         lock_mode = await self.get_link(ctx.guild.id)
 
-        mapping = {0: "❌ No lock", 1: "⚙️Invite lock enabled",
-                   2: "⚙️Link lock enabled"}
+        mapping = {
+            0: "❌ No lock", 1: "⚙️Invite lock enabled",
+            2: "⚙️Link lock enabled[excluding discord invites]",
+            3: "⚙ Link and invite lock enabled."
+        }
 
         await ctx.send(
             embed=discord.Embed(
@@ -90,7 +123,7 @@ class LinkLock(Cog):
         status = await self.get_link(ctx.guild.id)
 
         if status:
-            link_status = 'Link' if status == 2 else 'Discord Invite'
+            link_status = self.lock_map[status]
 
             embed = discord.Embed(
                 title="Link Lock Error!",
@@ -124,7 +157,7 @@ class LinkLock(Cog):
         status = await self.get_link(ctx.guild.id)
 
         if status:
-            link_status = 'Link' if status == 2 else 'Discord Invite'
+            link_status = self.lock_map[status]
 
             embed = discord.Embed(
                 title="Link Lock Error!",
@@ -143,6 +176,40 @@ class LinkLock(Cog):
             **Lock type**: ⚙️Discord Invite Lock
             **Enabler**: {ctx.author.mention}
             **INFO**: All users sending other servers' invited's messages will be removed and warned.
+            """
+        )
+        embed = discord.Embed(
+            title="Link Lock Enabled",
+            description=desc,
+            color=discord.Color.blue()
+        )
+        await ctx.send(embed=embed)
+
+    @link_lock.command()
+    async def link_invite(self, ctx: Context) -> None:
+        """Prevent everybody from posting other server's invites and also all links."""
+        status = await self.get_link(ctx.guild.id)
+
+        if status:
+            link_status = self.lock_map[status]
+
+            embed = discord.Embed(
+                title="Link Lock Error!",
+                description=(
+                    f"⚠️ {link_status} Lock is already "
+                    "enabled on this server! Please use "
+                    f"**`{ctx.prefix}link-unlock`** to lift this lock!"
+                ),
+            )
+            await ctx.send(embed=embed)
+            return
+
+        await LinkLockDB.set_lock(self.bot.database, ctx.guild.id, 3)
+        desc = textwrap.dedent(
+            f"""
+            **Lock type**: ⚙️Link and Discord Invite Lock
+            **Enabler**: {ctx.author.mention}
+            **INFO**: All users sending links or other servers' invited's messages will be removed and warned.
             """
         )
         embed = discord.Embed(
