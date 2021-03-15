@@ -1,7 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, group, guild_only,
+                                  has_permissions)
 
 from bot import Bot
 from bot.databases.mod_lock import ModLock as ModLockDB
@@ -37,11 +38,8 @@ class ModerationLock(Cog):
         """Set the mod lock mode."""
         lock_mode = await self.get_lock(ctx.guild.id)
 
-        mapping = {
-            0: "❌ No lock",
-            1: "⚙️Kick lock enabled",
-            2: "⚙️Ban lock enabled"
-        }
+        mapping = {0: "❌ No lock", 1: "⚙️Kick lock enabled",
+                   2: "⚙️Ban lock enabled"}
 
         await ctx.send(
             embed=discord.Embed(
@@ -72,7 +70,7 @@ class ModerationLock(Cog):
         await ModLockDB.set_lock(self.bot.database, ctx.guild.id, 0)
         embed = discord.Embed(
             description="Server Locks Are Successfully Disabled! You can now invite your friends and everyone!",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         await ctx.send(embed=embed)
 
@@ -82,7 +80,7 @@ class ModerationLock(Cog):
         status = await self.get_lock(ctx.guild.id)
 
         if status:
-            lock_type = 'Kick' if status == 1 else 'Ban'
+            lock_type = "Kick" if status == 1 else "Ban"
             embed = discord.Embed(
                 title="Server Lock Error!",
                 description=(
@@ -103,9 +101,7 @@ class ModerationLock(Cog):
             """
         )
         embed = discord.Embed(
-            title="Server Lock Enabled",
-            description=desc,
-            color=discord.Color.blue()
+            title="Server Lock Enabled", description=desc, color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
 
@@ -115,7 +111,7 @@ class ModerationLock(Cog):
         status = await self.get_lock(ctx.guild.id)
 
         if status:
-            lock_status = 'Kick' if status == 1 else 'Ban'
+            lock_status = "Kick" if status == 1 else "Ban"
             embed = discord.Embed(
                 title="Server Lock Error!",
                 description=(
@@ -136,9 +132,6 @@ class ModerationLock(Cog):
             """
         )
         embed = discord.Embed(
-            title="Server Lock Enabled",
-            description=desc,
-            color=discord.Color.blue()
+            title="Server Lock Enabled", description=desc, color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
-
