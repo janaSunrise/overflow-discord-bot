@@ -66,3 +66,35 @@ class Suggestions(Cog):
             self.bot.database, ctx.guild.id, limit
         )
         await ctx.send(f"Set limit to {limit}")
+
+    @suggestion.command()
+    async def dm(self, ctx: Context) -> None:
+        """Toggle DM notifications for user when their suggestion is accepted / rejected."""
+        row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
+
+        if not row:
+            await ctx.send("⚠️Suggestion channel not configured!")
+            return
+
+        if not row["dm_notification"]:
+            await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, True)
+            await ctx.send("DM notifications will be sent when users suggestions are accepted / rejected.")
+        else:
+            await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, False)
+            await ctx.send("DM notifications will not be sent when users suggestions are accepted / rejected.")
+
+    @suggestion.command()
+    async def anonymous(self, ctx: Context) -> None:
+        """If the suggestions for the user should be anonymous."""
+        row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
+
+        if not row:
+            await ctx.send("⚠️Suggestion channel not configured!")
+            return
+
+        if not row["anonymous"]:
+            await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, True)
+            await ctx.send("Users suggestions will be anonymous. Their identity will be hidden.")
+        else:
+            await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, False)
+            await ctx.send("Users suggestions will not be anonymous. Their identity will not be hidden.")

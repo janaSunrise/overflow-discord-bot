@@ -89,6 +89,38 @@ class SuggestionConfig(DatabaseBase):
         )
         await session.commit()
 
+    @classmethod
+    async def set_dm(
+            cls,
+            session: AsyncSession,
+            guild_id: t.Union[str, int, discord.Guild],
+            dm: bool
+    ) -> None:
+        guild_id = get_datatype_int(guild_id)
+
+        await session.run_sync(
+            lambda session_: session_.query(cls)
+                .filter_by(guild_id=guild_id)
+                .update({"dm_notification": dm})
+        )
+        await session.commit()
+
+    @classmethod
+    async def set_anonymous(
+            cls,
+            session: AsyncSession,
+            guild_id: t.Union[str, int, discord.Guild],
+            anonymous: bool
+    ) -> None:
+        guild_id = get_datatype_int(guild_id)
+
+        await session.run_sync(
+            lambda session_: session_.query(cls)
+                .filter_by(guild_id=guild_id)
+                .update({"anonymous": anonymous})
+        )
+        await session.commit()
+
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)
                 for key in self.__table__.columns.keys()}
