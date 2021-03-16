@@ -60,25 +60,14 @@ class Starboard(Cog):
         row = await StarboardDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row:
-            row = {
-                "channel_id": None,
-                "emoji": "star",
-                "required_stars": 3,
-                "required_to_lose": 0,
-                "bots_in_sb": False,
-                "locked": False,
-                "on_edit": True,
-                "on_delete": False,
-            }
+            await ctx.send("⚠️Starboard channel not configured!")
 
         await ctx.send(
             embed=discord.Embed(
                 title="Starboard settings configuration",
                 description=textwrap.dedent(
                     f"""
-                    • Channel: {
-                        f"<#{row['channel_id']}>" if row["channel_id"] is not None else "No channel configured!"
-                        }
+                    • Channel: {f"<#{row['channel_id']}>"}
                     • Emoji: {await self.emoji_string(row["sb_emoji"], ctx.guild)}
                     • Required stars: **`{row["required_stars"]}`**
                     • Stars to lose: **`{row["required_to_lose"]}`**

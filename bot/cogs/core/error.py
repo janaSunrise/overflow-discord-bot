@@ -94,8 +94,6 @@ class ErrorHandler(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: errors.CommandError) -> None:
         """Common error handler for the bot, so It doesnt interrupt and runs perfectly."""
-        logger.warning(type(error))
-
         if hasattr(ctx.command, "on_error"):
             return
 

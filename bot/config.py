@@ -36,10 +36,7 @@ nodes = {
     "MAIN": {
         "host": os.getenv("LAVALINK_HOST"),
         "port": os.getenv("LAVALINK_PORT"),
-        "rest_uri": "http://"
-        + os.getenv("LAVALINK_HOST")
-        + ":"
-        + os.getenv("LAVALINK_PORT"),
+        "rest_uri": f"http://{os.getenv('LAVALINK_HOST')}:{os.getenv('LAVALINK_PORT')}",
         "password": os.getenv("LAVALINK_PASSWORD"),
         "identifier": "MAIN",
         "region": "us_central",
