@@ -15,10 +15,10 @@ class Lookup(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.STATUSES = {
-            discord.Status.online: "Online",
-            discord.Status.idle: "Idle",
-            discord.Status.dnd: "DND",
-            discord.Status.offline: "Offline",
+            discord.Status.online: "🟢",
+            discord.Status.idle: "🟡",
+            discord.Status.dnd: "🔴",
+            discord.Status.offline: "⚫",
         }
         self.features = {
             "VIP_REGIONS": "Has VIP voice regions",
