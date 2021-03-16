@@ -116,8 +116,8 @@ class SuggestionConfig(DatabaseBase):
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(guild_id=guild_id)
-                .update({"anonymous": anonymous})
+                                     .filter_by(guild_id=guild_id)
+                                     .update({"anonymous": anonymous})
         )
         await session.commit()
 
@@ -149,8 +149,8 @@ class Suggestion(DatabaseBase):
         try:
             row = await session.run_sync(
                 lambda session_: session_.query(cls)
-                    .filter_by(suggestion_id=suggestion_id)
-                    .first()
+                                         .filter_by(suggestion_id=suggestion_id)
+                                         .first()
             )
         except NoResultFound:
             return None
@@ -159,6 +159,8 @@ class Suggestion(DatabaseBase):
             return row.dict()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key, None)
+            for key in self.__table__.columns.keys()
+        }
         return data

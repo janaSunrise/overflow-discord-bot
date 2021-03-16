@@ -1,7 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, group
+from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
 
 from bot import Bot
 from bot.databases.suggestions import SuggestionConfig
@@ -12,6 +12,8 @@ class Suggestions(Cog):
         self.bot = bot
 
     @group(invoke_without_command=True)
+    @guild_only()
+    @has_permissions(manage_channels=True, ban_members=True)
     async def suggestion(self, ctx: Context):
         """Commands for suggestion config."""
         row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
