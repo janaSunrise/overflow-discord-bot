@@ -16,7 +16,7 @@ class LinkLock(Cog):
         self.lock_map = {
             1: "Discord Invite",
             2: "Link lock excluding discord invite",
-            3: "Link and discord invite lock"
+            3: "Link and discord invite lock",
         }
 
     @staticmethod
@@ -24,7 +24,7 @@ class LinkLock(Cog):
         """Get the invite codes codes from a link."""
         return re.findall(
             r"(?:discord(?:[\.,]|dot)gg|"
-            r"discord(?:[\.,]|dot)com(?:\/|slash)invite|" 
+            r"discord(?:[\.,]|dot)com(?:\/|slash)invite|"
             r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|"
             r"discord(?:[\.,]|dot)me|"
             r"discord(?:[\.,]|dot)io"
@@ -60,7 +60,7 @@ class LinkLock(Cog):
             if re.findall(
                 r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s("
                 r")<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
-                message.content
+                message.content,
             ):
                 await message.channel.send(
                     f"{message.author.mention}, you are not allowed to post any links here!"
@@ -73,7 +73,7 @@ class LinkLock(Cog):
             if re.findall(
                 r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]"
                 r"+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
-                message.content
+                message.content,
             ):
                 for code in self.get_codes(message.content):
                     if not await self.is_our_invite(code, message.guild):
@@ -99,9 +99,10 @@ class LinkLock(Cog):
         lock_mode = await self.get_link(ctx.guild.id)
 
         mapping = {
-            0: "❌ No lock", 1: "⚙️Invite lock enabled",
+            0: "❌ No lock",
+            1: "⚙️Invite lock enabled",
             2: "⚙️Link lock enabled[excluding discord invites]",
-            3: "⚙ Link and invite lock enabled."
+            3: "⚙ Link and invite lock enabled.",
         }
 
         await ctx.send(
@@ -145,9 +146,7 @@ class LinkLock(Cog):
             """
         )
         embed = discord.Embed(
-            title="Link Lock Enabled",
-            description=desc,
-            color=discord.Color.blue()
+            title="Link Lock Enabled", description=desc, color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
 
@@ -179,9 +178,7 @@ class LinkLock(Cog):
             """
         )
         embed = discord.Embed(
-            title="Link Lock Enabled",
-            description=desc,
-            color=discord.Color.blue()
+            title="Link Lock Enabled", description=desc, color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
 
@@ -213,9 +210,7 @@ class LinkLock(Cog):
             """
         )
         embed = discord.Embed(
-            title="Link Lock Enabled",
-            description=desc,
-            color=discord.Color.blue()
+            title="Link Lock Enabled", description=desc, color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
 
