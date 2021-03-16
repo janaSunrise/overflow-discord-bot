@@ -1,7 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, TextChannelConverter, group,
+                                  guild_only, has_permissions)
 
 from bot import Bot
 from bot.databases.suggestions import SuggestionConfig
@@ -50,7 +51,9 @@ class Suggestions(Cog):
         await ctx.send(f"Set suggestion channel to {channel.mention}")
 
     @suggestion.command()
-    async def submission_channel(self, ctx: Context, channel: TextChannelConverter) -> None:
+    async def submission_channel(
+        self, ctx: Context, channel: TextChannelConverter
+    ) -> None:
         """Register a channel as a submission channel where people can suggest."""
         await SuggestionConfig.set_submission_channel(
             self.bot.database, ctx.guild.id, channel.id
@@ -64,9 +67,7 @@ class Suggestions(Cog):
             await ctx.send("❌ Invalid limit specified.")
             return
 
-        await SuggestionConfig.set_limit(
-            self.bot.database, ctx.guild.id, limit
-        )
+        await SuggestionConfig.set_limit(self.bot.database, ctx.guild.id, limit)
         await ctx.send(f"Set limit to {limit}")
 
     @suggestion.command()
@@ -80,10 +81,14 @@ class Suggestions(Cog):
 
         if not row["dm_notification"]:
             await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, True)
-            await ctx.send("DM notifications will be sent when users suggestions are accepted / rejected.")
+            await ctx.send(
+                "DM notifications will be sent when users suggestions are accepted / rejected."
+            )
         else:
             await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, False)
-            await ctx.send("DM notifications will not be sent when users suggestions are accepted / rejected.")
+            await ctx.send(
+                "DM notifications will not be sent when users suggestions are accepted / rejected."
+            )
 
     @suggestion.command()
     async def anonymous(self, ctx: Context) -> None:
@@ -96,7 +101,11 @@ class Suggestions(Cog):
 
         if not row["anonymous"]:
             await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, True)
-            await ctx.send("Users suggestions will be anonymous. Their identity will be hidden.")
+            await ctx.send(
+                "Users suggestions will be anonymous. Their identity will be hidden."
+            )
         else:
             await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, False)
-            await ctx.send("Users suggestions will not be anonymous. Their identity will not be hidden.")
+            await ctx.send(
+                "Users suggestions will not be anonymous. Their identity will not be hidden."
+            )
