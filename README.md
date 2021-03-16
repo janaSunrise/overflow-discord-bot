@@ -81,6 +81,18 @@ Once your done, create the databases and users accordingly, and configure it in 
   preferences.
 - Run the server using `pipenv run start`
 
+## Database migrations
+
+We support database changes and migrations for the latest structures instead of dropping and recreating
+them. We use `alembic`, a sqlalchemy tool to perform the migrations for us.
+
+Migration guide:
+
+- To do a migration, use this: `alembic revision --autogenerate`
+- To bring the migration into actual change: `alembic upgrade head`
+
+NOTE: If you're using pipenv, go into the shell first using `pipenv shell` to use those commands.
+
 ## Contributing
 
 Contributions, issues and feature requests are welcome. After cloning & setting up project locally, you 
