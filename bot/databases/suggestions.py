@@ -21,15 +21,15 @@ class SuggestionConfig(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild]
     ) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         try:
             row = await session.run_sync(
                 lambda session_: session_.query(cls)
-                    .filter_by(guild_id=guild_id)
-                    .first()
+                .filter_by(guild_id=guild_id)
+                .first()
             )
         except NoResultFound:
             return None
@@ -39,10 +39,10 @@ class SuggestionConfig(DatabaseBase):
 
     @classmethod
     async def set_suggestions_channel(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            channel_id: t.Union[str, int, discord.TextChannel],
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        channel_id: t.Union[str, int, discord.TextChannel],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
         channel_id = get_datatype_int(channel_id)
@@ -57,10 +57,10 @@ class SuggestionConfig(DatabaseBase):
 
     @classmethod
     async def set_submission_channel(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            channel_id: t.Union[str, int, discord.TextChannel],
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        channel_id: t.Union[str, int, discord.TextChannel],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
         channel_id = get_datatype_int(channel_id)
@@ -75,49 +75,46 @@ class SuggestionConfig(DatabaseBase):
 
     @classmethod
     async def set_limit(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            limit: int
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        limit: int,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(guild_id=guild_id)
-                .update({"limit": limit})
+            .filter_by(guild_id=guild_id)
+            .update({"limit": limit})
         )
         await session.commit()
 
     @classmethod
     async def set_dm(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            dm: bool
+        cls, session: AsyncSession, guild_id: t.Union[str, int, discord.Guild], dm: bool
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(guild_id=guild_id)
-                .update({"dm_notification": dm})
+            .filter_by(guild_id=guild_id)
+            .update({"dm_notification": dm})
         )
         await session.commit()
 
     @classmethod
     async def set_anonymous(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            anonymous: bool
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        anonymous: bool,
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                                     .filter_by(guild_id=guild_id)
-                                     .update({"anonymous": anonymous})
+            .filter_by(guild_id=guild_id)
+            .update({"anonymous": anonymous})
         )
         await session.commit()
 
@@ -215,15 +212,15 @@ class Suggestion(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, suggestion_id: t.Union[str, int, discord.Guild]
+        cls, session: AsyncSession, suggestion_id: t.Union[str, int, discord.Guild]
     ) -> t.Optional[dict]:
         suggestion_id = get_datatype_int(suggestion_id)
 
         try:
             row = await session.run_sync(
                 lambda session_: session_.query(cls)
-                                         .filter_by(suggestion_id=suggestion_id)
-                                         .first()
+                .filter_by(suggestion_id=suggestion_id)
+                .first()
             )
         except NoResultFound:
             return None
@@ -232,8 +229,6 @@ class Suggestion(DatabaseBase):
             return row.dict()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: getattr(self, key, None)
-            for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
         return data

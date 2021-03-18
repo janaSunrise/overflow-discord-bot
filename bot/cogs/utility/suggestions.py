@@ -1,7 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
+from discord.ext.commands import (Cog, Context, TextChannelConverter, group,
+                                  guild_only, has_permissions)
 
 from bot import Bot
 from bot.databases.suggestions import SuggestionConfig, SuggestionUser
@@ -54,7 +55,9 @@ class Suggestions(Cog):
         await ctx.send(f"Set suggestion channel to {channel.mention}")
 
     @suggestion.command()
-    async def submission_channel(self, ctx: Context, channel: TextChannelConverter) -> None:
+    async def submission_channel(
+        self, ctx: Context, channel: TextChannelConverter
+    ) -> None:
         """Register a channel as a submission channel where people can suggest."""
         await SuggestionConfig.set_submission_channel(
             self.bot.database, ctx.guild.id, channel.id
@@ -68,9 +71,7 @@ class Suggestions(Cog):
             await ctx.send("❌ Invalid limit specified.")
             return
 
-        await SuggestionConfig.set_limit(
-            self.bot.database, ctx.guild.id, limit
-        )
+        await SuggestionConfig.set_limit(self.bot.database, ctx.guild.id, limit)
         await ctx.send(f"Set limit to {limit}")
 
     @group(invoke_without_command=True, aliases=["suggestion-user"])
