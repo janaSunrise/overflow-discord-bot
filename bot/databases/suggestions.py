@@ -137,9 +137,9 @@ class SuggestionUser(DatabaseBase):
 
     @classmethod
     async def set_user(
-            cls,
-            session: AsyncSession,
-            user_id: t.Union[str, int, discord.Guild],
+        cls,
+        session: AsyncSession,
+        user_id: t.Union[str, int, discord.Guild],
     ) -> None:
         user_id = get_datatype_int(user_id)
 
@@ -148,15 +148,14 @@ class SuggestionUser(DatabaseBase):
 
     @classmethod
     async def get_config(
-            cls, session: AsyncSession, user_id: t.Union[str, int, discord.User]
+        cls, session: AsyncSession, user_id: t.Union[str, int, discord.User]
     ) -> t.Optional[dict]:
         user_id = get_datatype_int(user_id)
 
         try:
             row = await session.run_sync(
-                lambda session_: session_.query(cls)
-                    .filter_by(user_id=user_id)
-                    .first()
+                lambda session_: session_.query(
+                    cls).filter_by(user_id=user_id).first()
             )
         except NoResultFound:
             return None
@@ -166,33 +165,30 @@ class SuggestionUser(DatabaseBase):
 
     @classmethod
     async def set_dm(
-            cls,
-            session: AsyncSession,
-            user_id: t.Union[str, int, discord.User],
-            dm: bool
+        cls, session: AsyncSession, user_id: t.Union[str, int, discord.User], dm: bool
     ) -> None:
         user_id = get_datatype_int(user_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(user_id=user_id)
-                .update({"dm_notification": dm})
+            .filter_by(user_id=user_id)
+            .update({"dm_notification": dm})
         )
         await session.commit()
 
     @classmethod
     async def set_anonymous(
-            cls,
-            session: AsyncSession,
-            user_id: t.Union[str, int, discord.User],
-            anonymous: bool
+        cls,
+        session: AsyncSession,
+        user_id: t.Union[str, int, discord.User],
+        anonymous: bool,
     ) -> None:
         user_id = get_datatype_int(user_id)
 
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(user_id=user_id)
-                .update({"anonymous": anonymous})
+            .filter_by(user_id=user_id)
+            .update({"anonymous": anonymous})
         )
         await session.commit()
 

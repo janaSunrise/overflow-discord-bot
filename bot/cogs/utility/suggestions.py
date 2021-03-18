@@ -108,10 +108,14 @@ class Suggestions(Cog):
 
         if not row["dm_notification"]:
             await SuggestionUser.set_dm(self.bot.database, ctx.author.id, True)
-            await ctx.send("DM notifications will be sent when your suggestions are accepted / rejected.")
+            await ctx.send(
+                "DM notifications will be sent when your suggestions are accepted / rejected."
+            )
         else:
             await SuggestionUser.set_dm(self.bot.database, ctx.author.id, False)
-            await ctx.send("DM notifications will not be sent when your suggestions are accepted / rejected.")
+            await ctx.send(
+                "DM notifications will not be sent when your suggestions are accepted / rejected."
+            )
 
     @suggestion_user.command()
     async def anonymous(self, ctx: Context) -> None:
@@ -124,7 +128,11 @@ class Suggestions(Cog):
 
         if not row["anonymous"]:
             await SuggestionUser.set_anonymous(self.bot.database, ctx.author.id, True)
-            await ctx.send("Users suggestions will be anonymous. Your identity will be hidden.")
+            await ctx.send(
+                "Users suggestions will be anonymous. Your identity will be hidden."
+            )
         else:
             await SuggestionUser.set_anonymous(self.bot.database, ctx.author.id, False)
-            await ctx.send("Users suggestions will not be anonymous. Your identity will not be hidden.")
+            await ctx.send(
+                "Users suggestions will not be anonymous. Your identity will not be hidden."
+            )
