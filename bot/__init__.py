@@ -1,7 +1,6 @@
 import asyncio
 import collections
 import sys
-import traceback
 import typing as t
 from datetime import datetime
 
@@ -80,7 +79,8 @@ class Bot(AutoShardedBot):
         bring_databases_into_scope()
 
         engine = create_async_engine(
-            config.DATABASE_CONN, pool_size=20, max_overflow=0)
+            config.DATABASE_CONN, pool_size=30, max_overflow=0
+        )
 
         try:
             async with engine.begin() as conn:
@@ -91,6 +91,7 @@ class Bot(AutoShardedBot):
         except ConnectionRefusedError:
             logger.error("Database connection refused. Trying again.")
             await asyncio.sleep(3)
+
             return await self.init_db()
 
         return AsyncSession(bind=engine)
@@ -107,7 +108,7 @@ class Bot(AutoShardedBot):
                 logger.error(
                     f"Cog {extension} failed to load with {type(exc)}: {exc!r}"
                 )
-                logger.error(traceback.format_exc())
+                raise exc
 
     async def on_ready(self) -> None:
         """Functions called when the bot is ready and connected."""

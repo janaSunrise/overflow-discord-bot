@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Boolean, Column, String
+from sqlalchemy import BigInteger, Boolean, Column, String, insert
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -125,6 +125,79 @@ class SuggestionConfig(DatabaseBase):
         data = {key: getattr(self, key, None)
                 for key in self.__table__.columns.keys()}
         return data
+
+
+class SuggestionUser(DatabaseBase):
+    __tablename__ = "suggestion_user"
+    user_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    anonymous = Column(Boolean, default=False)
+    dm_notification = Column(Boolean, default=False)
+
+    def dict(self) -> t.Dict[str, t.Any]:
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
+        return data
+
+    @classmethod
+    async def set_user(
+            cls,
+            session: AsyncSession,
+            user_id: t.Union[str, int, discord.Guild],
+    ) -> None:
+        user_id = get_datatype_int(user_id)
+
+        await session.execute(insert(cls).values(user_id=user_id))
+        await session.commit()
+
+    @classmethod
+    async def get_config(
+            cls, session: AsyncSession, user_id: t.Union[str, int, discord.User]
+    ) -> t.Optional[dict]:
+        user_id = get_datatype_int(user_id)
+
+        try:
+            row = await session.run_sync(
+                lambda session_: session_.query(cls)
+                    .filter_by(user_id=user_id)
+                    .first()
+            )
+        except NoResultFound:
+            return None
+
+        if row is not None:
+            return row.dict()
+
+    @classmethod
+    async def set_dm(
+            cls,
+            session: AsyncSession,
+            user_id: t.Union[str, int, discord.User],
+            dm: bool
+    ) -> None:
+        user_id = get_datatype_int(user_id)
+
+        await session.run_sync(
+            lambda session_: session_.query(cls)
+                .filter_by(user_id=user_id)
+                .update({"dm_notification": dm})
+        )
+        await session.commit()
+
+    @classmethod
+    async def set_anonymous(
+            cls,
+            session: AsyncSession,
+            user_id: t.Union[str, int, discord.User],
+            anonymous: bool
+    ) -> None:
+        user_id = get_datatype_int(user_id)
+
+        await session.run_sync(
+            lambda session_: session_.query(cls)
+                .filter_by(user_id=user_id)
+                .update({"anonymous": anonymous})
+        )
+        await session.commit()
 
 
 class Suggestion(DatabaseBase):

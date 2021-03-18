@@ -4,12 +4,18 @@ import discord
 from discord.ext.commands import Cog, Context, TextChannelConverter, group, guild_only, has_permissions
 
 from bot import Bot
-from bot.databases.suggestions import SuggestionConfig
+from bot.databases.suggestions import SuggestionConfig, SuggestionUser
 
 
 class Suggestions(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
+    @staticmethod
+    def get_human_readable_word(expression: bool) -> str:
+        if expression:
+            return "Enabled"
+        return "Disabled"
 
     @group(invoke_without_command=True)
     @guild_only()
@@ -33,8 +39,6 @@ class Suggestions(Cog):
                         "No channel configured!"
                     }
                     • Limit: {row["limit"]}
-                    • DM on decision: {row["dm_notification"]}
-                    • Anonymous suggestions: {row["anonymous"]} 
                     """
                 ),
                 color=discord.Color.blue(),
@@ -69,34 +73,57 @@ class Suggestions(Cog):
         )
         await ctx.send(f"Set limit to {limit}")
 
-    @suggestion.command()
+    @group(invoke_without_command=True, aliases=["suggestion-user"])
+    async def suggestion_user(self, ctx: Context):
+        """Commands for suggestion config."""
+        row = await SuggestionUser.get_config(self.bot.database, ctx.author.id)
+
+        if not row:
+            await SuggestionUser.set_user(self.bot.database, ctx.author.id)
+            return
+
+        await ctx.send(
+            embed=discord.Embed(
+                title="Suggestion settings configuration",
+                description=textwrap.dedent(
+                    f"""
+                    • User: {ctx.author.mention}
+                    • Anonymous: {self.get_human_readable_word(row["anonymous"])}
+                    • DM notification: {self.get_human_readable_word(row["dm_notification"])}
+                    """
+                ),
+                color=discord.Color.blue(),
+            )
+        )
+
+    @suggestion_user.command()
     async def dm(self, ctx: Context) -> None:
         """Toggle DM notifications for user when their suggestion is accepted / rejected."""
-        row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
+        row = await SuggestionUser.get_config(self.bot.database, ctx.author.id)
 
         if not row:
             await ctx.send("⚠️Suggestion channel not configured!")
             return
 
         if not row["dm_notification"]:
-            await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, True)
-            await ctx.send("DM notifications will be sent when users suggestions are accepted / rejected.")
+            await SuggestionUser.set_dm(self.bot.database, ctx.author.id, True)
+            await ctx.send("DM notifications will be sent when your suggestions are accepted / rejected.")
         else:
-            await SuggestionConfig.set_dm(self.bot.database, ctx.guild.id, False)
-            await ctx.send("DM notifications will not be sent when users suggestions are accepted / rejected.")
+            await SuggestionUser.set_dm(self.bot.database, ctx.author.id, False)
+            await ctx.send("DM notifications will not be sent when your suggestions are accepted / rejected.")
 
-    @suggestion.command()
+    @suggestion_user.command()
     async def anonymous(self, ctx: Context) -> None:
         """If the suggestions for the user should be anonymous."""
-        row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
+        row = await SuggestionUser.get_config(self.bot.database, ctx.author.id)
 
         if not row:
             await ctx.send("⚠️Suggestion channel not configured!")
             return
 
         if not row["anonymous"]:
-            await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, True)
-            await ctx.send("Users suggestions will be anonymous. Their identity will be hidden.")
+            await SuggestionUser.set_anonymous(self.bot.database, ctx.author.id, True)
+            await ctx.send("Users suggestions will be anonymous. Your identity will be hidden.")
         else:
-            await SuggestionConfig.set_anonymous(self.bot.database, ctx.guild.id, False)
-            await ctx.send("Users suggestions will not be anonymous. Their identity will not be hidden.")
+            await SuggestionUser.set_anonymous(self.bot.database, ctx.author.id, False)
+            await ctx.send("Users suggestions will not be anonymous. Your identity will not be hidden.")
