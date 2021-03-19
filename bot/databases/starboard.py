@@ -13,7 +13,7 @@ class Starboard(DatabaseBase):
 
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
-    channel_id = Column(BigInteger, nullable=False, unique=True)
+    channel_id = Column(BigInteger, unique=True)
     sb_emoji = Column(String, default="⭐")
     required_stars = Column(BigInteger, default=3)
     required_to_lose = Column(BigInteger, default=0)
@@ -67,10 +67,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"sb_emoji": emoji})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "sb_emoji": emoji},
         )
         await session.commit()
 
@@ -83,10 +84,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"required_stars": required_stars})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "required_stars": required_stars},
         )
         await session.commit()
 
@@ -99,10 +101,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"required_to_lose": required_to_lose})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "required_to_lose": required_to_lose},
         )
         await session.commit()
 
@@ -115,10 +118,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"on_delete": on_delete})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "on_delete": on_delete},
         )
         await session.commit()
 
@@ -131,10 +135,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"on_edit": on_edit})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "on_edit": on_edit},
         )
         await session.commit()
 
@@ -147,10 +152,11 @@ class Starboard(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"bots_in_sb": bots_in_sb})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "bots_in_sb": bots_in_sb},
         )
         await session.commit()
 

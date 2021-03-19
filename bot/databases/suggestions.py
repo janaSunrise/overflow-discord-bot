@@ -82,10 +82,11 @@ class SuggestionConfig(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"limit": limit})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "limit": limit},
         )
         await session.commit()
 
@@ -95,10 +96,11 @@ class SuggestionConfig(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"dm_notification": dm})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "dm_notification": dm},
         )
         await session.commit()
 
@@ -111,10 +113,11 @@ class SuggestionConfig(DatabaseBase):
     ) -> None:
         guild_id = get_datatype_int(guild_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-            .filter_by(guild_id=guild_id)
-            .update({"anonymous": anonymous})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["guild_id"],
+            values={"guild_id": guild_id, "anonymous": anonymous},
         )
         await session.commit()
 
@@ -173,10 +176,11 @@ class SuggestionUser(DatabaseBase):
     ) -> None:
         user_id = get_datatype_int(user_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-                .filter_by(user_id=user_id)
-                .update({"dm_notification": dm})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["user_id"],
+            values={"user_id": user_id, "dm_notification": dm},
         )
         await session.commit()
 
@@ -189,10 +193,11 @@ class SuggestionUser(DatabaseBase):
     ) -> None:
         user_id = get_datatype_int(user_id)
 
-        await session.run_sync(
-            lambda session_: session_.query(cls)
-                .filter_by(user_id=user_id)
-                .update({"anonymous": anonymous})
+        await on_conflict(
+            session,
+            cls,
+            conflict_columns=["user_id"],
+            values={"user_id": user_id, "anonymous": anonymous},
         )
         await session.commit()
 
