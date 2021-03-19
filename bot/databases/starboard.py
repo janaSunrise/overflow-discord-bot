@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Boolean, Column, String
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, String
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +14,6 @@ class Starboard(DatabaseBase):
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
-    sb_emoji = Column(String, default="⭐")
     required_stars = Column(BigInteger, default=3)
     required_to_lose = Column(BigInteger, default=0)
     bots_in_sb = Column(Boolean, default=False)
@@ -55,23 +54,6 @@ class Starboard(DatabaseBase):
             cls,
             conflict_columns=["guild_id"],
             values={"guild_id": guild_id, "channel_id": channel_id},
-        )
-        await session.commit()
-
-    @classmethod
-    async def set_sb_emoji(
-        cls,
-        session: AsyncSession,
-        guild_id: t.Union[str, int, discord.Guild],
-        emoji: str,
-    ) -> None:
-        guild_id = get_datatype_int(guild_id)
-
-        await on_conflict(
-            session,
-            cls,
-            conflict_columns=["guild_id"],
-            values={"guild_id": guild_id, "sb_emoji": emoji},
         )
         await session.commit()
 
@@ -171,6 +153,59 @@ class Starboard(DatabaseBase):
         await session.run_sync(lambda session_: session_.delete(row))
 
         await session.commit()
+
+    def dict(self) -> t.Dict[str, t.Any]:
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
+        return data
+
+
+class StarboardMessage(DatabaseBase):
+    __tablename__ = "starboard_message"
+
+    id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
+    channel_id = Column(BigInteger, unique=True)
+    message_id = Column(BigInteger, unique=True)
+    user_id = Column(BigInteger, unique=True)
+    bot_message_id = Column(BigInteger, unique=True)
+
+    @classmethod
+    async def delete_starboard_message(
+            cls, session: AsyncSession, bot_message_id: t.Union[str, int, discord.Message, list]
+    ) -> tuple:
+        if isinstance(bot_message_id, list):
+            row = await session.run_sync(
+                lambda session_: session_.query(
+                    cls).filter(cls.bot_message_id.any(bot_message_id).all())
+            )
+        else:
+            bot_message_id = get_datatype_int(bot_message_id)
+
+            row = await session.run_sync(
+                lambda session_: session_.query(
+                    cls).filter_by(bot_message_id=bot_message_id).first()
+            )
+
+        row = await session.run_sync(lambda session_: session_.delete(row))
+
+        await session.commit()
+
+        return row.fetchall()
+
+    def dict(self) -> t.Dict[str, t.Any]:
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
+        return data
+
+
+class Starrers(DatabaseBase):
+    __tablename__ = "starrers"
+
+    id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
+    user_id = Column(BigInteger, unique=True)
+    entry_id = Column(BigInteger, ForeignKey("starboard_message.id"))
 
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)
