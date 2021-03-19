@@ -169,7 +169,9 @@ class Bot(AutoShardedBot):
 
         return message.channel.id
 
-    async def get_or_fetch_member(self, guild: discord.Guild, member_id: int) -> t.Optional[discord.Member]:
+    async def get_or_fetch_member(
+        self, guild: discord.Guild, member_id: int
+    ) -> t.Optional[discord.Member]:
         member = guild.get_member(member_id)
         if member is not None:
             return member

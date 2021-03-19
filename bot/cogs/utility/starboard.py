@@ -5,11 +5,13 @@ import weakref
 
 import discord
 from discord.ext import tasks
-from discord.ext.commands import (CheckFailure, Cog, Context, TextChannelConverter, group,
-                                  guild_only, has_permissions)
+from discord.ext.commands import (CheckFailure, Cog, Context,
+                                  TextChannelConverter, group, guild_only,
+                                  has_permissions)
 
 from bot import Bot
-from bot.databases.starboard import Starboard as StarboardDB, StarboardMessage as SBMessageDB
+from bot.databases.starboard import Starboard as StarboardDB
+from bot.databases.starboard import StarboardMessage as SBMessageDB
 from bot.utils.utils import confirmation
 
 
@@ -29,7 +31,7 @@ class Starboard(Cog):
         self._about_to_be_deleted = set()
 
         self._locks = weakref.WeakValueDictionary()
-        self.spoilers = re.compile(r'\|\|(.+?)\|\|')
+        self.spoilers = re.compile(r"\|\|(.+?)\|\|")
 
     def cog_unload(self):
         self.clean_message_cache.cancel()
@@ -41,13 +43,13 @@ class Starboard(Cog):
     @staticmethod
     def star_emoji(stars: int) -> str:
         if 5 > stars >= 0:
-            return '\N{WHITE MEDIUM STAR}'
+            return "\N{WHITE MEDIUM STAR}"
         elif 10 > stars >= 5:
-            return '\N{GLOWING STAR}'
+            return "\N{GLOWING STAR}"
         elif 25 > stars >= 10:
-            return '\N{DIZZY SYMBOL}'
+            return "\N{DIZZY SYMBOL}"
         else:
-            return '\N{SPARKLES}'
+            return "\N{SPARKLES}"
 
     @staticmethod
     def star_gradient_colour(stars: int) -> int:
@@ -72,39 +74,61 @@ class Starboard(Cog):
         emoji = self.star_emoji(stars)
 
         if stars > 1:
-            content = f'{emoji} **{stars}** {message.channel.mention} ID: {message.id}'
+            content = f"{emoji} **{stars}** {message.channel.mention} ID: {message.id}"
         else:
-            content = f'{emoji} {message.channel.mention} ID: {message.id}'
+            content = f"{emoji} {message.channel.mention} ID: {message.id}"
 
         embed = discord.Embed(description=message.content)
         if message.embeds:
             data = message.embeds[0]
-            if data.type == 'image' and not self.is_url_spoiler(message.content, data.url):
+            if data.type == "image" and not self.is_url_spoiler(
+                message.content, data.url
+            ):
                 embed.set_image(url=data.url)
 
         if message.attachments:
             file = message.attachments[0]
             spoiler = file.is_spoiler()
-            if not spoiler and file.url.lower().endswith(('png', 'jpeg', 'jpg', 'gif', 'webp')):
+            if not spoiler and file.url.lower().endswith(
+                ("png", "jpeg", "jpg", "gif", "webp")
+            ):
                 embed.set_image(url=file.url)
             elif spoiler:
-                embed.add_field(name='Attachment', value=f'||[{file.filename}]({file.url})||', inline=False)
+                embed.add_field(
+                    name="Attachment",
+                    value=f"||[{file.filename}]({file.url})||",
+                    inline=False,
+                )
             else:
-                embed.add_field(name='Attachment', value=f'[{file.filename}]({file.url})', inline=False)
+                embed.add_field(
+                    name="Attachment",
+                    value=f"[{file.filename}]({file.url})",
+                    inline=False,
+                )
 
-        embed.add_field(name='Original', value=f'[Jump!]({message.jump_url})', inline=False)
-        embed.set_author(name=message.author.display_name, icon_url=message.author.avatar_url_as(format='png'))
+        embed.add_field(
+            name="Original", value=f"[Jump!]({message.jump_url})", inline=False
+        )
+        embed.set_author(
+            name=message.author.display_name,
+            icon_url=message.author.avatar_url_as(format="png"),
+        )
         embed.timestamp = message.created_at
         embed.colour = self.star_gradient_colour(stars)
         return content, embed
 
-    async def get_message(self, channel: discord.TextChannel, message_id: int) -> t.Optional[discord.Message]:
+    async def get_message(
+        self, channel: discord.TextChannel, message_id: int
+    ) -> t.Optional[discord.Message]:
         try:
             return self._message_cache[message_id]
         except KeyError:
             try:
                 o = discord.Object(id=message_id + 1)
-                pred = lambda m: m.id == message_id
+
+                def pred(m):
+                    return m.id == message_id
+
                 msg = await channel.history(limit=1, before=o).next()
 
                 if msg.id != message_id:
@@ -116,7 +140,7 @@ class Starboard(Cog):
                 return None
 
     async def reaction_action(self, fmt: str, payload: t.Any) -> None:
-        if str(payload.emoji) != '\N{WHITE MEDIUM STAR}':
+        if str(payload.emoji) != "\N{WHITE MEDIUM STAR}":
             return
 
         guild = self.bot.get_guild(payload.guild_id)
@@ -127,9 +151,11 @@ class Starboard(Cog):
         if not isinstance(channel, discord.TextChannel):
             return
 
-        method = getattr(self, f'{fmt}_message')
+        method = getattr(self, f"{fmt}_message")
 
-        user = payload.member or (await self.bot.get_or_fetch_member(guild, payload.user_id))
+        user = payload.member or (
+            await self.bot.get_or_fetch_member(guild, payload.user_id)
+        )
         if user is None or user.bot:
             return
 
@@ -150,39 +176,59 @@ class Starboard(Cog):
         await StarboardDB.delete_starboard_channel(self.bot.database, channel.guild.id)
 
     @Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.raw_models.RawReactionActionEvent) -> None:
-        await self.reaction_action('star', payload)
+    async def on_raw_reaction_add(
+        self, payload: discord.raw_models.RawReactionActionEvent
+    ) -> None:
+        await self.reaction_action("star", payload)
 
     @Cog.listener()
-    async def on_raw_reaction_remove(self, payload: discord.raw_models.RawReactionClearEvent) -> None:
-        await self.reaction_action('unstar', payload)
+    async def on_raw_reaction_remove(
+        self, payload: discord.raw_models.RawReactionClearEvent
+    ) -> None:
+        await self.reaction_action("unstar", payload)
 
     @Cog.listener()
-    async def on_raw_message_delete(self, payload: discord.raw_models.RawMessageDeleteEvent) -> None:
+    async def on_raw_message_delete(
+        self, payload: discord.raw_models.RawMessageDeleteEvent
+    ) -> None:
         if payload.message_id in self._about_to_be_deleted:
             self._about_to_be_deleted.discard(payload.message_id)
             return
 
         starboard = await StarboardDB.get_config(self.bot.database, payload.guild_id)
-        if starboard["channel_id"] is None or starboard["channel_id"] != payload.channel_id:
+        if (
+            starboard["channel_id"] is None
+            or starboard["channel_id"] != payload.channel_id
+        ):
             return
 
-        await SBMessageDB.delete_starboard_message(self.bot.database, payload.message_id)
+        await SBMessageDB.delete_starboard_message(
+            self.bot.database, payload.message_id
+        )
 
     @Cog.listener()
-    async def on_raw_bulk_message_delete(self, payload: discord.raw_models.RawBulkMessageDeleteEvent) -> None:
+    async def on_raw_bulk_message_delete(
+        self, payload: discord.raw_models.RawBulkMessageDeleteEvent
+    ) -> None:
         if payload.message_ids <= self._about_to_be_deleted:
             self._about_to_be_deleted.difference_update(payload.message_ids)
             return
 
         starboard = await StarboardDB.get_config(self.bot.database, payload.guild_id)
-        if starboard["channel_id"] is None or starboard["channel_id"] != payload.channel_id:
+        if (
+            starboard["channel_id"] is None
+            or starboard["channel_id"] != payload.channel_id
+        ):
             return
 
-        await SBMessageDB.delete_starboard_message(self.bot.database, list(payload.message_ids))
+        await SBMessageDB.delete_starboard_message(
+            self.bot.database, list(payload.message_ids)
+        )
 
     @Cog.listener()
-    async def on_raw_reaction_clear(self, payload: discord.raw_models.RawReactionClearEvent) -> None:
+    async def on_raw_reaction_clear(
+        self, payload: discord.raw_models.RawReactionClearEvent
+    ) -> None:
         channel = self.bot.get_channel(payload.channel_id)
         if channel is None or not isinstance(channel, discord.TextChannel):
             return
@@ -191,9 +237,9 @@ class Starboard(Cog):
         if starboard["channel_id"] is None:
             return
 
-        bot_message_id = (await SBMessageDB.delete_starboard_id(self.bot.database, payload.message_id))[
-            "bot_message_id"
-        ]
+        bot_message_id = (
+            await SBMessageDB.delete_starboard_id(self.bot.database, payload.message_id)
+        )["bot_message_id"]
 
         if bot_message_id is None:
             return

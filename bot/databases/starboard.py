@@ -174,19 +174,23 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def delete_starboard_message(
-            cls, session: AsyncSession, bot_message_id: t.Union[str, int, discord.Message, list]
+        cls,
+        session: AsyncSession,
+        bot_message_id: t.Union[str, int, discord.Message, list],
     ) -> tuple:
         if isinstance(bot_message_id, list):
             row = await session.run_sync(
-                lambda session_: session_.query(
-                    cls).filter(cls.bot_message_id.any(bot_message_id).all())
+                lambda session_: session_.query(cls).filter(
+                    cls.bot_message_id.any(bot_message_id).all()
+                )
             )
         else:
             bot_message_id = get_datatype_int(bot_message_id)
 
             row = await session.run_sync(
-                lambda session_: session_.query(
-                    cls).filter_by(bot_message_id=bot_message_id).first()
+                lambda session_: session_.query(cls)
+                .filter_by(bot_message_id=bot_message_id)
+                .first()
             )
 
         row = await session.run_sync(lambda session_: session_.delete(row))
