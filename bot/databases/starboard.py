@@ -105,7 +105,8 @@ class Starboard(DatabaseBase):
             session,
             cls,
             conflict_columns=["guild_id"],
-            values={"guild_id": guild_id, "required_to_lose": required_to_lose},
+            values={"guild_id": guild_id,
+                    "required_to_lose": required_to_lose},
         )
         await session.commit()
 
