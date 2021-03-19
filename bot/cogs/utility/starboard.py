@@ -61,6 +61,7 @@ class Starboard(Cog):
 
         if not row:
             await ctx.send("⚠️Starboard channel not configured!")
+            return
 
         await ctx.send(
             embed=discord.Embed(
