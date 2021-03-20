@@ -3,6 +3,7 @@ import textwrap
 import typing as t
 import weakref
 
+import asyncpg
 import discord
 from discord.ext import tasks
 from discord.ext.commands import (CheckFailure, Cog, Context,
@@ -12,6 +13,7 @@ from discord.ext.commands import (CheckFailure, Cog, Context,
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
 from bot.databases.starboard import StarboardMessage as SBMessageDB
+from bot.databases.starboard import Starrers as StarrersDB
 from bot.utils.utils import confirmation
 
 
@@ -248,6 +250,76 @@ class Starboard(Cog):
         msg = await self.get_message(starboard["channel_id"], bot_message_id)
         if msg is not None:
             await msg.delete()
+
+    async def _star_message(self, channel: discord.TextChannel, message_id: int, starrer_id: int):
+        guild_id = channel.guild.id
+
+        starboard = await StarboardDB.get_config(self.bot.database, guild_id)
+        starboard_channel = starboard["channel_id"]
+
+        if starboard_channel is None:
+            raise StarError('\N{WARNING SIGN} Starboard channel not found.')
+
+        if starboard["locked"]:
+            raise StarError('\N{NO ENTRY SIGN} Starboard is locked.')
+
+        if channel.is_nsfw() and not starboard_channel.is_nsfw():
+            raise StarError('\N{NO ENTRY SIGN} Cannot star NSFW in non-NSFW starboard channel.')
+
+        if channel.id == starboard_channel.id:
+            record = await SBMessageDB.get_config(self.bot.database, message_id)
+
+            if record is None:
+                raise StarError('Could not find message in the starboard.')
+
+            ch = channel.guild.get_channel(record['channel_id'])
+            if ch is None:
+                raise StarError('Could not find original channel.')
+
+            return await self._star_message(ch, record['message_id'], starrer_id)
+
+        if not starboard_channel.permissions_for(starboard_channel.guild.me).send_messages:
+            raise StarError('\N{NO ENTRY SIGN} Cannot post messages in starboard channel.')
+
+        msg = await self.get_message(channel, message_id)
+
+        if msg is None:
+            raise StarError('\N{BLACK QUESTION MARK ORNAMENT} This message could not be found.')
+
+        if msg.author.id == starrer_id:
+            raise StarError('\N{NO ENTRY SIGN} You cannot star your own message.')
+
+        if (len(msg.content) == 0 and len(msg.attachments) == 0) or msg.type is not discord.MessageType.default:
+            raise StarError('\N{NO ENTRY SIGN} This message cannot be starred.')
+
+        try:
+            row = await SBMessageDB.insert_sb_entry(self.bot.database, message_id, channel.id, guild_id, msg.author.id)
+            # record = await SBMessageDB.get_star_entry_id(self.bot.database, )  # TODO: Complete this
+        except asyncpg.UniqueViolationError:
+            raise StarError('\N{NO ENTRY SIGN} You already starred this message.')
+
+        entry_id = record[0]
+
+        record = await StarrersDB.get_starrers_count(self.bot.database, entry_id)
+
+        count = record[0]
+        if count < starboard["required_stars"]:
+            return
+
+        content, embed = self.get_emoji_message(msg, count)
+
+        record = await SBMessageDB.get_config_message_id(self.bot.database, message_id)
+        bot_message_id = record[0]
+
+        if bot_message_id is None:
+            new_msg = await starboard_channel.send(content, embed=embed)
+            await SBMessageDB.update_starboard_message(self.bot.database, new_msg.id, message_id)
+        else:
+            new_msg = await self.get_message(starboard_channel, bot_message_id)
+            if new_msg is None:
+                await SBMessageDB.delete_starboard_message_msg_id(self.bot.database, message_id)
+            else:
+                await new_msg.edit(content=content, embed=embed)
 
     @group(invoke_without_command=True)
     @guild_only()
