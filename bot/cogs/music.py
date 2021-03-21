@@ -115,7 +115,7 @@ class Player(wavelink.Player):
         self.shuffle_votes.clear()
         self.stop_votes.clear()
 
-        if self.loop_mode == 'off' or self.loop_mode is None:
+        if self.loop_mode == "off" or self.loop_mode is None:
             try:
                 self.waiting = True
 
@@ -132,15 +132,13 @@ class Player(wavelink.Player):
                     return await self.do_next()
 
                 yt_track = results[0]
-                track = Track(
-                    yt_track.id, yt_track.info,
-                    requester=track.requester
-                )
+                track = Track(yt_track.id, yt_track.info,
+                              requester=track.requester)
 
-        elif self.loop_mode == 'track':
+        elif self.loop_mode == "track":
             track = self.current_song
 
-        elif self.loop_mode == 'queue':
+        elif self.loop_mode == "queue":
             try:
                 self.waiting = True
                 with async_timeout.timeout(300):
@@ -157,10 +155,8 @@ class Player(wavelink.Player):
                     return await self.do_next()
 
                 yt_track = results[0]
-                track = Track(
-                    yt_track.id, yt_track.info,
-                    requester=track.requester
-                )
+                track = Track(yt_track.id, yt_track.info,
+                              requester=track.requester)
 
         await self.play(track)
         self.current_song = track
