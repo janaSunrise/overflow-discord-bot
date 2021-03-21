@@ -369,11 +369,18 @@ class Starboard(Cog):
                 await new_msg.edit(content=content, embed=embed)
 
     async def unstar_message(
-            self, channel: discord.TextChannel, message_id: int, starrer_id: int, *, verify: bool = False
+        self,
+        channel: discord.TextChannel,
+        message_id: int,
+        starrer_id: int,
+        *,
+        verify: bool = False,
     ) -> None:
         await self._unstar_message(channel, message_id, starrer_id)
 
-    async def _unstar_message(self, channel: discord.TextChannel, message_id: int, starrer_id: int) -> None:
+    async def _unstar_message(
+        self, channel: discord.TextChannel, message_id: int, starrer_id: int
+    ) -> None:
         guild_id = channel.guild.id
         starboard = await StarboardDB.get_config(self.bot.database, guild_id)
         if starboard is None:
@@ -381,29 +388,36 @@ class Starboard(Cog):
 
         starboard_channel = starboard["channel_id"]
         if starboard_channel is None:
-            raise StarError('\N{WARNING SIGN} Starboard channel not found.')
+            raise StarError("\N{WARNING SIGN} Starboard channel not found.")
 
         if starboard["locked"]:
-            raise StarError('\N{NO ENTRY SIGN} Starboard is locked.')
+            raise StarError("\N{NO ENTRY SIGN} Starboard is locked.")
 
         if channel.id == starboard_channel:
             record = await SBMessageDB.get_config(self.bot.database, message_id)
 
             if record is None:
-                raise StarError('Could not find message in the starboard.')
+                raise StarError("Could not find message in the starboard.")
 
-            ch = channel.guild.get_channel(record['channel_id'])
+            ch = channel.guild.get_channel(record["channel_id"])
             if ch is None:
-                raise StarError('Could not find original channel.')
+                raise StarError("Could not find original channel.")
 
-            return await self._unstar_message(ch, record['message_id'], starrer_id)
+            return await self._unstar_message(ch, record["message_id"], starrer_id)
 
-        if not starboard_channel.permissions_for(starboard_channel.guild.me).send_messages:
-            raise StarError('\N{NO ENTRY SIGN} Cannot edit messages in starboard channel.')
+        if not starboard_channel.permissions_for(
+            starboard_channel.guild.me
+        ).send_messages:
+            raise StarError(
+                "\N{NO ENTRY SIGN} Cannot edit messages in starboard channel."
+            )
 
-        record = await StarrersDB.delete_star_entry_id(self.bot.database, message_id, starrer_id)
+        record = await StarrersDB.delete_star_entry_id(
+            self.bot.database, message_id, starrer_id
+        )
         if record is None:
-            raise StarError('\N{NO ENTRY SIGN} You have not starred this message.')
+            raise StarError(
+                "\N{NO ENTRY SIGN} You have not starred this message.")
 
         entry_id = record[0]
         bot_message_id = record[1]
@@ -412,7 +426,9 @@ class Starboard(Cog):
         count = count[0]
 
         if count == 0:
-            await SBMessageDB.delete_starboard_message_by_id(self.bot.database, entry_id)
+            await SBMessageDB.delete_starboard_message_by_id(
+                self.bot.database, entry_id
+            )
 
         if bot_message_id is None:
             return
@@ -424,13 +440,17 @@ class Starboard(Cog):
         if count < starboard["required_stars"]:
             self._about_to_be_deleted.add(bot_message_id)
             if count:
-                await SBMessageDB.update_starboard_message_set_null(self.bot.database, entry_id)
+                await SBMessageDB.update_starboard_message_set_null(
+                    self.bot.database, entry_id
+                )
 
             await bot_message.delete()
         else:
             msg = await self.get_message(channel, message_id)
             if msg is None:
-                raise StarError('\N{BLACK QUESTION MARK ORNAMENT} This message could not be found.')
+                raise StarError(
+                    "\N{BLACK QUESTION MARK ORNAMENT} This message could not be found."
+                )
 
             content, embed = self.get_emoji_message(msg, count)
             await bot_message.edit(content=content, embed=embed)
