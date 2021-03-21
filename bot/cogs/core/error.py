@@ -16,7 +16,8 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
 from loguru import logger
 
 from bot import Bot
-from bot.utils.errors import IncorrectChannelError, NoChannelProvided, InvalidRepeatMode
+from bot.utils.errors import (IncorrectChannelError, InvalidRepeatMode,
+                              NoChannelProvided)
 from bot.utils.utils import format_time
 
 
@@ -111,7 +112,8 @@ class ErrorHandler(Cog):
 
         elif isinstance(error, InvalidRepeatMode):
             await self.error_embed(
-                ctx, "The repeat mode specified is wrong. Check the help for the command to know the repeat modes."
+                ctx,
+                "The repeat mode specified is wrong. Check the help for the command to know the repeat modes.",
             )
             return
 
