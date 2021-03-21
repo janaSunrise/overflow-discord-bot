@@ -88,6 +88,9 @@ class Player(wavelink.Player):
         self.queue = SongQueue()
         self.controller = None
 
+        self.loop_mode = None
+        self.current_song = None
+
         self.waiting = False
         self.updating = False
 
@@ -112,25 +115,55 @@ class Player(wavelink.Player):
         self.shuffle_votes.clear()
         self.stop_votes.clear()
 
-        try:
-            self.waiting = True
-            with async_timeout.timeout(300):
-                track = await self.queue.get()
-        except asyncio.TimeoutError:
-            # No music has been played for 5 minutes, cleanup and disconnect.
-            return await self.teardown()
+        if self.loop_mode == 'off' or self.loop_mode is None:
+            try:
+                self.waiting = True
 
-        if isinstance(track, SpotifyTrack):
-            results = await self.node.get_tracks(f"ytsearch:{track.description}")
+                with async_timeout.timeout(300):
+                    track = await self.queue.get()
 
-            if not results:
-                return await self.do_next()
+            except asyncio.TimeoutError:
+                return await self.teardown()
 
-            yt_track = results[0]
-            track = Track(yt_track.id, yt_track.info,
-                          requester=track.requester)
+            if isinstance(track, SpotifyTrack):
+                results = await self.node.get_tracks(f"ytsearch:{track.description}")
+
+                if not results:
+                    return await self.do_next()
+
+                yt_track = results[0]
+                track = Track(
+                    yt_track.id, yt_track.info,
+                    requester=track.requester
+                )
+
+        elif self.loop_mode == 'track':
+            track = self.current_song
+
+        elif self.loop_mode == 'queue':
+            try:
+                self.waiting = True
+                with async_timeout.timeout(300):
+                    await self.queue.put(self.current_song)
+                    track = await self.queue.get()
+
+            except asyncio.TimeoutError:
+                return await self.teardown()
+
+            if isinstance(track, SpotifyTrack):
+                results = await self.node.get_tracks(f"ytsearch:{track.description}")
+
+                if not results:
+                    return await self.do_next()
+
+                yt_track = results[0]
+                track = Track(
+                    yt_track.id, yt_track.info,
+                    requester=track.requester
+                )
 
         await self.play(track)
+        self.current_song = track
         self.waiting = False
 
         # Invoke our players controller.
@@ -795,11 +828,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         Repeat one or more songs.
 
         **MODES**:
-        - `none` (stop repeat)
-        - `1`
-        - `all`
+        - `off`
+        - `track`
+        - `queue`
         """
-        if mode not in ("none", "1", "all"):
+        if mode not in ("off", "track", "queue"):
             raise InvalidRepeatMode
 
         player: Player = self.bot.wavelink.get_player(
@@ -827,7 +860,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 ),
                 delete_after=10,
             )
-            player.queue.set_repeat_mode(mode)
+            player.loop_mode = mode
 
             if not player.is_playing:
                 await player.do_next()
@@ -853,7 +886,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 ),
                 delete_after=10,
             )
-            player.queue.set_repeat_mode(mode)
+            player.loop_mode = mode
 
             if not player.is_playing:
                 await player.do_next()
