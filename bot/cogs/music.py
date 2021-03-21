@@ -42,6 +42,9 @@ class Track(wavelink.Track):
 
 
 class SongQueue(asyncio.Queue):
+    def __init__(self) -> None:
+        super().__init__()
+
     def __getitem__(self, item) -> t.Union[list, str]:
         if isinstance(item, slice):
             return list(itertools.islice(self._queue, item.start, item.stop, item.step))
