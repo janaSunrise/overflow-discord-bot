@@ -261,7 +261,12 @@ class Starboard(Cog):
             await msg.delete()
 
     async def star_message(
-            self, channel: discord.TextChannel, message_id: int, starrer_id: int, *, verify: bool = False
+        self,
+        channel: discord.TextChannel,
+        message_id: int,
+        starrer_id: int,
+        *,
+        verify: bool = False,
     ) -> None:
         await self._star_message(channel, message_id, starrer_id)
 
@@ -325,7 +330,12 @@ class Starboard(Cog):
 
         try:
             record = await SBMessageDB.get_star_entry_id(
-                self.bot.database, message_id, channel.id, guild_id, msg.author.id, starrer_id
+                self.bot.database,
+                message_id,
+                channel.id,
+                guild_id,
+                msg.author.id,
+                starrer_id,
             )
         except asyncpg.UniqueViolationError:
             raise StarError(

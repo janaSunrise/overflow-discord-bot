@@ -3,8 +3,8 @@ import typing as t
 import discord
 from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey, func)
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.sql import text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import text
 
 from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 
@@ -217,7 +217,7 @@ class StarboardMessage(DatabaseBase):
         channel_id: t.Union[str, int, discord.TextChannel],
         guild_id: t.Union[str, int, discord.Guild],
         author_id: t.Union[str, int, discord.User],
-        starrer_id: int
+        starrer_id: int,
     ) -> t.Any:
         query = """WITH to_insert AS (
                        INSERT INTO starboard_message AS entries (message_id, channel_id, guild_id, author_id)
@@ -236,10 +236,18 @@ class StarboardMessage(DatabaseBase):
                    RETURNING entry_id;
                 """
 
-        row = (await session.execute(text(query), {
-            "message_id": message_id, "channel_id": channel_id, "guild_id": guild_id, "author_id": author_id,
-            "starrer_id": starrer_id
-        })).fetchone()
+        row = (
+            await session.execute(
+                text(query),
+                {
+                    "message_id": message_id,
+                    "channel_id": channel_id,
+                    "guild_id": guild_id,
+                    "author_id": author_id,
+                    "starrer_id": starrer_id,
+                },
+            )
+        ).fetchone()
 
         return row.dict()
 
