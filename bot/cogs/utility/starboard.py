@@ -251,6 +251,11 @@ class Starboard(Cog):
         if msg is not None:
             await msg.delete()
 
+    async def star_message(
+            self, channel: discord.TextChannel, message_id: int, starrer_id: int, *, verify: bool = False
+    ) -> None:
+        await self._star_message(channel, message_id, starrer_id)
+
     async def _star_message(
         self, channel: discord.TextChannel, message_id: int, starrer_id: int
     ):
