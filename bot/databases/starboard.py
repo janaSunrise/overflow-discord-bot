@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey, func)
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, func
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import text
@@ -253,14 +253,14 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def update_starboard_message_set_null(
-            cls,
-            session: AsyncSession,
-            id: int,
+        cls,
+        session: AsyncSession,
+        id: int,
     ) -> None:
         await session.run_sync(
             lambda session_: session_.query(cls)
-                .filter_by(id=id)
-                .update({"bot_message_id": None})
+            .filter_by(id=id)
+            .update({"bot_message_id": None})
         )
         await session.commit()
 
@@ -283,14 +283,12 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def delete_starboard_message_by_id(
-            cls,
-            session: AsyncSession,
-            id: int,
+        cls,
+        session: AsyncSession,
+        id: int,
     ) -> None:
         row = await session.run_sync(
-            lambda session_: session_.query(cls)
-                .filter_by(id=id)
-                .first()
+            lambda session_: session_.query(cls).filter_by(id=id).first()
         )
 
         await session.run_sync(lambda session_: session_.delete(row))
@@ -356,7 +354,9 @@ class Starrers(DatabaseBase):
     entry_id = Column(BigInteger, ForeignKey("starboard_message.id"))
 
     @classmethod
-    async def get_starrers_count(cls, session: AsyncSession, entry_id: int) -> t.Optional[dict]:
+    async def get_starrers_count(
+        cls, session: AsyncSession, entry_id: int
+    ) -> t.Optional[dict]:
         try:
             row = await session.run_sync(
                 lambda session_: session_.query(func.count("*"))
@@ -371,10 +371,10 @@ class Starrers(DatabaseBase):
 
     @classmethod
     async def delete_star_entry_id(
-            cls,
-            session: AsyncSession,
-            message_id: t.Union[str, int, discord.Message],
-            starrer_id: int
+        cls,
+        session: AsyncSession,
+        message_id: t.Union[str, int, discord.Message],
+        starrer_id: int,
     ) -> t.Any:
         query = """DELETE FROM starrers USING starboard_message entry
                    WHERE entry.message_id=:message_id
@@ -383,7 +383,12 @@ class Starrers(DatabaseBase):
                    RETURNING starrers.entry_id, entry.bot_message_id
                 """
 
-        row = (await session.execute(text(query), {"message_id": message_id, "starrer_id": starrer_id})).fetchone()
+        row = (
+            await session.execute(
+                text(query), {"message_id": message_id,
+                              "starrer_id": starrer_id}
+            )
+        ).fetchone()
         await session.commit()
 
         return row.dict()
