@@ -25,6 +25,7 @@ alembic = "*"
 lxml = "*"
 tabulate = "*"
 backoff = "*"
+aioradios = "*"
 
 [dev-packages]
 
