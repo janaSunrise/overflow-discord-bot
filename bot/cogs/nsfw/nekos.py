@@ -26,7 +26,7 @@ class Neko(Cog):
         embed.set_image(url=req["data"]["response"]["url"])
         return embed
 
-    @group(invoke_without_subcommand=True)
+    @group(invoke_without_command=True)
     async def neko(self, ctx: Context) -> None:
         """Neko Commands Group."""
         await ctx.send_help(ctx.command)

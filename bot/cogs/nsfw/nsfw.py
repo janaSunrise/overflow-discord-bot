@@ -29,7 +29,7 @@ class Nsfw(Cog):
             self.cog_unload()
         self.bot = bot
 
-    @group(invoke_without_subcommand=True)
+    @group(invoke_without_command=True)
     async def nsfw(self, ctx: Context) -> None:
         """Nsfw commands."""
         await ctx.send_help(ctx.command)
