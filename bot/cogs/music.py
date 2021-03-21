@@ -546,9 +546,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         channel = self.bot.get_channel(int(player.channel_id))
         required = math.ceil((len(channel.members) - 1) / 2.5)
 
-        if (
-            ctx.command.name in ["stop", "skip"] and len(channel.members) == 3
-        ):
+        if ctx.command.name in ["stop", "skip"] and len(channel.members) == 3:
             required = 2
         return required
 
@@ -1498,51 +1496,63 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             delete_after=10,
         )
 
-    @commands.command(name='radio', aliases=['rad'])
+    @commands.command(name="radio", aliases=["rad"])
     async def radio(self, ctx: commands.Context, *radio_station):
         """Search and play online radio staions."""
-        radiolist = await self.rb.search(name=" ".join(radio_station), hidebroken=True, limit=15)
+        radiolist = await self.rb.search(
+            name=" ".join(radio_station), hidebroken=True, limit=15
+        )
 
         def check(m: discord.Message) -> bool:
-            return m.author.id == ctx.author.id and m.content in (str(i) for i in range(1, len(radiolist) + 1))
+            return m.author.id == ctx.author.id and m.content in (
+                str(i) for i in range(1, len(radiolist) + 1)
+            )
 
-        e = discord.Embed(
-            title="Station list",
-            colour=discord.Colour.orange()
-        )
+        e = discord.Embed(title="Station list", colour=discord.Colour.orange())
         if len(radiolist) == 0:
-            e.add_field(name="Nothing found",
-                        value="Unfortunately the system could not find a radio station like that. If you are using URL "
-                              "use the `play` command. Keep in mind to use the exact same name.")
+            e.add_field(
+                name="Nothing found",
+                value="Unfortunately the system could not find a radio station like that. If you are using URL "
+                "use the `play` command. Keep in mind to use the exact same name.",
+            )
 
         text = []
         for station in range(len(radiolist)):
             text.append(
                 f"{station + 1}. **[{radiolist[station]['name']}]({radiolist[station]['homepage']}) | country: "
-                f"{radiolist[station]['country']}**")
+                f"{radiolist[station]['country']}**"
+            )
         e.description = "\n".join(text)
-        e.set_footer(text="Some of the radio stations may be not working. Enter your choice for the radio station.")
+        e.set_footer(
+            text="Some of the radio stations may be not working. Enter your choice for the radio station."
+        )
         await ctx.send(embed=e)
 
         try:
-            message = await self.bot.wait_for('message', check=check, timeout=120.0)
+            message = await self.bot.wait_for("message", check=check, timeout=120.0)
 
         except asyncio.TimeoutError:
             return
         radio_station = radiolist[int(message.content) - 1]
 
-        player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
+        player = self.bot.wavelink.get_player(
+            guild_id=ctx.guild.id, cls=Player, context=ctx
+        )
         if not player.is_connected:
             await ctx.invoke(self.connect)
 
-        tracks = await self.bot.wavelink.get_tracks(radio_station['url'])
-        track = Track(tracks[0].id, tracks[0].info, requester=ctx.author, data=radio_station)
+        tracks = await self.bot.wavelink.get_tracks(radio_station["url"])
+        track = Track(
+            tracks[0].id, tracks[0].info, requester=ctx.author, data=radio_station
+        )
         await ctx.send(
             embed=discord.Embed(
                 title="Success",
                 description=f"Succesfully added `{track.title}` to the playlist.",
-                colour=discord.Colour.green()),
-            delete_after=15)
+                colour=discord.Colour.green(),
+            ),
+            delete_after=15,
+        )
 
         await player.queue.put(track)
         if not player.is_playing:
