@@ -307,10 +307,9 @@ class Starboard(Cog):
                 "\N{NO ENTRY SIGN} This message cannot be starred.")
 
         try:
-            row = await SBMessageDB.insert_sb_entry(
-                self.bot.database, message_id, channel.id, guild_id, msg.author.id
+            record = await SBMessageDB.get_star_entry_id(
+                self.bot.database, message_id, channel.id, guild_id, msg.author.id, starrer_id
             )
-            # record = await SBMessageDB.get_star_entry_id(self.bot.database, )  # TODO: Complete this
         except asyncpg.UniqueViolationError:
             raise StarError(
                 "\N{NO ENTRY SIGN} You already starred this message.")

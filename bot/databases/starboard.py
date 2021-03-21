@@ -5,6 +5,7 @@ from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey, func, insert,
                         select)
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.sql import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.databases import DatabaseBase, get_datatype_int, on_conflict
@@ -214,57 +215,33 @@ class StarboardMessage(DatabaseBase):
     async def get_star_entry_id(
         cls,
         session: AsyncSession,
-        entry_id: int,
         message_id: t.Union[str, int, discord.Message],
+        channel_id: t.Union[str, int, discord.TextChannel],
+        guild_id: t.Union[str, int, discord.Guild],
         author_id: t.Union[str, int, discord.User],
+        starrer_id: int
     ) -> t.Any:
-        message_id = get_datatype_int(message_id)
-        author_id = get_datatype_int(author_id)
+        query = """WITH to_insert AS (
+                       INSERT INTO starboard_message AS entries (message_id, channel_id, guild_id, author_id)
+                       VALUES (:message_id, :channel_id, :guild_id, :author_id)
+                       ON CONFLICT (message_id) DO NOTHING
+                       RETURNING entries.id
+                   )
+                   INSERT INTO starrers (author_id, entry_id)
+                   SELECT :starrer_id, entry.id
+                   FROM (
+                       SELECT id FROM to_insert
+                       UNION ALL
+                       SELECT id FROM starboard_message WHERE message_id=:message_id
+                       LIMIT 1
+                   ) AS entry
+                   RETURNING entry_id;
+                """
 
-        query_1 = select(cls.id)
-        query_2 = select(cls.id).filter_by(message_id=message_id)
-
-        union_q = query_1.union(query_2).limit(1).all()
-
-        query = (
-            insert(Starrers)
-            .values(user_id=author_id, entry_id=entry_id)
-            .select(union_q)
-            .returning(entry_id)
-        )
-
-        row = await session.execute(query)
-        await session.commit()
-
-        return row
-
-    @classmethod
-    async def insert_sb_entry(
-        cls,
-        session: AsyncSession,
-        message_id: t.Union[int, str, discord.Message],
-        channel_id: t.Union[int, str, discord.TextChannel],
-        guild_id: t.Union[int, str, discord.Guild],
-        author_id: t.Union[int, str, discord.User],
-    ) -> t.Any:
-        author_id = get_datatype_int(author_id)
-        message_id = get_datatype_int(message_id)
-        channel_id = get_datatype_int(channel_id)
-        guild_id = get_datatype_int(guild_id)
-
-        row = await session.execute(
-            postgresql.insert(cls)
-            .values(
-                user_id=author_id,
-                message_id=message_id,
-                guild_id=guild_id,
-                channel_id=channel_id,
-            )
-            .on_conflict_do_nothing()
-            .returning(cls.id)
-        )
-
-        await session.commit()
+        row = (await session.execute(text(query), {
+            "message_id": message_id, "channel_id": channel_id, "guild_id": guild_id, "author_id": author_id,
+            "starrer_id": starrer_id
+        })).fetchone()
 
         return row
 
