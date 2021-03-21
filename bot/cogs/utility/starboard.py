@@ -198,6 +198,9 @@ class Starboard(Cog):
             return
 
         starboard = await StarboardDB.get_config(self.bot.database, payload.guild_id)
+        if starboard is None:
+            return
+
         if (
             starboard["channel_id"] is None
             or starboard["channel_id"] != payload.channel_id
@@ -217,6 +220,9 @@ class Starboard(Cog):
             return
 
         starboard = await StarboardDB.get_config(self.bot.database, payload.guild_id)
+        if starboard is None:
+            return
+
         if (
             starboard["channel_id"] is None
             or starboard["channel_id"] != payload.channel_id
@@ -236,6 +242,9 @@ class Starboard(Cog):
             return
 
         starboard = await StarboardDB.get_config(self.bot.database, payload.guild_id)
+        if starboard is None:
+            return
+
         if starboard["channel_id"] is None:
             return
 
@@ -262,6 +271,9 @@ class Starboard(Cog):
         guild_id = channel.guild.id
 
         starboard = await StarboardDB.get_config(self.bot.database, guild_id)
+        if starboard is None:
+            return
+
         starboard_channel = starboard["channel_id"]
 
         if starboard_channel is None:
@@ -275,7 +287,7 @@ class Starboard(Cog):
                 "\N{NO ENTRY SIGN} Cannot star NSFW in non-NSFW starboard channel."
             )
 
-        if channel.id == starboard_channel.id:
+        if channel.id == starboard_channel:
             record = await SBMessageDB.get_config(self.bot.database, message_id)
 
             if record is None:
