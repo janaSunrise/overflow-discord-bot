@@ -1497,8 +1497,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         )
 
     @commands.command(name="radio", aliases=["rad"])
-    async def radio(self, ctx: commands.Context, *radio_station):
-        """Search and play online radio staions."""
+    async def radio(self, ctx: commands.Context, *radio_station) -> None:
+        """Search and play online radio stations."""
         radiolist = await self.rb.search(
             name=" ".join(radio_station), hidebroken=True, limit=15
         )
@@ -1508,25 +1508,25 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 str(i) for i in range(1, len(radiolist) + 1)
             )
 
-        e = discord.Embed(title="Station list", colour=discord.Colour.orange())
+        embed = discord.Embed(title="Station list", colour=discord.Colour.orange())
         if len(radiolist) == 0:
-            e.add_field(
+            embed.add_field(
                 name="Nothing found",
                 value="Unfortunately the system could not find a radio station like that. If you are using URL "
-                "use the `play` command. Keep in mind to use the exact same name.",
+                f"use the `{ctx.prefix}play` command. Keep in mind to use the exact same name.",
             )
 
         text = []
         for station in range(len(radiolist)):
             text.append(
-                f"{station + 1}. **[{radiolist[station]['name']}]({radiolist[station]['homepage']}) | country: "
+                f"**`{station + 1}`** | **[{radiolist[station]['name']}]({radiolist[station]['homepage']}) | country: "
                 f"{radiolist[station]['country']}**"
             )
-        e.description = "\n".join(text)
-        e.set_footer(
+        embed.description = "\n".join(text)
+        embed.set_footer(
             text="Some of the radio stations may be not working. Enter your choice for the radio station."
         )
-        await ctx.send(embed=e)
+        await ctx.send(embed=embed)
 
         try:
             message = await self.bot.wait_for("message", check=check, timeout=120.0)
