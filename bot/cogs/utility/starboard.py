@@ -1,5 +1,6 @@
 import re
 import textwrap
+import time
 import typing as t
 import weakref
 
@@ -7,7 +8,7 @@ import asyncpg
 import discord
 from discord.ext import tasks
 from discord.ext.commands import (CheckFailure, Cog, Context,
-                                  TextChannelConverter, group, guild_only,
+                                  TextChannelConverter, check, command, group, guild_only,
                                   has_permissions)
 
 from bot import Bot
@@ -19,6 +20,28 @@ from bot.utils.utils import confirmation
 
 class StarError(CheckFailure):
     pass
+
+
+def MessageID(argument: t.Any) -> int:
+    try:
+        return int(argument, base=10)
+    except ValueError:
+        raise StarError(f'"{argument}" is not a valid message ID. Use Developer Mode to get the Copy ID option.')
+
+
+def requires_starboard() -> t.Any:
+    async def predicate(ctx: Context) -> t.Any:
+        if ctx.guild is None:
+            return False
+
+        cog = ctx.bot.get_cog('Stars')
+
+        ctx.starboard = await StarboardDB.get_config(ctx.bot.database, ctx.guild.id)
+        if ctx.starboard is None:
+            raise StarError('\N{WARNING SIGN} Starboard channel not found.')
+
+        return True
+    return check(predicate)
 
 
 class Starboard(Cog):
@@ -249,7 +272,7 @@ class Starboard(Cog):
             return
 
         bot_message_id = (
-            await SBMessageDB.delete_starboard_id(self.bot.database, payload.message_id)
+            await SBMessageDB.delete_starboard_message_msg_id(self.bot.database, payload.message_id)
         )["bot_message_id"]
 
         if bot_message_id is None:
@@ -437,7 +460,7 @@ class Starboard(Cog):
         if bot_message is None:
             return
 
-        if count < starboard["required_stars"]:
+        if count <= starboard["required_to_lose"]:
             self._about_to_be_deleted.add(bot_message_id)
             if count:
                 await SBMessageDB.update_starboard_message_set_null(
@@ -570,3 +593,45 @@ class Starboard(Cog):
         else:
             await StarboardDB.set_bots_in_sb(self.bot.database, ctx.guild.id, False)
             await ctx.send("Bot messages won't be added to starboard anymore.")
+
+    @group(invoke_without_command=True, ignore_extra=False)
+    @guild_only()
+    async def star(self, ctx: Context, message: MessageID):
+        try:
+            await self.star_message(ctx.channel, message, ctx.author.id)
+        except StarError as e:
+            await ctx.send(e)
+        else:
+            await ctx.message.delete()
+
+    @command()
+    @guild_only()
+    async def unstar(self, ctx: Context, message: MessageID):
+        try:
+            await self.unstar_message(ctx.channel, message, ctx.author.id, verify=True)
+        except StarError as e:
+            return await ctx.send(e)
+        else:
+            await ctx.message.delete()
+
+    @star.command(name='clean')
+    @has_permissions(manage_channels=True)
+    @requires_starboard()
+    async def star_clean(self, ctx, stars=1):
+        stars = max(stars, 1)
+        channel = ctx.starboard.channel
+
+        last_messages = await channel.history(limit=100).map(lambda m: m.id).flatten()
+
+        to_delete = await StarboardDB.clear_starboard(self.bot.database, ctx.guild.id, last_messages, stars)
+
+        min_snowflake = int((time.time() - 14 * 24 * 60 * 60) * 1000.0 - 1420070400000) << 22
+        to_delete = [discord.Object(id=r[0]) for r in to_delete if r[0] > min_snowflake]
+
+        try:
+            self._about_to_be_deleted.update(o.id for o in to_delete)
+            await channel.delete_messages(to_delete)
+        except discord.HTTPException:
+            await ctx.send('Could not delete messages.')
+        else:
+            await ctx.send(f'\N{PUT LITTER IN ITS PLACE SYMBOL} Deleted {len(to_delete):message}.')

@@ -156,6 +156,42 @@ class Starboard(DatabaseBase):
 
         await session.commit()
 
+    @classmethod
+    async def clear_starboard(
+            cls,
+            session: AsyncSession,
+            guild_id: t.Union[str, int, discord.Guild],
+            last_messages: list,
+            stars: int
+    ) -> t.Any:
+        query = """WITH bad_entries AS (
+                       SELECT entry_id
+                       FROM starrers
+                       INNER JOIN starboard_message
+                       ON starboard_message.id = starrers.entry_id
+                       WHERE starboard_message.guild_id=:guild_id
+                       AND   starboard_message.bot_message_id = ANY(:last_messages::bigint[])
+                       GROUP BY entry_id
+                       HAVING COUNT(*) <= :stars
+                   )
+                   DELETE FROM starboard_message USING bad_entries
+                   WHERE starboard_message.id = bad_entries.entry_id
+                   RETURNING starboard_message.bot_message_id
+                """
+
+        row = (
+            await session.execute(
+                text(query),
+                {
+                    "guild_id": guild_id,
+                    "last_messages": last_messages,
+                    "stars": stars
+                },
+            )
+        ).fetchone()
+
+        return row.dict()
+
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)
                 for key in self.__table__.columns.keys()}
