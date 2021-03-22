@@ -19,19 +19,19 @@ class LinkLock(Cog):
             3: "Link and discord invite lock",
         }
 
-    @staticmethod
-    def get_codes(string: str) -> t.List[str]:
+        self.link_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\
+        ([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+        self.invite_regex = r"(?:discord(?:[\.,]|dot)gg|"
+        r"discord(?:[\.,]|dot)com(?:\/|slash)invite|"
+        r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|"
+        r"discord(?:[\.,]|dot)me|"
+        r"discord(?:[\.,]|dot)io"
+        r")(?:[\/]|slash)"
+        r"([a-zA-Z0-9\-]+)"
+
+    def get_codes(self, string: str) -> t.List[str]:
         """Get the invite codes codes from a link."""
-        return re.findall(
-            r"(?:discord(?:[\.,]|dot)gg|"
-            r"discord(?:[\.,]|dot)com(?:\/|slash)invite|"
-            r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|"
-            r"discord(?:[\.,]|dot)me|"
-            r"discord(?:[\.,]|dot)io"
-            r")(?:[\/]|slash)"
-            r"([a-zA-Z0-9\-]+)",
-            string,
-        )
+        return re.findall(self.invite_regex, string)
 
     @staticmethod
     async def is_our_invite(fragment: str, guild: discord.Guild) -> bool:
@@ -58,8 +58,7 @@ class LinkLock(Cog):
                     return
 
             if re.findall(
-                r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s("
-                r")<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
+                self.link_regex,
                 message.content,
             ):
                 await message.channel.send(
@@ -71,8 +70,7 @@ class LinkLock(Cog):
 
         if status == 3:
             if re.findall(
-                r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]"
-                r"+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))",
+                self.link_regex,
                 message.content,
             ):
                 for code in self.get_codes(message.content):
