@@ -1508,7 +1508,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 str(i) for i in range(1, len(radiolist) + 1)
             )
 
-        embed = discord.Embed(title="Station list", colour=discord.Colour.orange())
+        embed = discord.Embed(title="Station list",
+                              colour=discord.Colour.orange())
         if len(radiolist) == 0:
             embed.add_field(
                 name="Nothing found",
