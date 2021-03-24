@@ -192,7 +192,7 @@ class Bot(AutoShardedBot):
         return members[0]
 
     async def resolve_member_ids(
-            self, guild: t.Union[int, discord.Guild], member_ids: t.Union[list, tuple]
+        self, guild: t.Union[int, discord.Guild], member_ids: t.Union[list, tuple]
     ) -> t.AsyncIterable:
         needs_resolution = []
         for member_id in member_ids:
@@ -213,17 +213,22 @@ class Bot(AutoShardedBot):
                 else:
                     yield member
             else:
-                members = await guild.query_members(limit=1, user_ids=needs_resolution, cache=True)
+                members = await guild.query_members(
+                    limit=1, user_ids=needs_resolution, cache=True
+                )
                 if members:
                     yield members[0]
         elif total_need_resolution <= 100:
-            resolved = await guild.query_members(limit=100, user_ids=needs_resolution, cache=True)
+            resolved = await guild.query_members(
+                limit=100, user_ids=needs_resolution, cache=True
+            )
             for member in resolved:
                 yield member
         else:
             for index in range(0, total_need_resolution, 100):
-                to_resolve = needs_resolution[index:index + 100]
-                members = await guild.query_members(limit=100, user_ids=to_resolve, cache=True)
+                to_resolve = needs_resolution[index: index + 100]
+                members = await guild.query_members(
+                    limit=100, user_ids=to_resolve, cache=True
+                )
                 for member in members:
                     yield member
-

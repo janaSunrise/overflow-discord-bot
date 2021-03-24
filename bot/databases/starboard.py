@@ -198,8 +198,7 @@ class StarboardMessage(DatabaseBase):
     __tablename__ = "starboard_message"
 
     id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False)
     channel_id = Column(BigInteger)
     message_id = Column(BigInteger, unique=True)
     user_id = Column(BigInteger)
@@ -285,8 +284,10 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def get_starboard_message(
-            cls, session: AsyncSession, guild_id: t.Union[int, str, discord.Guild],
-            message: t.Union[int, str, discord.Message]
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[int, str, discord.Guild],
+        message: t.Union[int, str, discord.Message],
     ) -> t.Any:
         query = """SELECT entry.channel_id,
                           entry.message_id,
@@ -302,11 +303,7 @@ class StarboardMessage(DatabaseBase):
 
         row = (
             await session.execute(
-                text(query),
-                {
-                    "guild_id": guild_id,
-                    "message": message
-                }
+                text(query), {"guild_id": guild_id, "message": message}
             )
         ).fetchone()
 
@@ -314,7 +311,7 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def get_starboard_message_author(
-            cls, session: AsyncSession, message: t.Union[int, str, discord.Message]
+        cls, session: AsyncSession, message: t.Union[int, str, discord.Message]
     ) -> t.Any:
         query = """SELECT starrers.user_id
                    FROM starrers
@@ -323,12 +320,7 @@ class StarboardMessage(DatabaseBase):
                    WHERE entry.message_id = :message OR entry.bot_message_id = :message
                 """
 
-        row = (
-            await session.execute(
-                text(query),
-                {"message": message}
-            )
-        ).fetchone()
+        row = (await session.execute(text(query), {"message": message})).fetchone()
 
         return row
 
