@@ -190,7 +190,7 @@ class Starboard(DatabaseBase):
             )
         ).fetchone()
 
-        return row.dict()
+        return row
 
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)
@@ -203,11 +203,11 @@ class StarboardMessage(DatabaseBase):
 
     id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
     guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
-    channel_id = Column(BigInteger, unique=True)
+                      nullable=False)
+    channel_id = Column(BigInteger)
     message_id = Column(BigInteger, unique=True)
-    user_id = Column(BigInteger, unique=True)
-    bot_message_id = Column(BigInteger, unique=True)
+    user_id = Column(BigInteger)
+    bot_message_id = Column(BigInteger)
 
     @classmethod
     async def get_config(
@@ -256,12 +256,12 @@ class StarboardMessage(DatabaseBase):
         starrer_id: int,
     ) -> t.Any:
         query = """WITH to_insert AS (
-                       INSERT INTO starboard_message AS entries (message_id, channel_id, guild_id, author_id)
+                       INSERT INTO starboard_message AS entries (message_id, channel_id, guild_id, user_id)
                        VALUES (:message_id, :channel_id, :guild_id, :author_id)
                        ON CONFLICT (message_id) DO NOTHING
                        RETURNING entries.id
                    )
-                   INSERT INTO starrers (author_id, entry_id)
+                   INSERT INTO starrers (user_id, entry_id)
                    SELECT :starrer_id, entry.id
                    FROM (
                        SELECT id FROM to_insert
@@ -285,7 +285,56 @@ class StarboardMessage(DatabaseBase):
             )
         ).fetchone()
 
-        return row.dict()
+        return row
+
+    @classmethod
+    async def get_starboard_message(
+            cls, session: AsyncSession, guild_id: t.Union[int, str, discord.Guild],
+            message: t.Union[int, str, discord.Message]
+    ) -> t.Any:
+        query = """SELECT entry.channel_id,
+                          entry.message_id,
+                          entry.bot_message_id,
+                          COUNT(*) OVER(PARTITION BY entry_id) AS "Stars"
+                   FROM starrers
+                   INNER JOIN starboard_message entry
+                   ON entry.id = starrers.entry_id
+                   WHERE entry.guild_id=:guild_id
+                   AND (entry.message_id=:message OR entry.bot_message_id=:message)
+                   LIMIT 1
+                """
+
+        row = (
+            await session.execute(
+                text(query),
+                {
+                    "guild_id": guild_id,
+                    "message": message
+                }
+            )
+        ).fetchone()
+
+        return row
+
+    @classmethod
+    async def get_starboard_message_author(
+            cls, session: AsyncSession, message: t.Union[int, str, discord.Message]
+    ) -> t.Any:
+        query = """SELECT starrers.user_id
+                   FROM starrers
+                   INNER JOIN starboard_message entry
+                   ON entry.id = starrers.entry_id
+                   WHERE entry.message_id = :message OR entry.bot_message_id = :message
+                """
+
+        row = (
+            await session.execute(
+                text(query),
+                {"message": message}
+            )
+        ).fetchone()
+
+        return row
 
     @classmethod
     async def update_starboard_message_set_null(
@@ -397,12 +446,13 @@ class Starrers(DatabaseBase):
             row = await session.run_sync(
                 lambda session_: session_.query(func.count("*"))
                 .select_from(cls)
-                .where(entry_id == entry_id)
+                .filter_by(entry_id=entry_id)
             )
         except NoResultFound:
             return None
 
         if row is not None:
+            print(row)
             return row.dict()
 
     @classmethod
@@ -415,7 +465,7 @@ class Starrers(DatabaseBase):
         query = """DELETE FROM starrers USING starboard_message entry
                    WHERE entry.message_id=:message_id
                    AND   entry.id=starrers.entry_id
-                   AND   starrers.author_id=:starrer_id
+                   AND   starrers.user_id=:starrer_id
                    RETURNING starrers.entry_id, entry.bot_message_id
                 """
 
@@ -427,7 +477,7 @@ class Starrers(DatabaseBase):
         ).fetchone()
         await session.commit()
 
-        return row.dict()
+        return row
 
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)

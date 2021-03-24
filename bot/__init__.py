@@ -83,6 +83,7 @@ class Bot(AutoShardedBot):
 
         try:
             async with engine.begin() as conn:
+                await conn.run_sync(DatabaseBase.metadata.drop_all)
                 await conn.run_sync(DatabaseBase.metadata.create_all)
         except InvalidPasswordError as exc:
             logger.critical("The database password entered is invalid.")
@@ -189,3 +190,40 @@ class Bot(AutoShardedBot):
         if not members:
             return None
         return members[0]
+
+    async def resolve_member_ids(
+            self, guild: t.Union[int, discord.Guild], member_ids: t.Union[list, tuple]
+    ) -> t.AsyncIterable:
+        needs_resolution = []
+        for member_id in member_ids:
+            member = guild.get_member(member_id)
+            if member is not None:
+                yield member
+            else:
+                needs_resolution.append(member_id)
+
+        total_need_resolution = len(needs_resolution)
+        if total_need_resolution == 1:
+            shard = self.get_shard(guild.shard_id)
+            if shard.is_ws_ratelimited():
+                try:
+                    member = await guild.fetch_member(needs_resolution[0])
+                except discord.HTTPException:
+                    pass
+                else:
+                    yield member
+            else:
+                members = await guild.query_members(limit=1, user_ids=needs_resolution, cache=True)
+                if members:
+                    yield members[0]
+        elif total_need_resolution <= 100:
+            resolved = await guild.query_members(limit=100, user_ids=needs_resolution, cache=True)
+            for member in resolved:
+                yield member
+        else:
+            for index in range(0, total_need_resolution, 100):
+                to_resolve = needs_resolution[index:index + 100]
+                members = await guild.query_members(limit=100, user_ids=to_resolve, cache=True)
+                for member in members:
+                    yield member
+

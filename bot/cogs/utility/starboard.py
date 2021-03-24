@@ -6,7 +6,7 @@ import weakref
 
 import asyncpg
 import discord
-from discord.ext import tasks
+from discord.ext import menus, tasks
 from discord.ext.commands import (CheckFailure, Cog, Context,
                                   TextChannelConverter, check, command, group, guild_only,
                                   has_permissions)
@@ -15,6 +15,7 @@ from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
 from bot.databases.starboard import StarboardMessage as SBMessageDB
 from bot.databases.starboard import Starrers as StarrersDB
+from bot.utils.pages import SimplePages
 from bot.utils.utils import confirmation
 
 
@@ -327,6 +328,8 @@ class Starboard(Cog):
 
             return await self._star_message(ch, record["message_id"], starrer_id)
 
+        starboard_channel = self.bot.get_channel(starboard_channel)
+
         if not starboard_channel.permissions_for(
             starboard_channel.guild.me
         ).send_messages:
@@ -362,7 +365,8 @@ class Starboard(Cog):
             )
         except asyncpg.UniqueViolationError:
             raise StarError(
-                "\N{NO ENTRY SIGN} You already starred this message.")
+                "\N{NO ENTRY SIGN} You already starred this message."
+            )
 
         entry_id = record[0]
 
@@ -428,6 +432,7 @@ class Starboard(Cog):
 
             return await self._unstar_message(ch, record["message_id"], starrer_id)
 
+        starboard_channel = self.bot.get_channel(starboard_channel)
         if not starboard_channel.permissions_for(
             starboard_channel.guild.me
         ).send_messages:
@@ -635,3 +640,58 @@ class Starboard(Cog):
             await ctx.send('Could not delete messages.')
         else:
             await ctx.send(f'\N{PUT LITTER IN ITS PLACE SYMBOL} Deleted {len(to_delete):message}.')
+
+    @star.command(name='show')
+    @requires_starboard()
+    async def star_show(self, ctx: Context, message: MessageID) -> None:
+        record = await SBMessageDB.get_starboard_message(self.bot.database, ctx.guild.id, message)
+        if record is None:
+            await ctx.send('This message has not been starred.')
+            return
+
+        bot_message_id = record['bot_message_id']
+        if bot_message_id is not None:
+            msg = await self.get_message(ctx.starboard.channel, bot_message_id)
+            if msg is not None:
+                embed = msg.embeds[0] if msg.embeds else None
+                await ctx.send(msg.content, embed=embed)
+                return
+            else:
+                await SBMessageDB.delete_starboard_message_msg_id(self.bot.database, record["message_id"])
+                return
+
+        channel = ctx.guild.get_channel(record['channel_id'])
+        if channel is None:
+            await ctx.send("The message's channel has been deleted.")
+            return
+
+        msg = await self.get_message(channel, record['message_id'])
+        if msg is None:
+            await ctx.send('The message has been deleted.')
+            return
+
+        content, embed = self.get_emoji_message(msg, record['Stars'])
+        await ctx.send(content, embed=embed)
+
+    @star.command(name='who')
+    @requires_starboard()
+    async def star_who(self, ctx: Context, message: MessageID) -> None:
+        records = await SBMessageDB.get_starboard_message_author(self.bot.database, message)
+        if records is None or len(records) == 0:
+            await ctx.send('No one starred this message or this is an invalid message ID.')
+            return
+
+        records = [r[0] for r in records]
+        members = [str(member) async for member in self.bot.resolve_member_ids(ctx.guild, records)]
+
+        p = SimplePages(entries=members, per_page=20)
+        base = format(len(records), 'star')
+        if len(records) > len(members):
+            p.embed.title = f'{base} ({len(records) - len(members)} left server)'
+        else:
+            p.embed.title = base
+
+        try:
+            await p.start(ctx)
+        except menus.MenuError as e:
+            await ctx.send(e)
