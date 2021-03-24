@@ -8,8 +8,8 @@ import asyncpg
 import discord
 from discord.ext import menus, tasks
 from discord.ext.commands import (CheckFailure, Cog, Context,
-                                  TextChannelConverter, check, command, group, guild_only,
-                                  has_permissions)
+                                  TextChannelConverter, check, command, group,
+                                  guild_only, has_permissions)
 
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB
@@ -27,7 +27,9 @@ def MessageID(argument: t.Any) -> int:
     try:
         return int(argument, base=10)
     except ValueError:
-        raise StarError(f'"{argument}" is not a valid message ID. Use Developer Mode to get the Copy ID option.')
+        raise StarError(
+            f'"{argument}" is not a valid message ID. Use Developer Mode to get the Copy ID option.'
+        )
 
 
 def requires_starboard() -> t.Any:
@@ -35,13 +37,14 @@ def requires_starboard() -> t.Any:
         if ctx.guild is None:
             return False
 
-        cog = ctx.bot.get_cog('Stars')
+        cog = ctx.bot.get_cog("Stars")
 
         ctx.starboard = await StarboardDB.get_config(ctx.bot.database, ctx.guild.id)
         if ctx.starboard is None:
-            raise StarError('\N{WARNING SIGN} Starboard channel not found.')
+            raise StarError("\N{WARNING SIGN} Starboard channel not found.")
 
         return True
+
     return check(predicate)
 
 
@@ -273,7 +276,9 @@ class Starboard(Cog):
             return
 
         bot_message_id = (
-            await SBMessageDB.delete_starboard_message_msg_id(self.bot.database, payload.message_id)
+            await SBMessageDB.delete_starboard_message_msg_id(
+                self.bot.database, payload.message_id
+            )
         )["bot_message_id"]
 
         if bot_message_id is None:
@@ -619,7 +624,7 @@ class Starboard(Cog):
         else:
             await ctx.message.delete()
 
-    @star.command(name='clean')
+    @star.command(name="clean")
     @has_permissions(manage_channels=True)
     @requires_starboard()
     async def star_clean(self, ctx, stars=1):
@@ -628,16 +633,22 @@ class Starboard(Cog):
 
         last_messages = await channel.history(limit=100).map(lambda m: m.id).flatten()
 
-        to_delete = await StarboardDB.clear_starboard(self.bot.database, ctx.guild.id, last_messages, stars)
+        to_delete = await StarboardDB.clear_starboard(
+            self.bot.database, ctx.guild.id, last_messages, stars
+        )
 
-        min_snowflake = int((time.time() - 14 * 24 * 60 * 60) * 1000.0 - 1420070400000) << 22
-        to_delete = [discord.Object(id=r[0]) for r in to_delete if r[0] > min_snowflake]
+        min_snowflake = (
+            int((time.time() - 14 * 24 * 60 * 60)
+                * 1000.0 - 1420070400000) << 22
+        )
+        to_delete = [discord.Object(id=r[0])
+                     for r in to_delete if r[0] > min_snowflake]
 
         try:
             self._about_to_be_deleted.update(o.id for o in to_delete)
             await channel.delete_messages(to_delete)
         except discord.HTTPException:
-            await ctx.send('Could not delete messages.')
+            await ctx.send("Could not delete messages.")
         else:
             await ctx.send(f'\N{PUT LITTER IN ITS PLACE SYMBOL} Deleted {len(to_delete):message}.')
 

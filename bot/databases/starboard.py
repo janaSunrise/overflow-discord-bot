@@ -158,11 +158,11 @@ class Starboard(DatabaseBase):
 
     @classmethod
     async def clear_starboard(
-            cls,
-            session: AsyncSession,
-            guild_id: t.Union[str, int, discord.Guild],
-            last_messages: list,
-            stars: int
+        cls,
+        session: AsyncSession,
+        guild_id: t.Union[str, int, discord.Guild],
+        last_messages: list,
+        stars: int,
     ) -> t.Any:
         query = """WITH bad_entries AS (
                        SELECT entry_id
@@ -182,11 +182,7 @@ class Starboard(DatabaseBase):
         row = (
             await session.execute(
                 text(query),
-                {
-                    "guild_id": guild_id,
-                    "last_messages": last_messages,
-                    "stars": stars
-                },
+                {"guild_id": guild_id, "last_messages": last_messages, "stars": stars},
             )
         ).fetchone()
 
