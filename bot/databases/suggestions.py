@@ -11,10 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SuggestionConfig(DatabaseBase):
     __tablename__ = "suggestion_config"
 
-    guild_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
     submission_channel_id = Column(BigInteger, unique=True)
     anonymous = Column(Boolean, default=True)
@@ -74,7 +72,8 @@ class SuggestionConfig(DatabaseBase):
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id, "submission_channel_id": channel_id},
+                values={"guild_id": guild_id,
+                        "submission_channel_id": channel_id},
             )
             await session.commit()
 
@@ -143,10 +142,8 @@ class SuggestionUser(DatabaseBase):
     dm_notification = Column(Boolean, default=False)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: getattr(self, key, None)
-            for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
         return data
 
     @classmethod
@@ -170,8 +167,9 @@ class SuggestionUser(DatabaseBase):
         async with session() as session:
             try:
                 row = await session.run_sync(
-                    lambda session_: session_.query(
-                        cls).filter_by(user_id=user_id).first()
+                    lambda session_: session_.query(cls)
+                    .filter_by(user_id=user_id)
+                    .first()
                 )
             except NoResultFound:
                 return None
@@ -246,8 +244,6 @@ class Suggestion(DatabaseBase):
                 return row.dict()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: getattr(self, key, None)
-            for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
         return data

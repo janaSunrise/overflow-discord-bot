@@ -11,10 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Logging(DatabaseBase):
     __tablename__ = "logging"
 
-    guild_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     server_log = Column(BigInteger)
     mod_log = Column(BigInteger)
     message_log = Column(BigInteger)
@@ -47,16 +45,17 @@ class Logging(DatabaseBase):
         session: sessionmaker,
         log_type: str,
         guild: t.Union[str, int, discord.Guild],
-        channel: t.Union[str, int, discord.TextChannel]
+        channel: t.Union[str, int, discord.TextChannel],
     ) -> None:
         guild = get_datatype_int(guild)
         channel = get_datatype_int(channel)
 
         async with session() as session:
             await on_conflict(
-                session, cls,
+                session,
+                cls,
                 conflict_columns=["guild"],
-                values={"guild": guild, log_type: channel}
+                values={"guild": guild, log_type: channel},
             )
             await session.commit()
 

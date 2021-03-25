@@ -14,10 +14,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Starboard(DatabaseBase):
     __tablename__ = "starboard"
 
-    guild_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
     required_stars = Column(BigInteger, default=3)
     required_to_lose = Column(BigInteger, default=0)
@@ -78,7 +76,8 @@ class Starboard(DatabaseBase):
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id, "required_stars": required_stars},
+                values={"guild_id": guild_id,
+                        "required_stars": required_stars},
             )
             await session.commit()
 
@@ -161,9 +160,9 @@ class Starboard(DatabaseBase):
     ) -> None:
         async with session() as session:
             row = await session.run_sync(
-                lambda session_: session_.query(
-                    cls
-                ).filter_by(guild_id=guild_id).first()
+                lambda session_: session_.query(cls)
+                .filter_by(guild_id=guild_id)
+                .first()
             )
             await session.run_sync(lambda session_: session_.delete(row))
 
@@ -196,7 +195,11 @@ class Starboard(DatabaseBase):
             row = (
                 await session.execute(
                     text(query),
-                    {"guild_id": guild_id, "last_messages": last_messages, "stars": stars},
+                    {
+                        "guild_id": guild_id,
+                        "last_messages": last_messages,
+                        "stars": stars,
+                    },
                 )
             ).fetchone()
 
@@ -212,9 +215,7 @@ class StarboardMessage(DatabaseBase):
     __tablename__ = "starboard_message"
 
     id = Column(BigInteger, primary_key=True, unique=True, autoincrement=True)
-    guild_id = Column(
-        BigInteger, primary_key=True, nullable=False
-    )
+    guild_id = Column(BigInteger, primary_key=True, nullable=False)
     channel_id = Column(BigInteger)
     message_id = Column(BigInteger, unique=True)
     user_id = Column(BigInteger)
@@ -306,7 +307,7 @@ class StarboardMessage(DatabaseBase):
         cls,
         session: sessionmaker,
         guild_id: t.Union[int, str, discord.Guild],
-        message: t.Union[int, str, discord.Message]
+        message: t.Union[int, str, discord.Message],
     ) -> t.Any:
         query = """SELECT entry.channel_id,
                           entry.message_id,
@@ -323,11 +324,7 @@ class StarboardMessage(DatabaseBase):
         async with session() as session:
             row = (
                 await session.execute(
-                    text(query),
-                    {
-                        "guild_id": guild_id,
-                        "message": message
-                    }
+                    text(query), {"guild_id": guild_id, "message": message}
                 )
             ).fetchone()
 
@@ -335,7 +332,7 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def get_starboard_message_author(
-            cls, session: sessionmaker, message: t.Union[int, str, discord.Message]
+        cls, session: sessionmaker, message: t.Union[int, str, discord.Message]
     ) -> t.Any:
         query = """SELECT starrers.user_id
                    FROM starrers
@@ -345,12 +342,7 @@ class StarboardMessage(DatabaseBase):
                 """
 
         async with session() as session:
-            row = (
-                await session.execute(
-                    text(query),
-                    {"message": message}
-                )
-            ).fetchone()
+            row = (await session.execute(text(query), {"message": message})).fetchone()
 
             return row
 
@@ -470,7 +462,8 @@ class Starrers(DatabaseBase):
                 row = await session.run_sync(
                     lambda session_: session_.query(func.count("*"))
                     .select_from(cls)
-                    .filter_by(entry_id=entry_id).one()
+                    .filter_by(entry_id=entry_id)
+                    .one()
                 )
             except NoResultFound:
                 return None
@@ -495,10 +488,8 @@ class Starrers(DatabaseBase):
         async with session() as session:
             row = (
                 await session.execute(
-                    text(query), {
-                        "message_id": message_id,
-                        "starrer_id": starrer_id
-                    }
+                    text(query), {"message_id": message_id,
+                                  "starrer_id": starrer_id}
                 )
             ).fetchone()
             await session.commit()

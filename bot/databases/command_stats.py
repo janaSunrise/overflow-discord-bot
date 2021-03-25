@@ -22,7 +22,9 @@ class CommandStats(DatabaseBase):
     async def get_stats(cls, session: sessionmaker) -> t.List:
         async with session() as session:
             try:
-                rows = await session.run_sync(lambda session_: session_.query(cls).all())
+                rows = await session.run_sync(
+                    lambda session_: session_.query(cls).all()
+                )
             except NoResultFound:
                 return []
 

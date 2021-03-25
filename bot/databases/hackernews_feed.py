@@ -11,10 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class HackernewsFeed(DatabaseBase):
     __tablename__ = "hackernews_feed"
 
-    guild_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger, nullable=False)
 
     @classmethod
@@ -40,7 +38,9 @@ class HackernewsFeed(DatabaseBase):
     async def get_feed_channels(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = await session.run_sync(lambda session_: session_.query(cls).all())
+                rows = await session.run_sync(
+                    lambda session_: session_.query(cls).all()
+                )
             except NoResultFound:
                 return []
 
@@ -73,8 +73,9 @@ class HackernewsFeed(DatabaseBase):
 
         async with session() as session:
             row = await session.run_sync(
-                lambda session_: session_.query(
-                    cls).filter_by(guild_id=guild_id).first()
+                lambda session_: session_.query(cls)
+                .filter_by(guild_id=guild_id)
+                .first()
             )
             await session.run_sync(lambda session_: session_.delete(row))
 
