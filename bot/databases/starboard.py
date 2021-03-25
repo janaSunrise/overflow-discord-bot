@@ -29,7 +29,7 @@ class Starboard(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
+                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
             except NoResultFound:
                 return None
 
@@ -218,7 +218,7 @@ class StarboardMessage(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(bot_message_id=bot_message_id)).first()
+                row = (await session.execute(select(cls).filter_by(bot_message_id=bot_message_id))).first()
             except NoResultFound:
                 return None
 
@@ -233,7 +233,7 @@ class StarboardMessage(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(message_id=message_id)).first()
+                row = (await session.execute(select(cls).filter_by(message_id=message_id))).first()
             except NoResultFound:
                 return None
 
@@ -413,7 +413,7 @@ class Starrers(DatabaseBase):
     ) -> t.Optional[dict]:
         async with session() as session:
             try:
-                row = await session.execute(func.count("*").select_from(cls).where(cls.entry_id == entry_id)).one()
+                row = (await session.execute(func.count("*").select_from(cls).where(cls.entry_id == entry_id))).one()
             except NoResultFound:
                 return None
 

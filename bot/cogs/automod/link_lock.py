@@ -105,7 +105,7 @@ class LinkLock(Cog):
 
         await ctx.send(
             embed=discord.Embed(
-                title="Mod lock settings configuration",
+                title="Link lock settings configuration",
                 description=textwrap.dedent(
                     f"""
                         • LOCK ENABLED: **`{False if lock_mode == 0 else True}`**

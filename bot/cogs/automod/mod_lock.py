@@ -46,7 +46,7 @@ class ModerationLock(Cog):
                 title="Mod lock settings configuration",
                 description=textwrap.dedent(
                     f"""
-                    • LOCK ENABLED: **`{True if lock_mode == 0 else False}`**
+                    • LOCK ENABLED: **`{True if lock_mode != 0 else False}`**
                     • Lock type: **`{mapping[lock_mode]}`**
                     """
                 ),

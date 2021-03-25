@@ -151,9 +151,6 @@ class Bot(AutoShardedBot):
         if hasattr(self, "session"):
             await self.session.close()
 
-        if hasattr(self, "database"):
-            await self.database.close_all()
-
         await super().close()
 
     # -- Other methods --

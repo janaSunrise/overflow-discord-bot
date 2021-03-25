@@ -34,7 +34,7 @@ class LinkLock(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
+                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
             except NoResultFound:
                 return None
 
@@ -60,6 +60,8 @@ class LinkLock(DatabaseBase):
             await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key, None)
+            for key in self.__table__.columns.keys()
+        }
         return data

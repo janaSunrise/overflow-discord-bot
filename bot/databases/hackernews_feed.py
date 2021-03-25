@@ -22,7 +22,7 @@ class HackernewsFeed(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
+                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
             except NoResultFound:
                 return None
 
@@ -33,7 +33,7 @@ class HackernewsFeed(DatabaseBase):
     async def get_feed_channels(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = await session.execute(select(cls)).all()
+                rows = (await session.execute(select(cls))).all()
             except NoResultFound:
                 return []
 

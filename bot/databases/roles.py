@@ -25,7 +25,7 @@ class Roles(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
+                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
             except NoResultFound:
                 return None
 

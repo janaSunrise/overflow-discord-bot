@@ -26,7 +26,7 @@ class SuggestionConfig(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
+                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
             except NoResultFound:
                 return None
 
@@ -148,6 +148,21 @@ class SuggestionUser(DatabaseBase):
         return data
 
     @classmethod
+    async def get_config(
+            cls, session: sessionmaker, user_id: t.Union[str, int, discord.User]
+    ) -> t.Optional[dict]:
+        user_id = get_datatype_int(user_id)
+
+        async with session() as session:
+            try:
+                row = (await session.execute(select(cls).filter_by(user_id=user_id))).first()
+            except NoResultFound:
+                return None
+
+            if row is not None:
+                return row.dict()
+
+    @classmethod
     async def set_user(
         cls,
         session: sessionmaker,
@@ -158,21 +173,6 @@ class SuggestionUser(DatabaseBase):
         async with session() as session:
             await session.execute(insert(cls).values(user_id=user_id))
             await session.commit()
-
-    @classmethod
-    async def get_config(
-        cls, session: sessionmaker, user_id: t.Union[str, int, discord.User]
-    ) -> t.Optional[dict]:
-        user_id = get_datatype_int(user_id)
-
-        async with session() as session:
-            try:
-                row = await session.execute(select(cls).filter_by(user_id=user_id)).first()
-            except NoResultFound:
-                return None
-
-            if row is not None:
-                return row.dict()
 
     @classmethod
     async def set_dm(
@@ -226,7 +226,7 @@ class Suggestion(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(suggestion_id=suggestion_id)).first()
+                row = (await session.execute(select(cls).filter_by(suggestion_id=suggestion_id))).first()
             except NoResultFound:
                 return None
 

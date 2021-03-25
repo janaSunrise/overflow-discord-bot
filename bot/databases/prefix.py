@@ -17,7 +17,7 @@ class Prefix(DatabaseBase):
     async def get_prefixes(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = await session.execute(select(cls)).all()
+                rows = (await session.execute(select(cls))).all()
             except NoResultFound:
                 return []
 

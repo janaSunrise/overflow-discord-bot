@@ -24,7 +24,7 @@ class CommandStats(DatabaseBase):
     async def get_stats(cls, session: sessionmaker) -> t.List:
         async with session() as session:
             try:
-                rows = await session.execute(select(cls)).all()
+                rows = (await session.execute(select(cls))).all()
             except NoResultFound:
                 return []
 
@@ -36,7 +36,7 @@ class CommandStats(DatabaseBase):
     ) -> t.Optional[t.List[dict]]:
         async with session() as session:
             try:
-                row = await session.execute(select(cls).filter_by(command=command_name)).first()
+                row = (await session.execute(select(cls).filter_by(command=command_name))).first()
             except NoResultFound:
                 return None
 
