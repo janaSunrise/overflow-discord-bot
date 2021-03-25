@@ -11,7 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Logging(DatabaseBase):
     __tablename__ = "logging"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     server_log = Column(BigInteger)
     mod_log = Column(BigInteger)
     message_log = Column(BigInteger)
@@ -27,7 +28,9 @@ class Logging(DatabaseBase):
 
         async with session() as session:
             try:
-                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
+                row = (
+                    await session.execute(select(cls).filter_by(guild_id=guild_id))
+                ).first()
             except NoResultFound:
                 return None
 

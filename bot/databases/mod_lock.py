@@ -23,7 +23,8 @@ class ModLock(DatabaseBase):
 
     __tablename__ = "mod_lock"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     lock_code = Column(Integer, nullable=False, default=0)
 
     @classmethod
@@ -34,7 +35,9 @@ class ModLock(DatabaseBase):
 
         async with session() as session:
             try:
-                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
+                row = (
+                    await session.execute(select(cls).filter_by(guild_id=guild_id))
+                ).first()
             except NoResultFound:
                 return None
 

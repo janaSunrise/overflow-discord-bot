@@ -12,17 +12,16 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SwearFilter(DatabaseBase):
     __tablename__ = "swear_filter"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     manual_on = Column(Boolean, nullable=False, default=False)
     autoswear = Column(Boolean, nullable=False, default=False)
     notification = Column(Boolean, nullable=False, default=False)
     words = Column(ARRAY(String), nullable=False, default=[])
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: getattr(self, key, None)
-            for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key, None)
+                for key in self.__table__.columns.keys()}
         return data
 
     @classmethod
@@ -33,7 +32,9 @@ class SwearFilter(DatabaseBase):
 
         async with session() as session:
             try:
-                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
+                row = (
+                    await session.execute(select(cls).filter_by(guild_id=guild_id))
+                ).first()
             except NoResultFound:
                 return None
 
