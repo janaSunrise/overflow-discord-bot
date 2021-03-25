@@ -21,9 +21,11 @@ class LinkLock(Cog):
 
         self.link_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\
         ([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-        self.invite_regex = r"(?:discord(?:[\.,]|dot)gg|discord(?:[\.,]|dot)com(?:\/|slash)invite|" \
-                            r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|discord(?:[\.,]|dot)me|" \
-                            r"discord(?:[\.,]|dot)io)(?:[\/]|slash)([a-zA-Z0-9\-]+)"
+        self.invite_regex = (
+            r"(?:discord(?:[\.,]|dot)gg|discord(?:[\.,]|dot)com(?:\/|slash)invite|"
+            r"discordapp(?:[\.,]|dot)com(?:\/|slash)invite|discord(?:[\.,]|dot)me|"
+            r"discord(?:[\.,]|dot)io)(?:[\/]|slash)([a-zA-Z0-9\-]+)"
+        )
 
     def get_codes(self, string: str) -> t.List[str]:
         """Get the invite codes codes from a link."""

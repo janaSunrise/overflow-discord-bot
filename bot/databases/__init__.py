@@ -31,15 +31,14 @@ class CustomBase:
     if t.TYPE_CHECKING:
         __tablename__: str
     else:
+
         @declared_attr
         def __tablename__(self) -> str:
             return camel_to_snake(self.__name__)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {
-            key: getattr(self, key)
-            for key in self.__table__.columns.keys()
-        }
+        data = {key: getattr(self, key)
+                for key in self.__table__.columns.keys()}
         return data
 
 
