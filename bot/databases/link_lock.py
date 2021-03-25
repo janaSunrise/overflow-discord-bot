@@ -59,8 +59,3 @@ class LinkLock(DatabaseBase):
                 values={"guild_id": guild_id, "lock_code": lock_code},
             )
             await session.commit()
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data

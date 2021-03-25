@@ -139,11 +139,6 @@ class SuggestionUser(DatabaseBase):
     anonymous = Column(Boolean, default=False)
     dm_notification = Column(Boolean, default=False)
 
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data
-
     @classmethod
     async def get_config(
         cls, session: sessionmaker, user_id: t.Union[str, int, discord.User]
@@ -238,8 +233,3 @@ class Suggestion(DatabaseBase):
 
             if row is not None:
                 return row.dict()
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data

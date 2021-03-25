@@ -51,8 +51,3 @@ class AutoRoles(DatabaseBase):
                 values={"guild_id": guild_id, "auto_roles": role},
             )
             await session.commit()
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data

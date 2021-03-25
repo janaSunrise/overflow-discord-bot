@@ -70,8 +70,3 @@ class HackernewsFeed(DatabaseBase):
         async with session() as session:
             await session.execute(delete(cls).where(cls.guild_id == guild_id))
             await session.commit()
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
-        return data

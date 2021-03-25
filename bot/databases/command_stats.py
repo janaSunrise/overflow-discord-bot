@@ -13,11 +13,6 @@ class CommandStats(DatabaseBase):
     command = Column(String, primary_key=True, nullable=False, unique=True)
     usage_count = Column(BigInteger, nullable=False, default=0)
 
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
-        return data
-
     @classmethod
     async def get_stats(cls, session: sessionmaker) -> t.List:
         async with session() as session:

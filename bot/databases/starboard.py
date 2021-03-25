@@ -196,11 +196,6 @@ class Starboard(DatabaseBase):
 
             return row
 
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data
-
 
 class StarboardMessage(DatabaseBase):
     __tablename__ = "starboard_message"
@@ -411,11 +406,6 @@ class StarboardMessage(DatabaseBase):
             await session.execute(delete(cls).where(cls.message_id == message_id))
             await session.commit()
 
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data
-
 
 class Starrers(DatabaseBase):
     __tablename__ = "starrers"
@@ -466,8 +456,3 @@ class Starrers(DatabaseBase):
             await session.commit()
 
             return row
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data

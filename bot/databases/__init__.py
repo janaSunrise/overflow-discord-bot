@@ -1,4 +1,4 @@
-# TODO: use .scalars() in database to fix the .dict() issue, and migrate to custom Database base.
+# TODO: use .scalars() in database to fix the .dict() issue
 
 import typing as t
 from importlib import import_module
@@ -7,14 +7,13 @@ import discord
 import sqlalchemy as alchemy
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.declarative import (DeclarativeMeta, declarative_base,
-                                        declared_attr)
+from sqlalchemy.ext.declarative import (
+    DeclarativeMeta, declarative_base,
+    declared_attr
+)
 from sqlalchemy.sql.base import ImmutableColumnCollection
 
 from bot.utils.utils import camel_to_snake
-
-# -- The parent class for all DB Models --
-DatabaseBase = declarative_base()
 
 
 # -- Custom database base --
@@ -47,14 +46,14 @@ class CustomBase:
 _Base = declarative_base(cls=CustomBase, metaclass=CustomMeta)
 
 if t.TYPE_CHECKING:
-    class Base(_Base, CustomBase, metaclass=CustomMeta):
+    class DatabaseBase(_Base, CustomBase, metaclass=CustomMeta):
         __table__: alchemy.Table
         __tablename_: str
 
         metadata: alchemy.MetaData
         columns: ImmutableColumnCollection
 else:
-    Base = _Base
+    DatabaseBase = _Base
 
 
 # -- Get tables into scope --

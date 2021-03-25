@@ -19,11 +19,6 @@ class SwearFilter(DatabaseBase):
     notification = Column(Boolean, nullable=False, default=False)
     words = Column(ARRAY(String), nullable=False, default=[])
 
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
-        return data
-
     @classmethod
     async def get_config(
         cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]

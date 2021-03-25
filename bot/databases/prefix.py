@@ -38,8 +38,3 @@ class Prefix(DatabaseBase):
                 values={"context_id": context_id, "prefix": prefix},
             )
             await session.commit()
-
-    def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
-        return data
