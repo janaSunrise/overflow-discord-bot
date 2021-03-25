@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Boolean, Column, String, insert
+from sqlalchemy import BigInteger, Column
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -40,6 +40,25 @@ class Logging(DatabaseBase):
 
             if row is not None:
                 return row.dict()
+
+    @classmethod
+    async def set_log_channel(
+        cls,
+        session: sessionmaker,
+        log_type: str,
+        guild: t.Union[str, int, discord.Guild],
+        channel: t.Union[str, int, discord.TextChannel]
+    ) -> None:
+        guild = get_datatype_int(guild)
+        channel = get_datatype_int(channel)
+
+        async with session() as session:
+            await on_conflict(
+                session, cls,
+                conflict_columns=["guild"],
+                values={"guild": guild, log_type: channel}
+            )
+            await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
         data = {key: getattr(self, key, None)
