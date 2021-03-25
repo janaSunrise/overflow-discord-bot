@@ -80,7 +80,8 @@ class Bot(AutoShardedBot):
         bring_databases_into_scope()
 
         engine = create_async_engine(
-            config.DATABASE_CONN, pool_size=30, max_overflow=0)
+            config.DATABASE_CONN, pool_size=30, max_overflow=0
+        )
 
         try:
             async with engine.begin() as conn:

@@ -1,3 +1,5 @@
+# TODO: use .scalars() in database to fix the .dict() issue, and migrate to custom Database base.
+
 import typing as t
 from importlib import import_module
 
@@ -30,28 +32,27 @@ class CustomBase:
     if t.TYPE_CHECKING:
         __tablename__: str
     else:
-
         @declared_attr
         def __tablename__(self) -> str:
             return camel_to_snake(self.__name__)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key)
+            for key in self.__table__.columns.keys()
+        }
         return data
 
 
 _Base = declarative_base(cls=CustomBase, metaclass=CustomMeta)
-if t.TYPE_CHECKING:
 
+if t.TYPE_CHECKING:
     class Base(_Base, CustomBase, metaclass=CustomMeta):
         __table__: alchemy.Table
         __tablename_: str
 
         metadata: alchemy.MetaData
         columns: ImmutableColumnCollection
-
-
 else:
     Base = _Base
 
