@@ -32,19 +32,22 @@ class SimplePageSource(ListPageSource):
     async def format_page(self, menu, entries):
         pages = []
         for index, entry in enumerate(entries, start=menu.current_page * self.per_page):
-            pages.append(f'{index + 1}. {entry}')
+            pages.append(f"{index + 1}. {entry}")
 
         maximum = self.get_max_pages()
         if maximum > 1:
-            footer = f'Page {menu.current_page + 1}/{maximum} ({len(self.entries)} entries)'
+            footer = (
+                f"Page {menu.current_page + 1}/{maximum} ({len(self.entries)} entries)"
+            )
             menu.embed.set_footer(text=footer)
 
         if self.initial_page and self.is_paginating():
-            pages.append('')
-            pages.append('Confused? React with \N{INFORMATION SOURCE} for more info.')
+            pages.append("")
+            pages.append(
+                "Confused? React with \N{INFORMATION SOURCE} for more info.")
             self.initial_page = False
 
-        menu.embed.description = '\n'.join(pages)
+        menu.embed.description = "\n".join(pages)
         return menu.embed
 
 
