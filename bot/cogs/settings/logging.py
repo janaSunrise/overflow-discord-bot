@@ -1,3 +1,5 @@
+# TODO: Add configuration and settings for the logging.
+
 import discord
 from discord.ext.commands import (
     Cog, Context, TextChannelConverter, group,
