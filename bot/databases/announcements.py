@@ -11,10 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Announcements(DatabaseBase):
     __tablename__ = "announcements"
 
-    guild_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger)
     role_id = Column(BigInteger)
 

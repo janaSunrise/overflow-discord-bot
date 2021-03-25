@@ -1,10 +1,8 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (
-    Cog, Context, TextChannelConverter, group,
-    has_permissions
-)
+from discord.ext.commands import (Cog, Context, TextChannelConverter, group,
+                                  has_permissions)
 
 from bot import Bot
 from bot.databases.logging import Logging

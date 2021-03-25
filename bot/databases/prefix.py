@@ -10,17 +10,17 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Prefix(DatabaseBase):
     __tablename__ = "prefixes"
 
-    context_id = Column(
-        BigInteger, primary_key=True,
-        nullable=False, unique=True
-    )
+    context_id = Column(BigInteger, primary_key=True,
+                        nullable=False, unique=True)
     prefix = Column(String, nullable=False)
 
     @classmethod
     async def get_prefixes(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = await session.run_sync(lambda session_: session_.query(cls).all())
+                rows = await session.run_sync(
+                    lambda session_: session_.query(cls).all()
+                )
             except NoResultFound:
                 return []
 
