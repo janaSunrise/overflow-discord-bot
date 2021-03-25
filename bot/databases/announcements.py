@@ -11,7 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Announcements(DatabaseBase):
     __tablename__ = "announcements"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger)
     role_id = Column(BigInteger)
 
@@ -23,7 +24,9 @@ class Announcements(DatabaseBase):
 
         async with session() as session:
             try:
-                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
+                row = (
+                    await session.execute(select(cls).filter_by(guild_id=guild_id))
+                ).first()
             except NoResultFound:
                 return None
 
@@ -38,7 +41,9 @@ class Announcements(DatabaseBase):
 
         async with session() as session:
             try:
-                row = (await session.execute(select(cls).filter_by(guild_id=guild_id))).first()
+                row = (
+                    await session.execute(select(cls).filter_by(guild_id=guild_id))
+                ).first()
             except NoResultFound:
                 return None
 
