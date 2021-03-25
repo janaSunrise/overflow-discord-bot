@@ -3,8 +3,8 @@ from bot import Bot
 from .announcements import Announcements
 from .embeds import Embeds
 from .lookup import Lookup
-from .starboard import Starboard
-from .suggestions import Suggestions
+# from .starboard import Starboard
+# from .suggestions import Suggestions
 
 
 def setup(bot: Bot) -> None:
@@ -12,5 +12,5 @@ def setup(bot: Bot) -> None:
     bot.add_cog(Announcements(bot))
     bot.add_cog(Embeds(bot))
     bot.add_cog(Lookup(bot))
-    bot.add_cog(Starboard(bot))
-    bot.add_cog(Suggestions(bot))
+    # bot.add_cog(Starboard(bot))
+    # bot.add_cog(Suggestions(bot))
