@@ -2,7 +2,7 @@ import typing as t
 
 from sqlalchemy import BigInteger, Column, String
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 from bot.databases import DatabaseBase, on_conflict
 
@@ -19,38 +19,41 @@ class CommandStats(DatabaseBase):
         return data
 
     @classmethod
-    async def get_stats(cls, session: AsyncSession) -> t.List:
-        try:
-            rows = await session.run_sync(lambda session_: session_.query(cls).all())
-        except NoResultFound:
-            return []
+    async def get_stats(cls, session: sessionmaker) -> t.List:
+        async with session() as session:
+            try:
+                rows = await session.run_sync(lambda session_: session_.query(cls).all())
+            except NoResultFound:
+                return []
 
-        return [row.dict() for row in rows]
+            return [row.dict() for row in rows]
 
     @classmethod
     async def get_command_stats(
-        cls, session: AsyncSession, command_name: str
+        cls, session: sessionmaker, command_name: str
     ) -> t.Optional[t.List[dict]]:
-        try:
-            row = await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(command=command_name)
-                .first()
-            )
-        except NoResultFound:
-            return None
+        async with session() as session:
+            try:
+                row = await session.run_sync(
+                    lambda session_: session_.query(cls)
+                    .filter_by(command=command_name)
+                    .first()
+                )
+            except NoResultFound:
+                return None
 
-        if row is not None:
-            return row.dict()
+            if row is not None:
+                return row.dict()
 
     @classmethod
     async def set_command_stats(
-        cls, session: AsyncSession, command: str, usage_count: int
+        cls, session: sessionmaker, command: str, usage_count: int
     ) -> None:
-        await on_conflict(
-            session,
-            cls,
-            conflict_columns=["command"],
-            values={"command": command, "usage_count": usage_count},
-        )
-        await session.commit()
+        async with session() as session:
+            await on_conflict(
+                session,
+                cls,
+                conflict_columns=["command"],
+                values={"command": command, "usage_count": usage_count},
+            )
+            await session.commit()

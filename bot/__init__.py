@@ -10,6 +10,7 @@ import spotify
 from asyncpg.exceptions import InvalidPasswordError
 from discord.ext.commands import AutoShardedBot, Context
 from loguru import logger
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from bot import config
@@ -74,16 +75,16 @@ class Bot(AutoShardedBot):
 
         return await super().is_owner(user)
 
-    async def init_db(self) -> AsyncSession:
+    async def init_db(self) -> sessionmaker:
         """Initialize the database."""
         bring_databases_into_scope()
 
         engine = create_async_engine(
-            config.DATABASE_CONN, pool_size=30, max_overflow=0)
+            config.DATABASE_CONN, pool_size=30, max_overflow=0
+        )
 
         try:
             async with engine.begin() as conn:
-                await conn.run_sync(DatabaseBase.metadata.drop_all)
                 await conn.run_sync(DatabaseBase.metadata.create_all)
         except InvalidPasswordError as exc:
             logger.critical("The database password entered is invalid.")
@@ -94,7 +95,11 @@ class Bot(AutoShardedBot):
 
             return await self.init_db()
 
-        return AsyncSession(bind=engine)
+        async_session = sessionmaker(
+            engine, expire_on_commit=False, class_=AsyncSession
+        )
+
+        return async_session
 
     async def load_extensions(self) -> None:
         """Load all listed cogs."""
