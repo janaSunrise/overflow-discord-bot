@@ -1,7 +1,7 @@
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Column
+from sqlalchemy import BigInteger, Column, delete, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -11,8 +11,7 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class HackernewsFeed(DatabaseBase):
     __tablename__ = "hackernews_feed"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     channel_id = Column(BigInteger, nullable=False)
 
     @classmethod
@@ -23,11 +22,7 @@ class HackernewsFeed(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(guild_id=guild_id)
-                    .first()
-                )
+                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
             except NoResultFound:
                 return None
 
@@ -38,9 +33,7 @@ class HackernewsFeed(DatabaseBase):
     async def get_feed_channels(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = await session.run_sync(
-                    lambda session_: session_.query(cls).all()
-                )
+                rows = await session.execute(select(cls)).all()
             except NoResultFound:
                 return []
 
@@ -72,16 +65,12 @@ class HackernewsFeed(DatabaseBase):
         guild_id = get_datatype_int(guild_id)
 
         async with session() as session:
-            row = await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(guild_id=guild_id)
-                .first()
-            )
-            await session.run_sync(lambda session_: session_.delete(row))
-
+            await session.execute(delete(cls).where(cls.guild_id == guild_id))
             await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key)
+            for key in self.__table__.columns.keys()
+        }
         return data

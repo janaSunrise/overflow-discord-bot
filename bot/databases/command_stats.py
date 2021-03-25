@@ -1,6 +1,6 @@
 import typing as t
 
-from sqlalchemy import BigInteger, Column, String
+from sqlalchemy import BigInteger, Column, String, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 
@@ -14,17 +14,17 @@ class CommandStats(DatabaseBase):
     usage_count = Column(BigInteger, nullable=False, default=0)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key)
+            for key in self.__table__.columns.keys()
+        }
         return data
 
     @classmethod
     async def get_stats(cls, session: sessionmaker) -> t.List:
         async with session() as session:
             try:
-                rows = await session.run_sync(
-                    lambda session_: session_.query(cls).all()
-                )
+                rows = await session.execute(select(cls)).all()
             except NoResultFound:
                 return []
 
@@ -36,11 +36,7 @@ class CommandStats(DatabaseBase):
     ) -> t.Optional[t.List[dict]]:
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(command=command_name)
-                    .first()
-                )
+                row = await session.execute(select(cls).filter_by(command=command_name)).first()
             except NoResultFound:
                 return None
 

@@ -1,9 +1,7 @@
-# TODO: Complete starboard and add more functionality as per database table and columns.
-
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, func
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, func, delete, update, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
@@ -14,8 +12,7 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Starboard(DatabaseBase):
     __tablename__ = "starboard"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
     required_stars = Column(BigInteger, default=3)
     required_to_lose = Column(BigInteger, default=0)
@@ -32,11 +29,7 @@ class Starboard(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(guild_id=guild_id)
-                    .first()
-                )
+                row = await session.execute(select(cls).filter_by(guild_id=guild_id)).first()
             except NoResultFound:
                 return None
 
@@ -159,13 +152,7 @@ class Starboard(DatabaseBase):
         cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]
     ) -> None:
         async with session() as session:
-            row = await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(guild_id=guild_id)
-                .first()
-            )
-            await session.run_sync(lambda session_: session_.delete(row))
-
+            await session.execute(delete(cls).where(cls.guild_id == guild_id))
             await session.commit()
 
     @classmethod
@@ -206,8 +193,10 @@ class Starboard(DatabaseBase):
             return row
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key, None)
+            for key in self.__table__.columns.keys()
+        }
         return data
 
 
@@ -229,11 +218,7 @@ class StarboardMessage(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(bot_message_id=bot_message_id)
-                    .first()
-                )
+                row = await session.execute(select(cls).filter_by(bot_message_id=bot_message_id)).first()
             except NoResultFound:
                 return None
 
@@ -248,11 +233,7 @@ class StarboardMessage(DatabaseBase):
 
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(message_id=message_id)
-                    .first()
-                )
+                row = await session.execute(select(cls).filter_by(message_id=message_id)).first()
             except NoResultFound:
                 return None
 
@@ -342,8 +323,7 @@ class StarboardMessage(DatabaseBase):
                 """
 
         async with session() as session:
-            row = (await session.execute(text(query), {"message": message})).fetchone()
-
+            row = await session.execute(text(query), {"message": message}).fetchone()
             return row
 
     @classmethod
@@ -353,11 +333,7 @@ class StarboardMessage(DatabaseBase):
         id: int,
     ) -> None:
         async with session() as session:
-            await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(id=id)
-                .update({"bot_message_id": None})
-            )
+            await session.execute(update(cls).where(cls.id == id).values(bot_message_id=None))
             await session.commit()
 
     @classmethod
@@ -371,11 +347,7 @@ class StarboardMessage(DatabaseBase):
         bot_message_id = get_datatype_int(bot_message_id)
 
         async with session() as session:
-            await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(message_id=message_id)
-                .update({"bot_message_id": bot_message_id})
-            )
+            await session.execute(update(cls).where(cls.message_id == message_id).values(bot_message_id=bot_message_id))
             await session.commit()
 
     @classmethod
@@ -385,12 +357,7 @@ class StarboardMessage(DatabaseBase):
         id: int,
     ) -> None:
         async with session() as session:
-            row = await session.run_sync(
-                lambda session_: session_.query(cls).filter_by(id=id).first()
-            )
-
-            await session.run_sync(lambda session_: session_.delete(row))
-
+            await session.execute(delete(cls).where(cls.id == id))
             await session.commit()
 
     @classmethod
@@ -401,21 +368,13 @@ class StarboardMessage(DatabaseBase):
     ) -> tuple:
         async with session() as session:
             if isinstance(bot_message_id, list):
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls).filter(
-                        cls.bot_message_id.any(bot_message_id).all()
-                    )
+                row = await session.execute(delete(cls).where(
+                    cls.bot_message_id.any(bot_message_id).all() == bot_message_id)
                 )
             else:
                 bot_message_id = get_datatype_int(bot_message_id)
 
-                row = await session.run_sync(
-                    lambda session_: session_.query(cls)
-                    .filter_by(bot_message_id=bot_message_id)
-                    .first()
-                )
-
-            row = await session.run_sync(lambda session_: session_.delete(row))
+                row = await session.execute(delete(cls).where(cls.bot_message_id == bot_message_id)).returning(cls)
 
             await session.commit()
 
@@ -430,19 +389,14 @@ class StarboardMessage(DatabaseBase):
         message_id = get_datatype_int(message_id)
 
         async with session() as session:
-            row = await session.run_sync(
-                lambda session_: session_.query(cls)
-                .filter_by(message_id=message_id)
-                .first()
-            )
-
-            row = await session.run_sync(lambda session_: session_.delete(row))
-
+            await session.execute(delete(cls).where(cls.message_id == message_id))
             await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key, None)
+            for key in self.__table__.columns.keys()
+        }
         return data
 
 
@@ -459,12 +413,7 @@ class Starrers(DatabaseBase):
     ) -> t.Optional[dict]:
         async with session() as session:
             try:
-                row = await session.run_sync(
-                    lambda session_: session_.query(func.count("*"))
-                    .select_from(cls)
-                    .filter_by(entry_id=entry_id)
-                    .one()
-                )
+                row = await session.execute(func.count("*").select_from(cls).where(cls.entry_id == entry_id)).one()
             except NoResultFound:
                 return None
 
@@ -488,8 +437,10 @@ class Starrers(DatabaseBase):
         async with session() as session:
             row = (
                 await session.execute(
-                    text(query), {"message_id": message_id,
-                                  "starrer_id": starrer_id}
+                    text(query), {
+                        "message_id": message_id,
+                        "starrer_id": starrer_id
+                    }
                 )
             ).fetchone()
             await session.commit()
@@ -497,6 +448,8 @@ class Starrers(DatabaseBase):
             return row
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key, None)
+            for key in self.__table__.columns.keys()
+        }
         return data
