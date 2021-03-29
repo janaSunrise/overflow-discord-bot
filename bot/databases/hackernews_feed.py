@@ -25,7 +25,7 @@ class HackernewsFeed(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -36,7 +36,7 @@ class HackernewsFeed(DatabaseBase):
     async def get_feed_channels(cls, session: sessionmaker) -> t.Optional[list]:
         async with session() as session:
             try:
-                rows = (await session.execute(select(cls))).all()
+                rows = (await session.execute(select(cls))).scalars().all()
             except NoResultFound:
                 return []
 

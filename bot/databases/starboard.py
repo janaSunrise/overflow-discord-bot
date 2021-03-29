@@ -33,7 +33,7 @@ class Starboard(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -219,7 +219,7 @@ class StarboardMessage(DatabaseBase):
                     await session.execute(
                         select(cls).filter_by(bot_message_id=bot_message_id)
                     )
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -236,7 +236,7 @@ class StarboardMessage(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(message_id=message_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -422,10 +422,9 @@ class Starrers(DatabaseBase):
             try:
                 row = (
                     await session.execute(
-                        func.count(
-                            "*").select_from(cls).where(cls.entry_id == entry_id)
+                        func.count("*").select_from(cls).where(cls.entry_id == entry_id)
                     )
-                ).one()
+                ).scalar_one()
             except NoResultFound:
                 return None
 

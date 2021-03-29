@@ -26,12 +26,11 @@ class Announcements(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
-            if row is not None:
-                return row.dict()
+            return row.dict()
 
     @classmethod
     async def get_announcement_channel(
@@ -43,12 +42,11 @@ class Announcements(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
-            if row is not None:
-                return row.dict()
+            return row.dict()
 
     @classmethod
     async def set_announcement_role(

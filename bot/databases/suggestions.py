@@ -29,7 +29,7 @@ class SuggestionConfig(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -149,7 +149,7 @@ class SuggestionUser(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(user_id=user_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 
@@ -227,7 +227,7 @@ class Suggestion(DatabaseBase):
                     await session.execute(
                         select(cls).filter_by(suggestion_id=suggestion_id)
                     )
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 

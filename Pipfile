@@ -13,13 +13,13 @@ beautifulsoup4 = "*"
 psutil = "*"
 humanize = "*"
 yarl = "*"
-spotify = {git = "https://github.com/Axelancerr/spotify.py"}
+spotify = {git = "https://github.com/mental32/spotify.py"}
 jishaku = {git = "https://github.com/Gorialis/jishaku"}
 aiohttp = "*"
 pyyaml = "*"
 loguru = "*"
 asyncpg = "*"
-sqlalchemy = {git = "https://github.com/sqlalchemy/sqlalchemy"}
+sqlalchemy = "*"
 asyncpraw = "*"
 alembic = "*"
 lxml = "*"

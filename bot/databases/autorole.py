@@ -26,7 +26,7 @@ class AutoRoles(DatabaseBase):
             try:
                 row = (
                     await session.execute(select(cls).filter_by(guild_id=guild_id))
-                ).first()
+                ).scalar_one()
             except NoResultFound:
                 return None
 

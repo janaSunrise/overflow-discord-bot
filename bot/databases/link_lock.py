@@ -36,9 +36,7 @@ class LinkLock(DatabaseBase):
         async with session() as session:
             try:
                 row = (
-                    (await session.execute(select(cls).filter_by(guild_id=guild_id)))
-                    .scalars()
-                    .first()
+                    (await session.execute(select(cls).filter_by(guild_id=guild_id))).scalar_one()
                 )
             except NoResultFound:
                 return None
