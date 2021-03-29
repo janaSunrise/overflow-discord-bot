@@ -14,10 +14,10 @@ class SwearFilter(DatabaseBase):
 
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
-    manual_on = Column(Boolean, nullable=False, default=False)
-    autoswear = Column(Boolean, nullable=False, default=False)
-    notification = Column(Boolean, nullable=False, default=False)
-    words = Column(ARRAY(String), nullable=False, default=[])
+    manual_on = Column(Boolean, default=False)
+    autoswear = Column(Boolean, default=False)
+    notification = Column(Boolean, default=False)
+    words = Column(ARRAY(String), default=[])
 
     @classmethod
     async def get_config(

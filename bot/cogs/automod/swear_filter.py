@@ -26,6 +26,7 @@ class SwearFilter(Cog):
         row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row:
+            await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, [])
             row = {
                 "manual_on": False,
                 "autoswear": False,
