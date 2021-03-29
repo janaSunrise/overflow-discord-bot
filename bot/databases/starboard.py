@@ -422,7 +422,8 @@ class Starrers(DatabaseBase):
             try:
                 row = (
                     await session.execute(
-                        func.count("*").select_from(cls).where(cls.entry_id == entry_id)
+                        func.count(
+                            "*").select_from(cls).where(cls.entry_id == entry_id)
                     )
                 ).scalar_one()
             except NoResultFound:
