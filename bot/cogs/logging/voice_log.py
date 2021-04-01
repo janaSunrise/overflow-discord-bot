@@ -67,8 +67,7 @@ class VoiceLog(Cog):
             return
 
         voice_log_channel = guild.get_channel(
-            voice_log_channel_id["voice_log"]
-        )
+            voice_log_channel_id["voice_log"])
 
         if not voice_log_channel:
             return
