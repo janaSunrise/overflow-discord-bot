@@ -60,8 +60,13 @@ class MemberLog(Cog):
             if guild.get_member(after.id) is None:
                 continue
 
-            member_log_channel = guild.get_channel(await Logging.get_config(self.bot.database, guild.id))
-            if member_log_channel:
+            member_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
+            member_log_channel = None
+
+            if member_log_channel_id is not None:
+                member_log_channel = guild.get_channel(member_log_channel_id["member_log"])
+
+            if member_log_channel is not None:
                 member_logs.append(member_log_channel)
 
         for channel in member_logs:
