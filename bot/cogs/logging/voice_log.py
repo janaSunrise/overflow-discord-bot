@@ -11,7 +11,8 @@ class VoiceLog(Cog):
 
     @Cog.listener("on_voice_state_update")
     async def voice_log(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
-        print(f"Mute: {before.mute} | {after.mute}")
+        if member.bot:
+            return
 
         if before.mute != after.mute:
             embed = discord.Embed(

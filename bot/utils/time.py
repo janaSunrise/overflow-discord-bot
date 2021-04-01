@@ -1,3 +1,6 @@
+import typing as t
+from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 
 
@@ -32,3 +35,11 @@ def humanize_time(time_delta: relativedelta, min_unit: str = "seconds") -> str:
         time_str = time_list[0]
 
     return time_str
+
+
+def time_ago(_from: datetime, to: t.Optional[datetime] = None, min_unit: str = "seconds") -> str:
+    if not to:
+        to = datetime.utcnow()
+
+    time_delta = relativedelta(to, _from)
+    return f"{humanize_time(time_delta, min_unit=min_unit)} ago."
