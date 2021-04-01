@@ -10,7 +10,12 @@ class VoiceLog(Cog):
         self.bot = bot
 
     @Cog.listener("on_voice_state_update")
-    async def voice_log(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
+    async def voice_log(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState,
+    ) -> None:
         if member.bot:
             return
 

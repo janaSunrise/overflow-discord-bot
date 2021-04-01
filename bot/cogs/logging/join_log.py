@@ -30,7 +30,7 @@ class JoinLog(Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_footer(text=f"Member ID: {member.id}")
         embed.timestamp = datetime.utcnow()
-        
+
         await self.send_join_log(member.guild, embed=embed)
 
     @Cog.listener("on_member_remove")
