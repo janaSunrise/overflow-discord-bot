@@ -18,19 +18,19 @@ class VoiceLog(Cog):
             embed = discord.Embed(
                 title="User muted" if after.mute else "User un-muted",
                 description=f"**`User`**: {member.mention}",
-                color=discord.Color.gold()
+                color=discord.Color.gold(),
             )
         elif before.deaf != after.deaf:
             embed = discord.Embed(
                 title="User deafened" if after.mute else "User un-deafened",
                 description=f"**`User`**: {member.mention}",
-                color=discord.Color.gold()
+                color=discord.Color.gold(),
             )
         elif before.afk != after.afk:
             embed = discord.Embed(
                 title="User is now AFK" if after.afk else "User is not AFK Anymore",
                 description=f"**User:** {member.mention}",
-                color=discord.Color.gold()
+                color=discord.Color.gold(),
             )
         elif before.channel != after.channel:
             description = f"**User**: {member.mention}"
@@ -42,9 +42,11 @@ class VoiceLog(Cog):
                 description += f"\n**Before Channel**: {before.channel}"
 
             embed = discord.Embed(
-                title="Channels switched" if after.channel else "Voice channel disconnected",
+                title="Channels switched"
+                if after.channel
+                else "Voice channel disconnected",
                 description=description,
-                color=discord.Color.gold()
+                color=discord.Color.gold(),
             )
         else:
             return
@@ -55,7 +57,8 @@ class VoiceLog(Cog):
 
     async def send_voice_log(self, guild: discord.Guild, *args, **kwargs) -> None:
         voice_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
-        voice_log_channel = guild.get_channel(voice_log_channel_id["voice_log"])
+        voice_log_channel = guild.get_channel(
+            voice_log_channel_id["voice_log"])
 
         if not voice_log_channel:
             return
