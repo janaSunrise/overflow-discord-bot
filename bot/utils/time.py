@@ -37,7 +37,9 @@ def humanize_time(time_delta: relativedelta, min_unit: str = "seconds") -> str:
     return time_str
 
 
-def time_ago(_from: datetime, to: t.Optional[datetime] = None, min_unit: str = "seconds") -> str:
+def time_ago(
+    _from: datetime, to: t.Optional[datetime] = None, min_unit: str = "seconds"
+) -> str:
     if not to:
         to = datetime.utcnow()
 
