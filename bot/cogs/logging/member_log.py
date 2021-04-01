@@ -74,6 +74,10 @@ class MemberLog(Cog):
 
     async def send_member_log(self, guild: discord.Guild, *args, **kwargs) -> None:
         member_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
+
+        if not member_log_channel_id:
+            return
+
         member_log_channel = guild.get_channel(
             member_log_channel_id["member_log"]
         )

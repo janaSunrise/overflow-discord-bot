@@ -56,6 +56,10 @@ class JoinLog(Cog):
 
     async def send_join_log(self, guild: discord.Guild, *args, **kwargs) -> None:
         join_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
+
+        if not join_log_channel_id:
+            return
+
         join_log_channel = guild.get_channel(join_log_channel_id["join_log"])
 
         if not join_log_channel:

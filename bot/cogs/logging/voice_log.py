@@ -62,6 +62,10 @@ class VoiceLog(Cog):
 
     async def send_voice_log(self, guild: discord.Guild, *args, **kwargs) -> None:
         voice_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
+
+        if not voice_log_channel_id:
+            return
+
         voice_log_channel = guild.get_channel(
             voice_log_channel_id["voice_log"]
         )
