@@ -5,8 +5,10 @@ import discord
 
 
 async def get_latest_audit(
-    guild: discord.Guild, actions: t.Iterable[discord.enums.AuditLogAction],
-    target: t.Any = None, max_time: int = 5,
+    guild: discord.Guild,
+    actions: t.Iterable[discord.enums.AuditLogAction],
+    target: t.Any = None,
+    max_time: int = 5,
 ) -> t.Optional[discord.AuditLogEntry]:
     logs = []
 
