@@ -374,16 +374,19 @@ class Starboard(Cog):
 
         entry_id = record[0]
 
-        record = await StarrersDB.get_starrers_count(self.bot.database, entry_id)
+        record = await StarrersDB.get_starrers_count(self.bot.database, entry_id) + 1
 
-        count = record[0]
+        count = record
         if count < starboard["required_stars"]:
             return
 
         content, embed = self.get_emoji_message(msg, count)
 
         record = await SBMessageDB.get_config_message_id(self.bot.database, message_id)
-        bot_message_id = record[0]
+        if not record:
+            bot_message_id = None
+        else:
+            bot_message_id = record["bot_message_id"]
 
         if bot_message_id is None:
             new_msg = await starboard_channel.send(content, embed=embed)

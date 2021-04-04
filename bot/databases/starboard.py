@@ -417,20 +417,19 @@ class Starrers(DatabaseBase):
     @classmethod
     async def get_starrers_count(
         cls, session: sessionmaker, entry_id: int
-    ) -> t.Optional[dict]:
+    ) -> int:
         async with session() as session:
             try:
                 row = (
                     await session.execute(
-                        func.count(
-                            "*").select_from(cls).where(cls.entry_id == entry_id)
+                        select(func.count("*")).select_from(cls).where(cls.entry_id == entry_id)
                     )
                 ).scalar_one()
             except NoResultFound:
                 return None
 
             if row is not None:
-                return row.dict()
+                return row
 
     @classmethod
     async def delete_star_entry_id(
