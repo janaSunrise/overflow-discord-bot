@@ -25,7 +25,7 @@ class MemberLog(Cog):
                     **`New name`**: {after.name}
                     """
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
         elif before.discriminator != after.discriminator:
             embed = discord.Embed(
@@ -37,7 +37,7 @@ class MemberLog(Cog):
                     **`New Discriminator`**: {after.discriminator}
                     """
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
         elif before.avatar != after.avatar:
             embed = discord.Embed(
@@ -49,7 +49,7 @@ class MemberLog(Cog):
                     **`New avatar`**: [New avatar]({after.avatar_url})
                     """
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
         elif before.roles != after.roles:
             new_roles = after.roles
@@ -90,11 +90,15 @@ class MemberLog(Cog):
             if guild.get_member(after.id) is None:
                 continue
 
-            member_log_channel_id = await Logging.get_config(self.bot.database, guild.id)
+            member_log_channel_id = await Logging.get_config(
+                self.bot.database, guild.id
+            )
             member_log_channel = None
 
             if member_log_channel_id is not None:
-                member_log_channel = guild.get_channel(member_log_channel_id["member_log"])
+                member_log_channel = guild.get_channel(
+                    member_log_channel_id["member_log"]
+                )
 
             if member_log_channel is not None:
                 member_logs.append(member_log_channel)
@@ -144,8 +148,7 @@ class MemberLog(Cog):
             return
 
         member_log_channel = guild.get_channel(
-            member_log_channel_id["member_log"]
-        )
+            member_log_channel_id["member_log"])
 
         if not member_log_channel:
             return
