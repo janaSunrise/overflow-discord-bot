@@ -415,14 +415,14 @@ class Starrers(DatabaseBase):
     entry_id = Column(BigInteger, ForeignKey("starboard_message.id"))
 
     @classmethod
-    async def get_starrers_count(
-        cls, session: sessionmaker, entry_id: int
-    ) -> int:
+    async def get_starrers_count(cls, session: sessionmaker, entry_id: int) -> int:
         async with session() as session:
             try:
                 row = (
                     await session.execute(
-                        select(func.count("*")).select_from(cls).where(cls.entry_id == entry_id)
+                        select(func.count("*"))
+                        .select_from(cls)
+                        .where(cls.entry_id == entry_id)
                     )
                 ).scalar_one()
             except NoResultFound:
