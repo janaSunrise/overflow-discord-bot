@@ -13,6 +13,7 @@ import discord
 import humanize
 import wavelink
 import yarl
+from aioradios import RadioBrowser
 from discord.ext import commands, menus
 from loguru import logger
 
@@ -42,6 +43,9 @@ class Track(wavelink.Track):
 
 
 class SongQueue(asyncio.Queue):
+    def __init__(self) -> None:
+        super().__init__()
+
     def __getitem__(self, item) -> t.Union[list, str]:
         if isinstance(item, slice):
             return list(itertools.islice(self._queue, item.start, item.stop, item.step))
@@ -85,6 +89,9 @@ class Player(wavelink.Player):
         self.queue = SongQueue()
         self.controller = None
 
+        self.loop_mode = None
+        self.current_song = None
+
         self.waiting = False
         self.updating = False
 
@@ -109,25 +116,51 @@ class Player(wavelink.Player):
         self.shuffle_votes.clear()
         self.stop_votes.clear()
 
-        try:
-            self.waiting = True
-            with async_timeout.timeout(300):
-                track = await self.queue.get()
-        except asyncio.TimeoutError:
-            # No music has been played for 5 minutes, cleanup and disconnect.
-            return await self.teardown()
+        if self.loop_mode == "off" or self.loop_mode is None:
+            try:
+                self.waiting = True
 
-        if isinstance(track, SpotifyTrack):
-            results = await self.node.get_tracks(f"ytsearch:{track.description}")
+                with async_timeout.timeout(300):
+                    track = await self.queue.get()
 
-            if not results:
-                return await self.do_next()
+            except asyncio.TimeoutError:
+                return await self.teardown()
 
-            yt_track = results[0]
-            track = Track(yt_track.id, yt_track.info,
-                          requester=track.requester)
+            if isinstance(track, SpotifyTrack):
+                results = await self.node.get_tracks(f"ytsearch:{track.description}")
+
+                if not results:
+                    return await self.do_next()
+
+                yt_track = results[0]
+                track = Track(yt_track.id, yt_track.info,
+                              requester=track.requester)
+
+        elif self.loop_mode == "track":
+            track = self.current_song
+
+        elif self.loop_mode == "queue":
+            try:
+                self.waiting = True
+                with async_timeout.timeout(300):
+                    await self.queue.put(self.current_song)
+                    track = await self.queue.get()
+
+            except asyncio.TimeoutError:
+                return await self.teardown()
+
+            if isinstance(track, SpotifyTrack):
+                results = await self.node.get_tracks(f"ytsearch:{track.description}")
+
+                if not results:
+                    return await self.do_next()
+
+                yt_track = results[0]
+                track = Track(yt_track.id, yt_track.info,
+                              requester=track.requester)
 
         await self.play(track)
+        self.current_song = track
         self.waiting = False
 
         # Invoke our players controller.
@@ -237,7 +270,6 @@ class InteractiveController(menus.Menu):
 
     def __init__(self, *, embed: discord.Embed, player: Player):
         super().__init__(timeout=None)
-
         self.embed = embed
         self.player = player
 
@@ -381,6 +413,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.rb = RadioBrowser()
 
         if not hasattr(bot, "wavelink"):
             bot.wavelink = wavelink.Client(bot=bot)
@@ -399,6 +432,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         for node in config.nodes.values():
             await self.bot.wavelink.initiate_node(**node)
+
+        await self.rb.init()
+        logger.info("RADIOS initialized.")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -510,9 +546,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         channel = self.bot.get_channel(int(player.channel_id))
         required = math.ceil((len(channel.members) - 1) / 2.5)
 
-        if (
-            ctx.command.name in ["stop", "skip"] and len(channel.members) == 3
-        ):  # TODO: Add more commands.
+        if ctx.command.name in ["stop", "skip"] and len(channel.members) == 3:
             required = 2
         return required
 
@@ -793,11 +827,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         Repeat one or more songs.
 
         **MODES**:
-        - `none` (stop repeat)
-        - `1`
-        - `all`
+        - `off`
+        - `track`
+        - `queue`
         """
-        if mode not in ("none", "1", "all"):
+        if mode not in ("off", "track", "queue"):
             raise InvalidRepeatMode
 
         player: Player = self.bot.wavelink.get_player(
@@ -825,7 +859,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 ),
                 delete_after=10,
             )
-            player.queue.set_repeat_mode(mode)
+            player.loop_mode = mode
 
             if not player.is_playing:
                 await player.do_next()
@@ -851,7 +885,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 ),
                 delete_after=10,
             )
-            player.queue.set_repeat_mode(mode)
+            player.loop_mode = mode
 
             if not player.is_playing:
                 await player.do_next()
@@ -1112,6 +1146,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         - Boost
         - Metal
         - Piano
+        - Jazz
+        - Pop
         """
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1133,6 +1169,46 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             "boost": wavelink.Equalizer.boost(),
             "metal": wavelink.Equalizer.metal(),
             "piano": wavelink.Equalizer.piano(),
+            "jazz": wavelink.Equalizer.build(
+                levels=[
+                    (0, -0.13),
+                    (1, -0.11),
+                    (2, 0.1),
+                    (3, -0.1),
+                    (4, 0.14),
+                    (5, 0.2),
+                    (6, -0.18),
+                    (7, 0.0),
+                    (8, 0.24),
+                    (9, 0.22),
+                    (10, 0.2),
+                    (11, 0.0),
+                    (12, 0.0),
+                    (13, 0.0),
+                    (14, 0.0),
+                ],
+                name="jazz",
+            ),
+            "pop": wavelink.Equalizer.build(
+                levels=[
+                    (0, -0.02),
+                    (1, -0.01),
+                    (2, 0.08),
+                    (3, 0.1),
+                    (4, 0.15),
+                    (5, 0.1),
+                    (6, 0.03),
+                    (7, -0.02),
+                    (8, -0.035),
+                    (9, -0.05),
+                    (10, -0.05),
+                    (11, -0.05),
+                    (12, -0.05),
+                    (13, -0.05),
+                    (14, -0.05),
+                ],
+                name="pop",
+            ),
         }
 
         eq = eqs.get(equalizer.lower())
@@ -1419,6 +1495,69 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             ),
             delete_after=10,
         )
+
+    @commands.command(name="radio", aliases=["rad"])
+    async def radio(self, ctx: commands.Context, *radio_station) -> None:
+        """Search and play online radio stations."""
+        radiolist = await self.rb.search(
+            name=" ".join(radio_station), hidebroken=True, limit=15
+        )
+
+        def check(m: discord.Message) -> bool:
+            return m.author.id == ctx.author.id and m.content in (
+                str(i) for i in range(1, len(radiolist) + 1)
+            )
+
+        embed = discord.Embed(title="Station list",
+                              colour=discord.Colour.orange())
+        if len(radiolist) == 0:
+            embed.add_field(
+                name="Nothing found",
+                value="Unfortunately the system could not find a radio station like that. If you are using URL "
+                f"use the `{ctx.prefix}play` command. Keep in mind to use the exact same name.",
+            )
+
+        text = []
+        for station in range(len(radiolist)):
+            text.append(
+                f"**`{station + 1}`** | **[{radiolist[station]['name']}]({radiolist[station]['homepage']}) | country: "
+                f"{radiolist[station]['country']}**"
+            )
+        embed.description = "\n".join(text)
+        embed.set_footer(
+            text="Some of the radio stations may be not working. Enter your choice for the radio station."
+        )
+        await ctx.send(embed=embed)
+
+        try:
+            message = await self.bot.wait_for("message", check=check, timeout=120.0)
+
+        except asyncio.TimeoutError:
+            return
+        radio_station = radiolist[int(message.content) - 1]
+
+        player = self.bot.wavelink.get_player(
+            guild_id=ctx.guild.id, cls=Player, context=ctx
+        )
+        if not player.is_connected:
+            await ctx.invoke(self.connect)
+
+        tracks = await self.bot.wavelink.get_tracks(radio_station["url"])
+        track = Track(
+            tracks[0].id, tracks[0].info, requester=ctx.author, data=radio_station
+        )
+        await ctx.send(
+            embed=discord.Embed(
+                title="Success",
+                description=f"Succesfully added `{track.title}` to the playlist.",
+                colour=discord.Colour.green(),
+            ),
+            delete_after=15,
+        )
+
+        await player.queue.put(track)
+        if not player.is_playing:
+            await player.do_next()
 
     @commands.command(aliases=["wavelink-info", "wv-info"])
     async def wavelink_info(self, ctx: commands.Context):

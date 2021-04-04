@@ -16,7 +16,8 @@ from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
 from loguru import logger
 
 from bot import Bot
-from bot.utils.errors import IncorrectChannelError, NoChannelProvided
+from bot.utils.errors import (IncorrectChannelError, InvalidRepeatMode,
+                              NoChannelProvided)
 from bot.utils.utils import format_time
 
 
@@ -94,8 +95,6 @@ class ErrorHandler(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: errors.CommandError) -> None:
         """Common error handler for the bot, so It doesnt interrupt and runs perfectly."""
-        logger.warning(type(error))
-
         if hasattr(ctx.command, "on_error"):
             return
 
@@ -108,6 +107,13 @@ class ErrorHandler(Cog):
         elif isinstance(error, NoChannelProvided):
             await self.error_embed(
                 ctx, "You must be in a voice channel or provide one to connect to."
+            )
+            return
+
+        elif isinstance(error, InvalidRepeatMode):
+            await self.error_embed(
+                ctx,
+                "The repeat mode specified is wrong. Check the help for the command to know the repeat modes.",
             )
             return
 

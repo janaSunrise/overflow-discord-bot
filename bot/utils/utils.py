@@ -74,7 +74,7 @@ async def confirmation(
     ctx,
     description: str,
     title: str,
-    color=discord.Color.blurple(),
+    color: discord.Color = discord.Color.blurple(),
     footer: t.Optional[str] = None,
 ) -> t.Optional[bool]:
     emojis = {"✅": True, "❌": False}
@@ -91,7 +91,7 @@ async def confirmation(
         await message.add_reaction(emoji)
 
     try:
-        reaction, user = await ctx.wait_for(
+        reaction, user = await ctx.bot.wait_for(
             "reaction_add",
             check=lambda r, u: (r.message.id == message.id)
             and (u.id == user.id)

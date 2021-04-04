@@ -1,31 +1,24 @@
 import typing as t
 
 import discord
-from sqlalchemy import BigInteger, Column, Integer, select
+from sqlalchemy import BigInteger, Column, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 
 from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 
 
-class ModLock(DatabaseBase):
-    """
-    This is the database table for mod locking.
-
-    Moderation locking is a way to manually lock your server to stop raiders, by either kicking, or banning them on
-    join.
-
-    Here are the codes:
-    `0` - Lock disabled
-    `1` - Kick lock enabled
-    `2` - Ban lock enabled
-    """
-
-    __tablename__ = "mod_lock"
+class Logging(DatabaseBase):
+    __tablename__ = "logging"
 
     guild_id = Column(BigInteger, primary_key=True,
                       nullable=False, unique=True)
-    lock_code = Column(Integer, nullable=False, default=0)
+    server_log = Column(BigInteger)
+    mod_log = Column(BigInteger)
+    message_log = Column(BigInteger)
+    member_log = Column(BigInteger)
+    join_log = Column(BigInteger)
+    voice_log = Column(BigInteger)
 
     @classmethod
     async def get_config(
@@ -45,19 +38,21 @@ class ModLock(DatabaseBase):
                 return row.dict()
 
     @classmethod
-    async def set_lock(
+    async def set_log_channel(
         cls,
         session: sessionmaker,
+        log_type: str,
         guild_id: t.Union[str, int, discord.Guild],
-        lock_code: int,
+        channel: t.Union[str, int, discord.TextChannel],
     ) -> None:
         guild_id = get_datatype_int(guild_id)
+        channel = get_datatype_int(channel)
 
         async with session() as session:
             await on_conflict(
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id, "lock_code": lock_code},
+                values={"guild_id": guild_id, log_type: channel},
             )
             await session.commit()

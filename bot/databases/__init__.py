@@ -1,3 +1,5 @@
+# TODO: use .scalars() in database to fix the .dict() issue
+
 import typing as t
 from importlib import import_module
 
@@ -10,9 +12,6 @@ from sqlalchemy.ext.declarative import (DeclarativeMeta, declarative_base,
 from sqlalchemy.sql.base import ImmutableColumnCollection
 
 from bot.utils.utils import camel_to_snake
-
-# -- The parent class for all DB Models --
-DatabaseBase = declarative_base()
 
 
 # -- Custom database base --
@@ -42,9 +41,10 @@ class CustomBase:
 
 
 _Base = declarative_base(cls=CustomBase, metaclass=CustomMeta)
+
 if t.TYPE_CHECKING:
 
-    class Base(_Base, CustomBase, metaclass=CustomMeta):
+    class DatabaseBase(_Base, CustomBase, metaclass=CustomMeta):
         __table__: alchemy.Table
         __tablename_: str
 
@@ -53,7 +53,7 @@ if t.TYPE_CHECKING:
 
 
 else:
-    Base = _Base
+    DatabaseBase = _Base
 
 
 # -- Get tables into scope --
