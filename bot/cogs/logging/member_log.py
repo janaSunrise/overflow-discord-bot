@@ -55,22 +55,24 @@ class MemberLog(Cog):
             new_roles = after.roles
             old_roles = before.roles
 
-            stats = {
-                "added": old_roles - new_roles,
-                "removed": new_roles - old_roles
-            }
+            stats = {"added": old_roles - new_roles,
+                     "removed": new_roles - old_roles}
 
-            audit_log = await get_latest_audit(after.guild, [discord.AuditLogAction.member_role_update], after)
+            audit_log = await get_latest_audit(
+                after.guild, [discord.AuditLogAction.member_role_update], after
+            )
 
             if audit_log:
                 user = audit_log.user
 
             action = "added" if not stats.get("removed") else "removed"
 
-            description = textwrap.dedent(f"""
+            description = textwrap.dedent(
+                f"""
             **`Mention`**: {after.mention}
             **`Roles`**: {stats['removed'] if stats['removed'] else stats['added']}
-            """)
+            """
+            )
 
             if audit_log:
                 description += f"\n**`Moderator`**: {user.mention}"
@@ -78,7 +80,7 @@ class MemberLog(Cog):
             embed = discord.Embed(
                 title="Roles change",
                 description=description,
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
 
         embed.timestamp = datetime.utcnow()
@@ -107,7 +109,9 @@ class MemberLog(Cog):
             await channel.send(embed=embed)
 
     @Cog.listener("on_member_update")
-    async def log_member_update(self, before: discord.Member, after: discord.Member) -> None:
+    async def log_member_update(
+        self, before: discord.Member, after: discord.Member
+    ) -> None:
         if before.nick != after.nick:
             embed = discord.Embed(
                 title="Nickname change",
@@ -118,7 +122,7 @@ class MemberLog(Cog):
                     **`New nickname`**: {after.nick}
                     """
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
         elif before.pending != after.pending:
             embed = discord.Embed(
@@ -130,7 +134,7 @@ class MemberLog(Cog):
                     User has passed the server verification.
                     """
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
         else:
             return
