@@ -49,6 +49,30 @@ nodes = {
         "identifier": "NODE_1",
         "region": "us_central",
     },
+    "HELIA_MAIN": {
+        "host": "heroku-lavalink-heliaservice.herokuapp.com",
+        "port": 80,
+        "rest_uri": "https://heroku-lavalink-heliaservice.herokuapp.com",
+        "password": "youshallnotpass",
+        "identifier": "MAIN",
+        "region": "us_central",
+    },
+    "HELIA_BACKUP": {
+        "host": "backup-lavalink-servics.herokuapp.com",
+        "port": 80,
+        "rest_uri": "https://backup-lavalink-servics.herokuapp.com",
+        "password": "youshallnotpass",
+        "identifier": "EULAVA",
+        "region": "europe",
+    },
+    "LAVA_LINK": {
+        "host": "lava.link",
+        "port": 80,
+        "rest_uri": "https://lava.link",
+        "password": "youshallnotpass",
+        "identifier": "BACKUP",
+        "region": "us_central",
+    }
 }
 
 # -- Spotify --
