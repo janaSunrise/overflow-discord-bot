@@ -72,7 +72,7 @@ nodes = {
         "password": "youshallnotpass",
         "identifier": "BACKUP",
         "region": "us_central",
-    }
+    },
 }
 
 # -- Spotify --
