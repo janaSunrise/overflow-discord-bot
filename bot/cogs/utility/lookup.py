@@ -5,8 +5,7 @@ from textwrap import dedent
 
 import discord
 import humanize
-from discord.ext.commands import (Cog, Context, MemberConverter, UserConverter,
-                                  command)
+from discord.ext.commands import Cog, Context, MemberConverter, UserConverter, command
 
 from bot import Bot
 

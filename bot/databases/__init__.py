@@ -7,8 +7,7 @@ import discord
 import sqlalchemy as alchemy
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.declarative import (DeclarativeMeta, declarative_base,
-                                        declared_attr)
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base, declared_attr
 from sqlalchemy.sql.base import ImmutableColumnCollection
 
 from bot.utils.utils import camel_to_snake

@@ -7,9 +7,17 @@ import weakref
 import asyncpg
 import discord
 from discord.ext import menus, tasks
-from discord.ext.commands import (CheckFailure, Cog, Context,
-                                  TextChannelConverter, check, command, group,
-                                  guild_only, has_permissions)
+from discord.ext.commands import (
+    CheckFailure,
+    Cog,
+    Context,
+    TextChannelConverter,
+    check,
+    command,
+    group,
+    guild_only,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.databases.starboard import Starboard as StarboardDB

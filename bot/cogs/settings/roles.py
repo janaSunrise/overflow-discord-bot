@@ -1,8 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, RoleConverter, group,
-                                  has_permissions)
+from discord.ext.commands import Cog, Context, RoleConverter, group, has_permissions
 
 from bot import Bot
 from bot.databases.autorole import AutoRoles

@@ -1,8 +1,16 @@
 import typing as t
 
 import discord
-from sqlalchemy import (BigInteger, Boolean, Column, ForeignKey, delete, func,
-                        select, update)
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Column,
+    ForeignKey,
+    delete,
+    func,
+    select,
+    update,
+)
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text

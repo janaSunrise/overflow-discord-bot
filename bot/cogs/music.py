@@ -18,8 +18,7 @@ from discord.ext import commands, menus
 from loguru import logger
 
 from bot import config
-from bot.utils.errors import (IncorrectChannelError, InvalidRepeatMode,
-                              NoChannelProvided)
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot.utils.spotify_parse import SpotifyTrack, play
 from bot.utils.utils import format_time, progress_bar
 

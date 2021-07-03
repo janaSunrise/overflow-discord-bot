@@ -8,8 +8,16 @@ from datetime import datetime
 
 import discord
 from dateutil.relativedelta import relativedelta
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, group, has_permissions)
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    group,
+    has_permissions,
+)
 
 from bot import Bot, config
 from bot.core.converters import TimeConverter

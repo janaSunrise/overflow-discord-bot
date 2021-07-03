@@ -1,8 +1,14 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, TextChannelConverter, group,
-                                  guild_only, has_permissions)
+from discord.ext.commands import (
+    Cog,
+    Context,
+    TextChannelConverter,
+    group,
+    guild_only,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.databases.suggestions import SuggestionConfig, SuggestionUser
