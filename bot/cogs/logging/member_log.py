@@ -51,37 +51,8 @@ class MemberLog(Cog):
                 ),
                 color=discord.Color.blue(),
             )
-        elif before.roles != after.roles:
-            new_roles = after.roles
-            old_roles = before.roles
-
-            stats = {"added": old_roles - new_roles,
-                     "removed": new_roles - old_roles}
-
-            audit_log = await get_latest_audit(
-                after.guild, [discord.AuditLogAction.member_role_update], after
-            )
-
-            if audit_log:
-                user = audit_log.user
-
-            action = "added" if not stats.get("removed") else "removed"
-
-            description = textwrap.dedent(
-                f"""
-            **`Mention`**: {after.mention}
-            **`Roles`**: {stats['removed'] if stats['removed'] else stats['added']}
-            """
-            )
-
-            if audit_log:
-                description += f"\n**`Moderator`**: {user.mention}"
-
-            embed = discord.Embed(
-                title="Roles change",
-                description=description,
-                color=discord.Color.blue(),
-            )
+        else:
+            return
 
         embed.timestamp = datetime.utcnow()
         embed.set_thumbnail(url=after.avatar_url)
@@ -136,6 +107,38 @@ class MemberLog(Cog):
                 ),
                 color=discord.Color.blue(),
             )
+        elif before.roles != after.roles:
+            new_roles = set(after.roles)
+            old_roles = set(before.roles)
+
+            stats = {"added": old_roles - new_roles,
+                     "removed": new_roles - old_roles}
+
+            audit_log = await get_latest_audit(
+                after.guild, [discord.AuditLogAction.member_role_update], after
+            )
+
+            if audit_log:
+                user = audit_log.user
+
+            action = "added" if not stats.get("removed") else "removed"
+
+            description = textwrap.dedent(
+                f"""
+            **`Mention`**: {after.mention}
+            **`Roles`**: {stats['removed'].pop().mention if stats['removed'] else stats['added'].pop().mention}
+            """
+            )
+
+            if audit_log:
+                description += f"\n**`Moderator`**: {user.mention}"
+
+            embed = discord.Embed(
+                title="Roles action",
+                description=description,
+                color=discord.Color.blue(),
+            )
+
         else:
             return
 

@@ -13,8 +13,8 @@ beautifulsoup4 = "*"
 psutil = "*"
 humanize = "*"
 yarl = "*"
-spotify = {git = "https://github.com/mental32/spotify.py"}
-jishaku = {git = "https://github.com/Gorialis/jishaku"}
+spotify = "*"
+jishaku = "*"
 aiohttp = "*"
 pyyaml = "*"
 loguru = "*"
@@ -31,6 +31,3 @@ aioradios = "*"
 
 [scripts]
 start = "python -m bot"
-
-[pipenv]
-allow_prereleases = true
