@@ -303,7 +303,6 @@ class ErrorHandler(Cog):
                     f"the message({ctx.message.content}) invoked by {ctx.author.id} in {ctx.guild.name}[{ctx.guild.id}]"
                 )
             raise error_cause
-            return
 
         await self.error_embed(
             ctx,
