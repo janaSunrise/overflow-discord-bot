@@ -34,7 +34,8 @@ class CustomBase:
             return camel_to_snake(self.__name__)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key) for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key)
+                for key in self.__table__.columns.keys()}
         return data
 
 

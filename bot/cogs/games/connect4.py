@@ -12,7 +12,8 @@ class Connect4(menus.Menu):
         self.ids = cycle(list(self.id_dict))
         self.players = players
         self.next = next(self.ids)
-        self.status = [":black_large_square:", ":green_circle:", ":red_circle:"]
+        self.status = [":black_large_square:",
+                       ":green_circle:", ":red_circle:"]
         self.state = [[0 for _ in range(6)] for __ in range(7)]
 
     def reaction_check(self, payload) -> bool:
@@ -25,7 +26,8 @@ class Connect4(menus.Menu):
         return Embed(
             description="\n".join(
                 [
-                    "".join([self.status[column[5 - i]] for column in self.state])
+                    "".join([self.status[column[5 - i]]
+                            for column in self.state])
                     for i in range(6)
                 ]
             )

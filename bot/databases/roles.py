@@ -12,7 +12,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Roles(DatabaseBase):
     __tablename__ = "roles"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     mod_role = Column(ARRAY(BigInteger))
     mute_role = Column(BigInteger)
     default_role = Column(BigInteger)

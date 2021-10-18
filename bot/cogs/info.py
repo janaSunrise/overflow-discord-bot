@@ -32,7 +32,8 @@ class Info(Cog):
                     file_lines = 0
                     file_amount += 1
                     with codecs.open(
-                        "./" + str(pathlib.PurePath(filepath, name)), "r", "utf-8"
+                        "./" + str(pathlib.PurePath(filepath, name)
+                                   ), "r", "utf-8"
                     ) as file:
                         for _, line in enumerate(file):
                             if line.strip().startswith("#") or len(line.strip()) == 0:
@@ -47,7 +48,9 @@ class Info(Cog):
                         + f" : {file_lines} lines"
                     )
 
-        paginator = Paginator(max_size=2048,)
+        paginator = Paginator(
+            max_size=2048,
+        )
 
         for line in list_of_files:
             paginator.add_line(line)
@@ -83,13 +86,20 @@ class Info(Cog):
         source_lines = textwrap.dedent(
             "".join(source_lines).replace("```", f"`{ZWS}`{ZWS}`")
         ).split("\n")
-        paginator = Paginator(prefix="```py", suffix="```", max_size=2048,)
+        paginator = Paginator(
+            prefix="```py",
+            suffix="```",
+            max_size=2048,
+        )
 
         for line in source_lines:
             paginator.add_line(line)
 
         pages = menus.MenuPages(
-            source=SauceSource(paginator.pages, per_page=1,),
+            source=SauceSource(
+                paginator.pages,
+                per_page=1,
+            ),
             clear_reactions_after=True,
         )
         await pages.start(ctx)

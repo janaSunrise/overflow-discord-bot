@@ -11,7 +11,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class HackernewsFeed(DatabaseBase):
     __tablename__ = "hackernews_feed"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     channel_id = Column(BigInteger, nullable=False)
 
     @classmethod

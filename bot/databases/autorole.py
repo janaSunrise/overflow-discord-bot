@@ -12,7 +12,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class AutoRoles(DatabaseBase):
     __tablename__ = "autoroles"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     auto_roles = Column(ARRAY(BigInteger), default=[])
 
     @classmethod
