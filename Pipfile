@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+"discord.py" = {extras = ["voice"], version = "*"}
 discord-ext-menus = {git = "https://github.com/Rapptz/discord-ext-menus"}
 wavelink = "*"
-"discord.py" = {extras = ["voice"], version = "*"}
 html2text = "*"
 python-dateutil = "*"
 beautifulsoup4 = "*"

@@ -1,35 +1,36 @@
 import os
 import re
 
-# ---- About bot section ----
+# Bot info section
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "=")
 
 branding = "Overflow bot"
 creator = "Sunrit Jana"
+
 devs = [711194921683648523, 372063179557175297]
 
-# ---- Config settings section ----
-# -- Database config --
+# Database config
 DATABASE = {
     "user": os.getenv("DB_USERNAME"),
     "password": os.getenv("DB_PASSWORD"),
     "hostname": os.getenv("DB_HOST"),
     "database": os.getenv("DB_NAME"),
 }
+
 # Syntax: "postgresql+asyncpg://<user>:<password>@<hostname>/<dbname>"
 DATABASE_CONN = (
     f"postgresql+asyncpg://{DATABASE['user']}:{DATABASE['password']}@{DATABASE['hostname']}"
     f"/{DATABASE['database']}"
 )
 
-# -- Logger configuration --
+# Logger configuration
 log_file = "logs/bot.log"
 log_level = "INFO"
 log_format = (
     "<green>{time:YYYY-MM-DD hh:mm:ss}</green> | <level>{level: <8}</level> | "
     "<cyan>{name: <18}</cyan> | <level>{message}</level>"
 )
-log_file_size = "400 MB"
+log_file_size = "300 MB"
 
 # -- Music --
 nodes = {
@@ -75,11 +76,11 @@ nodes = {
     },
 }
 
-# -- Spotify --
+# Spotify for music
 spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
 spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-# -- 8ball response --
+# 8ball responses
 BALL_REPLIES = {
     "positive": [
         "Yep.",
@@ -134,7 +135,7 @@ BALL_REPLIES = {
     ],
 }
 
-# -- Search --
+# Searching
 basic_search_categories = [
     "web",
     "videos",
@@ -145,7 +146,7 @@ basic_search_categories = [
     "maps",
 ]
 
-# -- Study --
+# Responses for HTTP
 RESPONSES = {
     200: True,
     301: "Switching to a different endpoint",
@@ -156,7 +157,7 @@ RESPONSES = {
 }
 
 
-# ---- Cogs resource section ----
+# Icons mapping
 WEATHER_ICONS = {
     "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
     "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
@@ -166,7 +167,7 @@ WEATHER_ICONS = {
     "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png",
 }
 
-# -- Swear filter --
+# Swear filter
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
 
@@ -178,8 +179,7 @@ REGEXP = REGEXP[:-1]
 
 filter_words = re.compile(REGEXP, re.I)
 
-# -- Reddit config --
-# -- Subreddit config --
+# Subreddits
 subreddits_list = {
     "memes": (
         "ComedyCemetery",
