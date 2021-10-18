@@ -106,8 +106,7 @@ class EvalHelper:
     async def parse(
         self, code: str
     ) -> Tuple[
-        str, str, str, Dict[Union[str, Any],
-                            bool], List[str], List[str], List[str]
+        str, str, str, Dict[Union[str, Any], bool], List[str], List[str], List[str]
     ]:
         """Returned parsed data."""
         options = {"--stats": False, "--wrapped": False}
@@ -261,11 +260,9 @@ class FormatOutput:
 
     def embed_helper(self, description: str, field: str) -> Embed:
         """Embed helper function."""
-        embed = Embed(title="Eval Results", colour=self.GREEN,
-                      description=description)
+        embed = Embed(title="Eval Results", colour=self.GREEN, description=description)
         embed.add_field(
-            name="Output",
-            value=field,
+            name="Output", value=field,
         )
         return embed
 
@@ -281,13 +278,11 @@ class FormatOutput:
                 f"{i:02d} | {line}" for i, line in enumerate(result.split("\n"), 1)
             ]
             result = result[: self.max_lines]
-            program_output = "\n".join(
-                result) + "\n... (truncated - too many lines)"
+            program_output = "\n".join(result) + "\n... (truncated - too many lines)"
 
         elif len(result) > self.max_output_length:
             program_output = (
-                result[: self.max_output_length] +
-                "\n... (truncated - too long)"
+                result[: self.max_output_length] + "\n... (truncated - too long)"
             )
 
         embed = self.embed_helper(

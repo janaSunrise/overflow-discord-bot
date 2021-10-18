@@ -23,8 +23,7 @@ class Reddit(Cog):
                 username=os.getenv("REDDIT_USERNAME"),
             )
         except MissingRequiredAttributeException:
-            logger.error(
-                "Reddit cog requires correct environment variables to run.")
+            logger.error("Reddit cog requires correct environment variables to run.")
             self.cog_unload()
         self.bot = bot
 

@@ -1,8 +1,14 @@
 import typing as t
 
 import discord
-from discord.ext.commands import (Cog, Context, RoleConverter,
-                                  TextChannelConverter, group, has_permissions)
+from discord.ext.commands import (
+    Cog,
+    Context,
+    RoleConverter,
+    TextChannelConverter,
+    group,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.databases.announcements import Announcements as AnnouncementDB
@@ -115,8 +121,7 @@ class Announcements(Cog):
                 "The announcement role hasn't been configured for this server!"
             )
 
-        role = discord.utils.find(
-            lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
 
         if role in ctx.author.roles:
             await ctx.send("You're already subscribed!")
@@ -136,8 +141,7 @@ class Announcements(Cog):
                 "ERROR! The Announcement role hasn't been configured for this server!"
             )
 
-        role = discord.utils.find(
-            lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
 
         if role not in ctx.author.roles:
             await ctx.send("You're already unsubscribed!")

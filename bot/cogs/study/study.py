@@ -4,8 +4,7 @@ import urllib
 
 import aiohttp
 import discord
-from discord.ext.commands import (BadArgument, Cog, Context, clean_content,
-                                  command)
+from discord.ext.commands import BadArgument, Cog, Context, clean_content, command
 
 from bot import Bot, config
 from bot.utils.pages import EmbedPages
@@ -73,8 +72,7 @@ class Study(Cog):
 
         if response is True:
             embed = discord.Embed(title="Equation Results")
-            embed.add_field(name="**❯❯ Question**",
-                            value=equation, inline=False)
+            embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=r, inline=False)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
             await ctx.send(embed=embed)
@@ -108,8 +106,7 @@ class Study(Cog):
             for page in result["query"]["pages"]:
                 title = page["title"]
                 description = page["extract"].strip().replace("\n", "\n\n")
-                url = "https://en.wikipedia.org/wiki/{}".format(
-                    title.replace(" ", "_"))
+                url = "https://en.wikipedia.org/wiki/{}".format(title.replace(" ", "_"))
 
             if len(description) > 1500:
                 description = description[:1500].strip()
@@ -145,8 +142,7 @@ class Study(Cog):
                 img = await result.read()
 
         if not 200 <= result.status < 300:
-            raise BadArgument(
-                f"```{equation}``` is not a valid expression or equation")
+            raise BadArgument(f"```{equation}``` is not a valid expression or equation")
 
         output_img = discord.File(fp=io.BytesIO(img), filename="latex_eq.png")
         embed = discord.Embed(color=discord.Color.blue())

@@ -105,8 +105,7 @@ class Comics(Cog):
             async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
-            embed = Embed(title="Random Cyanide and Happiness",
-                          color=Color.blurple())
+            embed = Embed(title="Random Cyanide and Happiness", color=Color.blurple())
             embed.set_image(url="attachment://cah.png")
             file = File(img, "cah.png")
             await ctx.send(file=file, embed=embed)
@@ -218,8 +217,7 @@ class Comics(Cog):
             async with self.bot.session.get(img_url) as response:
                 img = io.BytesIO(await response.read())
 
-            embed = Embed(title="Random Sarah Scribbles",
-                          color=Color.blurple())
+            embed = Embed(title="Random Sarah Scribbles", color=Color.blurple())
             embed.set_image(url="attachment://sarahscribbles.png")
             file = File(img, "sarahscribbles.png")
             await ctx.send(file=file, embed=embed)

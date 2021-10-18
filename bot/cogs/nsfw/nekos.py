@@ -192,8 +192,7 @@ class Neko(Cog):
     @is_nsfw()
     async def trap(self, ctx: Context) -> None:
         """Gets NSFW Images from Neko API."""
-        sources = ["images/nsfw/img/trap_lewd",
-                   "images/nsfw/img/futanari_lewd"]
+        sources = ["images/nsfw/img/trap_lewd", "images/nsfw/img/futanari_lewd"]
         source = choice(sources)
 
         embed = await self.get(source, ctx.author)

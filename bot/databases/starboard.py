@@ -21,8 +21,7 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Starboard(DatabaseBase):
     __tablename__ = "starboard"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
     required_stars = Column(BigInteger, default=3)
     required_to_lose = Column(BigInteger, default=0)
@@ -81,8 +80,7 @@ class Starboard(DatabaseBase):
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id,
-                        "required_stars": required_stars},
+                values={"guild_id": guild_id, "required_stars": required_stars},
             )
             await session.commit()
 
@@ -100,8 +98,7 @@ class Starboard(DatabaseBase):
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id,
-                        "required_to_lose": required_to_lose},
+                values={"guild_id": guild_id, "required_to_lose": required_to_lose},
             )
             await session.commit()
 
@@ -339,9 +336,7 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def update_starboard_message_set_null(
-        cls,
-        session: sessionmaker,
-        id: int,
+        cls, session: sessionmaker, id: int,
     ) -> None:
         async with session() as session:
             await session.execute(
@@ -369,9 +364,7 @@ class StarboardMessage(DatabaseBase):
 
     @classmethod
     async def delete_starboard_message_by_id(
-        cls,
-        session: sessionmaker,
-        id: int,
+        cls, session: sessionmaker, id: int,
     ) -> None:
         async with session() as session:
             await session.execute(delete(cls).where(cls.id == id))
@@ -387,8 +380,7 @@ class StarboardMessage(DatabaseBase):
             if isinstance(bot_message_id, list):
                 row = await session.execute(
                     delete(cls).where(
-                        cls.bot_message_id.any(
-                            bot_message_id).all() == bot_message_id
+                        cls.bot_message_id.any(bot_message_id).all() == bot_message_id
                     )
                 )
             else:
@@ -456,8 +448,7 @@ class Starrers(DatabaseBase):
         async with session() as session:
             row = (
                 await session.execute(
-                    text(query), {"message_id": message_id,
-                                  "starrer_id": starrer_id}
+                    text(query), {"message_id": message_id, "starrer_id": starrer_id}
                 )
             ).fetchone()
             await session.commit()

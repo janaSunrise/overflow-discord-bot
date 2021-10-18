@@ -11,8 +11,7 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Logging(DatabaseBase):
     __tablename__ = "logging"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     server_log = Column(BigInteger)
     mod_log = Column(BigInteger)
     message_log = Column(BigInteger)

@@ -155,8 +155,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
         elif status.lower() == "watching":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(
-                        type=ActivityType.watching, name=status_info)
+                    activity=Activity(type=ActivityType.watching, name=status_info)
                 )
                 await ctx.send(
                     f"Successfully changed watching status to **{status_info}**"
@@ -173,8 +172,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
         elif status.lower() == "listening":
             try:
                 await self.bot.change_presence(
-                    activity=Activity(
-                        type=ActivityType.listening, name=status_info)
+                    activity=Activity(type=ActivityType.listening, name=status_info)
                 )
                 await ctx.send(
                     f"Successfully changed listening status to **{status_info}**"
@@ -232,8 +230,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
         embed = Embed(title="BOT STATISTICS", color=Color.blue())
         embed.add_field(name="**❯ General**", value=general, inline=False)
         embed.add_field(name="**❯ System**", value=system, inline=False)
-        embed.add_field(name="**❯ Shard info**",
-                        value=shard_info, inline=False)
+        embed.add_field(name="**❯ Shard info**", value=shard_info, inline=False)
 
         process = psutil.Process()
         with process.oneshot():
@@ -258,9 +255,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
                 """
             )
             embed.add_field(
-                name="**❯ Memory info**",
-                value=value,
-                inline=False,
+                name="**❯ Memory info**", value=value, inline=False,
             )
 
         uname = platform.uname()
@@ -277,9 +272,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
             """
         )
         embed.add_field(
-            name="**❯ System info**",
-            value=system,
-            inline=False,
+            name="**❯ System info**", value=system, inline=False,
         )
 
         embed.set_author(
@@ -419,19 +412,11 @@ class Sudo(*STANDARD_FEATURES, Cog):
     async def command_stats(self, ctx: Context) -> None:
         rows = await CommandStats.get_stats(self.bot.database)
 
-        embed = Embed(
-            title="Usage stats",
-            colour=Color.blue(),
-        )
+        embed = Embed(title="Usage stats", colour=Color.blue(),)
         embed.set_author(
-            name=ctx.author.display_name,
-            icon_url=str(ctx.author.avatar_url),
+            name=ctx.author.display_name, icon_url=str(ctx.author.avatar_url),
         )
-        records = sorted(
-            rows,
-            key=lambda elem: elem["usage_count"],
-            reverse=True,
-        )[:10]
+        records = sorted(rows, key=lambda elem: elem["usage_count"], reverse=True,)[:10]
 
         for record in records:
             embed.add_field(

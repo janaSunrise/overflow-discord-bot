@@ -87,10 +87,7 @@ class HangmanGame:
         guess_status: t.Optional[t.Literal[0, 1, 2, 3]] = None,
     ) -> None:
         """Get current game status as embed."""
-        embed = Embed(
-            title="Hangman",
-            color=Color.dark_green(),
-        )
+        embed = Embed(title="Hangman", color=Color.dark_green(),)
         embed.add_field(
             name="**❯❯ Status**",
             value=f"```\n{HangmanGame.stages[self.tries]}```",
@@ -115,8 +112,7 @@ class HangmanGame:
                 color = Color.dark_red()
             guess_embed = Embed(description=description, color=color)
             await self.channel.send(embed=guess_embed, delete_after=5)
-        embed.set_footer(
-            text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
+        embed.set_footer(text=f"{config.COMMAND_PREFIX}hangexit to exit the game!")
         if hasattr(self, "message"):
             await self.message.edit(embed=embed)
         else:

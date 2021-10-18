@@ -100,8 +100,7 @@ class HelpPages(EmbedPages):
     ) -> t.List[Embed]:
         embeds = []
         for fld in fields[0]:
-            initial_embed.add_field(
-                name=fld.name, value=fld.value, inline=False)
+            initial_embed.add_field(name=fld.name, value=fld.value, inline=False)
         embeds.append(initial_embed)
 
         for page, page_fields in enumerate(fields[1:]):
@@ -134,8 +133,7 @@ class HelpPages(EmbedPages):
     def split_cog_commands(
         cls, fields: t.List[field], initial_embed: Embed
     ) -> "HelpPages":
-        split_fields = cls._split_fields(
-            fields, len(initial_embed.description))
+        split_fields = cls._split_fields(fields, len(initial_embed.description))
         embeds = cls._make_cog_embeds(split_fields, initial_embed)
         return cls(embeds)
 
@@ -145,8 +143,7 @@ class HelpCommand(BaseHelpCommand):
 
     def __init__(self):
         super().__init__(
-            command_attrs={
-                "help": "Shows help for given command / all commands"}
+            command_attrs={"help": "Shows help for given command / all commands"}
         )
 
     def command_not_found(self, string):
@@ -181,8 +178,7 @@ class HelpCommand(BaseHelpCommand):
             self.context.message, not_print=False
         )
 
-        command_name = str(
-            command) if not parent else f"{parent} {command.name}"
+        command_name = str(command) if not parent else f"{parent} {command.name}"
         command_syntax = f"{command_prefix}{command_name} {command.signature}"
         command_help = f"{command.help or 'No description provided.'}"
 
@@ -293,12 +289,7 @@ class HelpCommand(BaseHelpCommand):
         for command in commands:
             _, command_syntax, command_help, _ = await self._describe_command(command)
 
-            fields.append(
-                field(
-                    name=f"**`{command_syntax}`**",
-                    value=command_help,
-                )
-            )
+            fields.append(field(name=f"**`{command_syntax}`**", value=command_help,))
 
         length = 0
         for fld in fields:

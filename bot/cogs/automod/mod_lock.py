@@ -37,8 +37,7 @@ class ModerationLock(Cog):
         """Set the mod lock mode."""
         lock_mode = await self.get_lock(ctx.guild.id)
 
-        mapping = {0: "❌ No lock", 1: "⚙️Kick lock enabled",
-                   2: "⚙️Ban lock enabled"}
+        mapping = {0: "❌ No lock", 1: "⚙️Kick lock enabled", 2: "⚙️Ban lock enabled"}
 
         await ctx.send(
             embed=discord.Embed(

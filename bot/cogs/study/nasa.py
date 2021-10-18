@@ -3,8 +3,7 @@ import random
 import re
 
 from discord import Color, Embed
-from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
-                                  cooldown)
+from discord.ext.commands import Bot, BucketType, Cog, Context, command, cooldown
 
 NASA_API = os.getenv("NASA_API")
 
@@ -57,8 +56,7 @@ class Nasa(Cog):
             rand_item = random.randint(0, len(items) - 1)
             item = items[rand_item]
 
-            embed = Embed(title=item["data"][0]
-                          ["description"], color=Color.blurple())
+            embed = Embed(title=item["data"][0]["description"], color=Color.blurple())
             embed.set_image(url=item["links"][0]["href"])
             embed.set_footer(text=f"ID: {item['data'][0]['nasa_id']}")
 

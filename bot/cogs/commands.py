@@ -185,8 +185,7 @@ class Commands(Cog):
 
         embed = discord.Embed(color=discord.Color.blurple())
         embed.add_field(name="Original Link", value=link, inline=False)
-        embed.add_field(name="Shortened Link",
-                        value=shortened_link, inline=False)
+        embed.add_field(name="Shortened Link", value=shortened_link, inline=False)
         await ctx.send(embed=embed)
 
     @command(aliases=("poll",))
@@ -243,8 +242,7 @@ class Commands(Cog):
                 break
             duration = relativedelta(final_time, datetime.utcnow())
 
-            embed.set_field_at(0, name="**Countdown**",
-                               value=humanize_time(duration))
+            embed.set_field_at(0, name="**Countdown**", value=humanize_time(duration))
             await message.edit(embed=embed)
 
             await asyncio.sleep(1)

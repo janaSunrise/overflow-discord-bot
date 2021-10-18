@@ -7,10 +7,19 @@ from datetime import datetime
 from textwrap import dedent
 
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, MemberConverter,
-                                  NoPrivateMessage, RoleConverter,
-                                  UserConverter, command, group, guild_only,
-                                  has_permissions)
+from discord.ext.commands import (
+    Cog,
+    Context,
+    Greedy,
+    MemberConverter,
+    NoPrivateMessage,
+    RoleConverter,
+    UserConverter,
+    command,
+    group,
+    guild_only,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.core.converters import ModerationReason
@@ -57,8 +66,7 @@ class Moderation(Cog):
 
         message = await ctx.send(
             f"Hey {ctx.author.mention}!",
-            embed=discord.Embed(description=description,
-                                color=discord.Color.green()),
+            embed=discord.Embed(description=description, color=discord.Color.green()),
         )
         await asyncio.sleep(4)
         await message.delete()
@@ -84,14 +92,11 @@ class Moderation(Cog):
 
         spammers = Counter(m.author.display_name for m in deleted)
         deleted = len(deleted)
-        messages = [
-            f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
+        messages = [f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
         if deleted:
             messages.append("")
-            spammers = sorted(spammers.items(),
-                              key=lambda t: t[1], reverse=True)
-            messages.extend(
-                f"• **{name}**: {count}" for name, count in spammers)
+            spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
+            messages.extend(f"• **{name}**: {count}" for name, count in spammers)
 
         to_send = "\n".join(messages)
 

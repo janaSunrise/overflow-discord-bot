@@ -11,8 +11,7 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SuggestionConfig(DatabaseBase):
     __tablename__ = "suggestion_config"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
     submission_channel_id = Column(BigInteger, unique=True)
     anonymous = Column(Boolean, default=True)
@@ -70,8 +69,7 @@ class SuggestionConfig(DatabaseBase):
                 session,
                 cls,
                 conflict_columns=["guild_id"],
-                values={"guild_id": guild_id,
-                        "submission_channel_id": channel_id},
+                values={"guild_id": guild_id, "submission_channel_id": channel_id},
             )
             await session.commit()
 
@@ -127,8 +125,7 @@ class SuggestionConfig(DatabaseBase):
             await session.commit()
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key, None)
-                for key in self.__table__.columns.keys()}
+        data = {key: getattr(self, key, None) for key in self.__table__.columns.keys()}
         return data
 
 
@@ -158,9 +155,7 @@ class SuggestionUser(DatabaseBase):
 
     @classmethod
     async def set_user(
-        cls,
-        session: sessionmaker,
-        user_id: t.Union[str, int, discord.Guild],
+        cls, session: sessionmaker, user_id: t.Union[str, int, discord.Guild],
     ) -> None:
         user_id = get_datatype_int(user_id)
 
@@ -208,8 +203,7 @@ class Suggestion(DatabaseBase):
     suggestion_id = Column(
         BigInteger, primary_key=True, nullable=False, unique=True, autoincrement=True
     )
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     user_id = Column(BigInteger, nullable=False, unique=True)
     message_id = Column(BigInteger, nullable=False, unique=True)
     accepted = Column(Boolean, default=None)

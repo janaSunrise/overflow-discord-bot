@@ -54,10 +54,7 @@ class LinkLock(Cog):
                 if not await self.is_our_invite(code, message.guild):
                     return
 
-            if re.findall(
-                self.link_regex,
-                message.content,
-            ):
+            if re.findall(self.link_regex, message.content,):
                 await message.channel.send(
                     f"{message.author.mention}, you are not allowed to post any links here!"
                 )
@@ -66,10 +63,7 @@ class LinkLock(Cog):
             return
 
         if status == 3:
-            if re.findall(
-                self.link_regex,
-                message.content,
-            ):
+            if re.findall(self.link_regex, message.content,):
                 for code in self.get_codes(message.content):
                     if not await self.is_our_invite(code, message.guild):
                         await message.channel.send(

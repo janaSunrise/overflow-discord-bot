@@ -358,14 +358,12 @@ class Starboard(Cog):
             )
 
         if msg.author.id == starrer_id:
-            raise StarError(
-                "\N{NO ENTRY SIGN} You cannot star your own message.")
+            raise StarError("\N{NO ENTRY SIGN} You cannot star your own message.")
 
         if (
             len(msg.content) == 0 and len(msg.attachments) == 0
         ) or msg.type is not discord.MessageType.default:
-            raise StarError(
-                "\N{NO ENTRY SIGN} This message cannot be starred.")
+            raise StarError("\N{NO ENTRY SIGN} This message cannot be starred.")
 
         try:
             record = await SBMessageDB.get_star_entry_id(
@@ -377,8 +375,7 @@ class Starboard(Cog):
                 starrer_id,
             )
         except asyncpg.UniqueViolationError:
-            raise StarError(
-                "\N{NO ENTRY SIGN} You already starred this message.")
+            raise StarError("\N{NO ENTRY SIGN} You already starred this message.")
 
         entry_id = record[0]
 
@@ -459,8 +456,7 @@ class Starboard(Cog):
             self.bot.database, message_id, starrer_id
         )
         if record is None:
-            raise StarError(
-                "\N{NO ENTRY SIGN} You have not starred this message.")
+            raise StarError("\N{NO ENTRY SIGN} You have not starred this message.")
 
         entry_id = record[0]
         bot_message_id = record[1]
@@ -648,11 +644,9 @@ class Starboard(Cog):
         )
 
         min_snowflake = (
-            int((time.time() - 14 * 24 * 60 * 60)
-                * 1000.0 - 1420070400000) << 22
+            int((time.time() - 14 * 24 * 60 * 60) * 1000.0 - 1420070400000) << 22
         )
-        to_delete = [discord.Object(id=r[0])
-                     for r in to_delete if r[0] > min_snowflake]
+        to_delete = [discord.Object(id=r[0]) for r in to_delete if r[0] > min_snowflake]
 
         try:
             self._about_to_be_deleted.update(o.id for o in to_delete)

@@ -173,8 +173,7 @@ class Blackjack(menus.Menu):
         self.cards = [
             BCard(i + 1, j) for i in range(13) for j in range(4) for _ in range(6)
         ]
-        self.players = [Deck(self.money_dict[i], self.cost, i)
-                        for i in self.money_dict]
+        self.players = [Deck(self.money_dict[i], self.cost, i) for i in self.money_dict]
         self.dealer = BRow()
         self.dealer.append(self.card)
         for i in range(len(self.players)):
@@ -194,8 +193,7 @@ class Blackjack(menus.Menu):
             embed.add_field(
                 name=f"{self.player_dict[player.player_id].display_name} ({player.money} GP)",
                 value="\n".join(
-                    [", ".join([card.name for card in row])
-                     for row in player.cards]
+                    [", ".join([card.name for card in row]) for row in player.cards]
                 ),
                 inline=False,
             )
@@ -216,8 +214,7 @@ class Blackjack(menus.Menu):
             self.next_card = self.card
 
         await self.message.edit(
-            content=self.player_dict[self.next].mention, embed=self.generate_embed(
-            )
+            content=self.player_dict[self.next].mention, embed=self.generate_embed()
         )
 
     async def result(self) -> None:
@@ -264,8 +261,7 @@ class Blackjack(menus.Menu):
                         elif row.value() > V:
                             player.balance += 2 * self.cost
                     else:
-                        n.append(
-                            f"Busted : {', '.join([card.name for card in row])}")
+                        n.append(f"Busted : {', '.join([card.name for card in row])}")
             embed.add_field(
                 name=f"{self.player_dict[player.player_id]} : {player.money} GP",
                 value="\n".join(n),

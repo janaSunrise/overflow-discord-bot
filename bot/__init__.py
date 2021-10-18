@@ -79,8 +79,7 @@ class Bot(AutoShardedBot):
         """Initialize the database."""
         bring_databases_into_scope()
 
-        engine = create_async_engine(
-            config.DATABASE_CONN, pool_size=30, max_overflow=0)
+        engine = create_async_engine(config.DATABASE_CONN, pool_size=30, max_overflow=0)
 
         try:
             async with engine.begin() as conn:
@@ -127,8 +126,7 @@ class Bot(AutoShardedBot):
         rows = await Prefix.get_prefixes(self.database)
 
         for row in rows:
-            self.prefix_dict[row["context_id"]] = [
-                row["prefix"], self.default_prefix]
+            self.prefix_dict[row["context_id"]] = [row["prefix"], self.default_prefix]
 
     def run(self, token: t.Optional[str]) -> None:
         """Run the bot and add missing token check."""
@@ -227,7 +225,7 @@ class Bot(AutoShardedBot):
                 yield member
         else:
             for index in range(0, total_need_resolution, 100):
-                to_resolve = needs_resolution[index: index + 100]
+                to_resolve = needs_resolution[index : index + 100]
                 members = await guild.query_members(
                     limit=100, user_ids=to_resolve, cache=True
                 )

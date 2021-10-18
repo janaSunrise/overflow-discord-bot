@@ -14,10 +14,8 @@ def snake_to_camel(snake: str, start_lower: bool = False) -> str:
 
 
 def camel_to_snake(camel: str) -> str:
-    snake = re.sub(r"([a-zA-Z])([0-9])",
-                   lambda m: f"{m.group(1)}_{m.group(2)}", camel)
-    snake = re.sub(r"([a-z0-9])([A-Z])",
-                   lambda m: f"{m.group(1)}_{m.group(2)}", snake)
+    snake = re.sub(r"([a-zA-Z])([0-9])", lambda m: f"{m.group(1)}_{m.group(2)}", camel)
+    snake = re.sub(r"([a-z0-9])([A-Z])", lambda m: f"{m.group(1)}_{m.group(2)}", snake)
     return snake.lower()
 
 
@@ -53,8 +51,7 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     for res in results:
         title = res["word"]
 
-        embed = discord.Embed(
-            colour=0xE86222, title=title, url=res["permalink"])
+        embed = discord.Embed(colour=0xE86222, title=title, url=res["permalink"])
         embed.set_footer(text=f'Author : {res["author"]}')
         embed.description = cleanup_definition(res["definition"])
 

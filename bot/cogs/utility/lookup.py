@@ -47,8 +47,7 @@ class Lookup(Cog):
             title=f"{user}'s stats and information.", color=user.color
         )
 
-        created_time = datetime.strftime(
-            user.created_at, "%A %d %B %Y at %H:%M")
+        created_time = datetime.strftime(user.created_at, "%A %d %B %Y at %H:%M")
 
         # -- User info section --
 
@@ -73,8 +72,7 @@ class Lookup(Cog):
             if user.nick:
                 member_info += f"Nickname: {user.nick}"
 
-            joined_time = datetime.strftime(
-                user.joined_at, "%A %d %B %Y at %H:%M")
+            joined_time = datetime.strftime(user.joined_at, "%A %d %B %Y at %H:%M")
             member_info += f"Joined server: {joined_time}"
 
             roles = [role.mention for role in user.roles[:10]]
@@ -114,13 +112,11 @@ class Lookup(Cog):
         else:
             status_info += "\nDevice: PC :desktop:"
 
-        embed.add_field(name="❯ General information",
-                        value=user_info, inline=False)
+        embed.add_field(name="❯ General information", value=user_info, inline=False)
         embed.add_field(
             name="❯ Server related information", value=member_info, inline=False
         )
-        embed.add_field(name="❯ Status information",
-                        value=status_info, inline=True)
+        embed.add_field(name="❯ Status information", value=status_info, inline=True)
         embed.set_thumbnail(url=user.avatar_url)
         embed.set_footer(text=f"UserID: {user.id}")
 
@@ -205,9 +201,7 @@ class Lookup(Cog):
             inline=True,
         )
         embed.add_field(
-            name="❯ Features",
-            value="\n".join(features),
-            inline=False,
+            name="❯ Features", value="\n".join(features), inline=False,
         )
         embed.set_thumbnail(url=guild.icon_url)
         embed.set_footer(text=f"Guild ID: {guild.id}")
@@ -294,8 +288,7 @@ class Lookup(Cog):
 
         if guild.is_icon_animated():
             embed.description += f'\n[GIF]({guild.icon_url_as(format="gif")})'
-            embed.set_image(
-                url=str(guild.icon_url_as(size=1024, format="gif")))
+            embed.set_image(url=str(guild.icon_url_as(size=1024, format="gif")))
 
         await ctx.send(embed=embed)
 

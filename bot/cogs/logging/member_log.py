@@ -111,8 +111,7 @@ class MemberLog(Cog):
             new_roles = set(after.roles)
             old_roles = set(before.roles)
 
-            stats = {"added": old_roles - new_roles,
-                     "removed": new_roles - old_roles}
+            stats = {"added": old_roles - new_roles, "removed": new_roles - old_roles}
 
             audit_log = await get_latest_audit(
                 after.guild, [discord.AuditLogAction.member_role_update], after
@@ -154,8 +153,7 @@ class MemberLog(Cog):
         if not member_log_channel_id:
             return
 
-        member_log_channel = guild.get_channel(
-            member_log_channel_id["member_log"])
+        member_log_channel = guild.get_channel(member_log_channel_id["member_log"])
 
         if not member_log_channel:
             return

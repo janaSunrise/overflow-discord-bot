@@ -132,8 +132,7 @@ class Player(wavelink.Player):
                     return await self.do_next()
 
                 yt_track = results[0]
-                track = Track(yt_track.id, yt_track.info,
-                              requester=track.requester)
+                track = Track(yt_track.id, yt_track.info, requester=track.requester)
 
         elif self.loop_mode == "track":
             track = self.current_song
@@ -155,8 +154,7 @@ class Player(wavelink.Player):
                     return await self.do_next()
 
                 yt_track = results[0]
-                track = Track(yt_track.id, yt_track.info,
-                              requester=track.requester)
+                track = Track(yt_track.id, yt_track.info, requester=track.requester)
 
         await self.play(track)
         self.current_song = track
@@ -437,8 +435,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        player: Player = self.bot.wavelink.get_player(
-            member.guild.id, cls=Player)
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
 
         if (
             not member.bot
@@ -467,8 +464,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if member.bot:
             return
 
-        player: Player = self.bot.wavelink.get_player(
-            member.guild.id, cls=Player)
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
 
         if not player.channel_id or not player.context:
             player.node.players.pop(member.guild.id)
@@ -513,8 +509,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             raise IncorrectChannelError
 
         if (
-            ctx.command.name in ["connect", "play",
-                                 "equalizer", "volume", "repeat"]
+            ctx.command.name in ["connect", "play", "equalizer", "volume", "repeat"]
             and not player.context
         ):
             return
@@ -600,9 +595,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         tracks = await self.bot.wavelink.get_tracks(query)
         if not tracks:
-            await ctx.send(
-                "No songs were found with that query. Please try again.",
-            )
+            await ctx.send("No songs were found with that query. Please try again.",)
             return
 
         output = ""
@@ -1507,8 +1500,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
                 str(i) for i in range(1, len(radiolist) + 1)
             )
 
-        embed = discord.Embed(title="Station list",
-                              colour=discord.Colour.orange())
+        embed = discord.Embed(title="Station list", colour=discord.Colour.orange())
         if len(radiolist) == 0:
             embed.add_field(
                 name="Nothing found",
