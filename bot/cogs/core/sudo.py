@@ -15,7 +15,7 @@ import psutil
 from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
-from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
+from jishaku.cog import STANDARD_FEATURES
 from tabulate import tabulate
 
 from bot import Bot, config
@@ -29,7 +29,7 @@ class CounterKeys(enum.Enum):
         return self.name
 
 
-class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
+class Sudo(*STANDARD_FEATURES, Cog):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot=bot)
         self.bot = bot
@@ -268,12 +268,12 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
             f"""
             • System: **`{uname.system}`**
             • Node Name: **`{uname.node}`**
-            
+
             • Release: **`{uname.release}`**
             • Version: **`{uname.version}`**
-            
+
             • Machine: **`{uname.machine}`**
-            • Processor: **`{uname.processor}`**            
+            • Processor: **`{uname.processor}`**
             """
         )
         embed.add_field(
