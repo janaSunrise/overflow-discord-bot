@@ -46,7 +46,8 @@ class ErrorHandler(Cog):
     ) -> None:
         """Utility method to send error embeds easily."""
         await ctx.send(
-            embed=Embed(title=title, description=description, color=Color.red())
+            embed=Embed(title=title, description=description,
+                        color=Color.red())
         )
 
     async def command_syntax_error(
@@ -56,7 +57,8 @@ class ErrorHandler(Cog):
         command = ctx.command
         parent = command.full_parent_name
 
-        command_name = str(command) if not parent else f"{parent} {command.name}"
+        command_name = str(
+            command) if not parent else f"{parent} {command.name}"
         command_syntax = f"```{command_name} {command.signature}```"
 
         aliases = [
@@ -203,7 +205,8 @@ class ErrorHandler(Cog):
             and error.original.code == 50034
         ):
             await self.error_embed(
-                ctx, "❌ You can only bulk delete messages that are under 14 days old",
+                ctx,
+                "❌ You can only bulk delete messages that are under 14 days old",
             )
             return
 

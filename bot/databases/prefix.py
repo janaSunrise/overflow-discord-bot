@@ -10,7 +10,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Prefix(DatabaseBase):
     __tablename__ = "prefixes"
 
-    context_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    context_id = Column(BigInteger, primary_key=True,
+                        nullable=False, unique=True)
     prefix = Column(String, nullable=False)
 
     @classmethod

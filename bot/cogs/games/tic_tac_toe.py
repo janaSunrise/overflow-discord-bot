@@ -56,7 +56,8 @@ class TTT_Game(menus.Menu):
         """Play in the given place."""
         if self.status[row][column]:
             await self.ctx.send(
-                f"{self.next_player.mention}, you can't play here !", delete_after=3,
+                f"{self.next_player.mention}, you can't play here !",
+                delete_after=3,
             )
         self.status[row][column] = self.players.index(self.next_player) + 1
         await self.update_board()
@@ -126,9 +127,11 @@ class TTT_Game(menus.Menu):
             all_checks.append(row)
         # columns
         for column_id in range(3):
-            all_checks.append([self.status[row_id][column_id] for row_id in range(3)])
+            all_checks.append([self.status[row_id][column_id]
+                              for row_id in range(3)])
         # diagonals
-        all_checks.append([self.status[place_id][place_id] for place_id in range(3)])
+        all_checks.append([self.status[place_id][place_id]
+                          for place_id in range(3)])
         all_checks.append(
             [self.status[2 - place_id][place_id] for place_id in range(3)]
         )

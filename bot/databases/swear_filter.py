@@ -12,7 +12,8 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SwearFilter(DatabaseBase):
     __tablename__ = "swear_filter"
 
-    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True,
+                      nullable=False, unique=True)
     manual_on = Column(Boolean, default=False)
     autoswear = Column(Boolean, default=False)
     notification = Column(Boolean, default=False)

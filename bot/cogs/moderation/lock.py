@@ -66,7 +66,9 @@ class Lock(Cog):
 
         if override_roles is not None:
             for role in override_roles:
-                overwrites[role] = discord.PermissionOverwrite(send_messages=True,)
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=True,
+                )
 
         channel_count = 0
         for channel in channels:
@@ -114,7 +116,9 @@ class Lock(Cog):
 
         if override_roles is not None:
             for role in override_roles:
-                overwrites[role] = discord.PermissionOverwrite(send_messages=False,)
+                overwrites[role] = discord.PermissionOverwrite(
+                    send_messages=False,
+                )
 
         channel_count = 0
         for channel in channels:

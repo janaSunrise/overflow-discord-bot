@@ -45,7 +45,9 @@ class Eval(Cog):
     @command(aliases=["language-list", "langs", "langs-list"])
     async def language_supported(self, ctx: Context) -> None:
         """Show all the languages supported by this compiler."""
-        paginator = commands.Paginator(max_size=2048,)
+        paginator = commands.Paginator(
+            max_size=2048,
+        )
 
         for line in self.languages:
             paginator.add_line(line)
@@ -111,10 +113,11 @@ class Eval(Cog):
                 text = code.strip("`")
                 first_line = text.splitlines()[0]
                 if re.fullmatch(r"( |[0-9A-z]*)\b", first_line):
-                    text = text[len(first_line) + 1 :]
+                    text = text[len(first_line) + 1:]
 
             if text is None:
-                raise commands.MissingRequiredArgument(ctx.command.clean_params["code"])
+                raise commands.MissingRequiredArgument(
+                    ctx.command.clean_params["code"])
 
             if lang in self.quick_map:
                 lang = self.quick_map[lang]
@@ -153,7 +156,8 @@ class Eval(Cog):
                         text = self.wrapping[beginning].replace("code", text)
                         break
 
-            tio = Tio(lang, text, inputs, compiler_flags, command_line_options, args)
+            tio = Tio(lang, text, inputs, compiler_flags,
+                      command_line_options, args)
             result = await tio.get_result()
 
             result = result.rstrip("\n")
@@ -164,7 +168,7 @@ class Eval(Cog):
                         result.rindex("Real time: "),
                         result.rindex("%\nExit code: "),
                     )
-                    result = result[:start] + result[end + 2 :]
+                    result = result[:start] + result[end + 2:]
                 except ValueError:
                     pass
 

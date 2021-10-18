@@ -204,7 +204,8 @@ class Embeds(Cog):
         if isinstance(icon, discord.Member):
             icon = icon.avatar_url_as(format="png")
 
-        embed.set_author(name=embed.author.name, url=embed.author.url, icon_url=icon)
+        embed.set_author(name=embed.author.name,
+                         url=embed.author.url, icon_url=icon)
         await ctx.send("✅ Successfully set author's icon.")
 
     @author.command()
