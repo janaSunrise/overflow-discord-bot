@@ -17,7 +17,7 @@ from bot import config
 from bot.databases import DatabaseBase, bring_databases_into_scope
 from bot.databases.prefix import Prefix
 
-# -- Logger configuration --
+# Logging configuration
 logger.configure(
     handlers=[
         dict(sink=sys.stdout, format=config.log_format, level=config.log_level),
@@ -36,19 +36,19 @@ class Bot(AutoShardedBot):
         """Initialize the subclass."""
         super().__init__(*args, **kwargs)
 
-        # -- Prefix --
-        self.default_prefix = config.COMMAND_PREFIX
-        self.prefix_dict = {}
-
-        # -- Bot info --
+        # Bot info
         self.cluster = kwargs.get("cluster_id")
         self.cluster_count = kwargs.get("cluster_count")
         self.version = kwargs.get("version")
 
-        # -- Start time config --
+        # Prefix loading
+        self.default_prefix = config.COMMAND_PREFIX
+        self.prefix_dict = {}
+
+        # Bot start time config
         self.start_time = datetime.utcnow()
 
-        # -- Sessions config --
+        # Database and Aiohttp session
         self.session = None
         self.database = None
 
@@ -56,10 +56,10 @@ class Bot(AutoShardedBot):
         self.bot_counters = collections.defaultdict(collections.Counter)
         self.guild_counters = collections.defaultdict(collections.Counter)
 
-        # -- Startup config --
+        # Startup config
         self.initial_call = True
 
-        # -- Spotify config --
+        # Spotify
         self.spotify = spotify.Client(
             client_id=config.spotify_client_id,
             client_secret=config.spotify_client_secret,
@@ -204,6 +204,7 @@ class Bot(AutoShardedBot):
                 needs_resolution.append(member_id)
 
         total_need_resolution = len(needs_resolution)
+
         if total_need_resolution == 1:
             shard = self.get_shard(guild.shard_id)
             if shard.is_ws_ratelimited():
@@ -231,5 +232,6 @@ class Bot(AutoShardedBot):
                 members = await guild.query_members(
                     limit=100, user_ids=to_resolve, cache=True
                 )
+
                 for member in members:
                     yield member

@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .join_log import JoinLog
 from .member_log import MemberLog
 from .voice_log import VoiceLog

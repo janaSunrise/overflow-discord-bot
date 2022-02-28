@@ -14,7 +14,7 @@ def moderation_embed(
     action: str,
     user: t.Union[discord.Member, MemberConverter, discord.User, UserConverter],
     reason: t.Union[str, ModerationReason],
-    color: discord.Color = discord.Color.blue(),
+    color: discord.Color = discord.Color.blue(),  # noqa: B008
 ) -> discord.Embed:
     """Return a quick embed for moderation event."""
     description = dedent(

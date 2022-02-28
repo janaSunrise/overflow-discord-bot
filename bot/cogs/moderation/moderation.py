@@ -165,7 +165,7 @@ class Moderation(Cog):
         """Removes all messages containing custom emoji."""
         custom_emoji = re.compile(r"<a?:[a-zA-Z0-9\_]+:([0-9]+)>")
 
-        def predicate(m):
+        def predicate(m) -> t.Optional[re.Match[str]]:
             return custom_emoji.search(m.content)
 
         await self.do_removal(ctx, search, predicate)

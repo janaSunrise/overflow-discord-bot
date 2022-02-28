@@ -44,8 +44,7 @@ class Info(Cog):
 
                     final_path = filepath + os.path.sep + name
                     list_of_files.append(
-                        final_path.split("." + os.path.sep)[-1]
-                        + f" : {file_lines} lines"
+                        final_path.split("." + os.path.sep)[-1] + f" : {file_lines} lines"
                     )
 
         paginator = Paginator(

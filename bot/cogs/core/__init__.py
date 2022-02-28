@@ -1,7 +1,6 @@
 from collections import Counter
 
 from bot import Bot
-
 from .error import ErrorHandler
 from .events import Events
 from .help import Help

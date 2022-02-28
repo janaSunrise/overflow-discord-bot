@@ -45,8 +45,6 @@ def requires_starboard() -> t.Any:
         if ctx.guild is None:
             return False
 
-        cog = ctx.bot.get_cog("Stars")
-
         ctx.starboard = await StarboardDB.get_config(ctx.bot.database, ctx.guild.id)
         if ctx.starboard is None:
             raise StarError("\N{WARNING SIGN} Starboard channel not found.")
@@ -70,11 +68,11 @@ class Starboard(Cog):
         self._locks = weakref.WeakValueDictionary()
         self.spoilers = re.compile(r"\|\|(.+?)\|\|")
 
-    def cog_unload(self):
+    def cog_unload(self) -> None:
         self.clean_message_cache.cancel()
 
     @tasks.loop(hours=1.0)
-    async def clean_message_cache(self):
+    async def clean_message_cache(self) -> None:
         self._message_cache.clear()
 
     @staticmethod
@@ -163,7 +161,7 @@ class Starboard(Cog):
             try:
                 o = discord.Object(id=message_id + 1)
 
-                def pred(m):
+                def pred(m: discord.Message) -> bool:
                     return m.id == message_id
 
                 msg = await channel.history(limit=1, before=o).next()
@@ -237,8 +235,7 @@ class Starboard(Cog):
             return
 
         if (
-            starboard["channel_id"] is None
-            or starboard["channel_id"] != payload.channel_id
+            starboard["channel_id"] is None or starboard["channel_id"] != payload.channel_id
         ):
             return
 
@@ -259,8 +256,7 @@ class Starboard(Cog):
             return
 
         if (
-            starboard["channel_id"] is None
-            or starboard["channel_id"] != payload.channel_id
+            starboard["channel_id"] is None or starboard["channel_id"] != payload.channel_id
         ):
             return
 
@@ -309,10 +305,11 @@ class Starboard(Cog):
 
     async def _star_message(
         self, channel: discord.TextChannel, message_id: int, starrer_id: int
-    ):
+    ) -> None:
         guild_id = channel.guild.id
 
         starboard = await StarboardDB.get_config(self.bot.database, guild_id)
+
         if starboard is None:
             return
 

@@ -5,7 +5,6 @@ from discord.ext import tasks
 from discord.ext.commands import Cog, Context, command
 
 from bot import Bot, config
-
 from .blackjack import Blackjack, Blackjack_players
 from .connect4 import Connect4
 from .hangman import HangmanGame

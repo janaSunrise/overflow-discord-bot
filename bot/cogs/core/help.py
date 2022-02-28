@@ -149,7 +149,7 @@ class HelpCommand(BaseHelpCommand):
                 "help": "Shows help for given command / all commands"}
         )
 
-    def command_not_found(self, string):
+    def command_not_found(self, string) -> str:
         ctx = self.context
         output = f"No command called `{string}` found."
 

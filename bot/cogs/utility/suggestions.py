@@ -22,17 +22,18 @@ class Suggestions(Cog):
     def get_human_readable_word(expression: bool) -> str:
         if expression:
             return "Enabled"
+
         return "Disabled"
 
     @group(invoke_without_command=True)
     @guild_only()
     @has_permissions(manage_channels=True, ban_members=True)
-    async def suggestion(self, ctx: Context):
+    async def suggestion(self, ctx: Context) -> None:
         """Commands for suggestion config."""
         row = await SuggestionConfig.get_config(self.bot.database, ctx.guild.id)
 
         if not row:
-            await ctx.send("⚠️Suggestion channel not configured!")
+            await ctx.send("⚠️ Suggestion channel not configured!")
             return
 
         await ctx.send(
@@ -42,7 +43,7 @@ class Suggestions(Cog):
                     f"""
                     • Channel: {f"<#{row['channel_id']}>"}
                     • Submission Channel: {
-                        f"<#{row['submission_channel_id']}>" if row["submission_channel_id"] is not None else 
+                        f"<#{row['submission_channel_id']}>" if row["submission_channel_id"] is not None else
                         "No channel configured!"
                     }
                     • Limit: {row["limit"]}
@@ -81,7 +82,7 @@ class Suggestions(Cog):
         await ctx.send(f"Set limit to {limit}")
 
     @group(invoke_without_command=True, aliases=["suggestion-user"])
-    async def suggestion_user(self, ctx: Context):
+    async def suggestion_user(self, ctx: Context) -> None:
         """Commands for suggestion config."""
         row = await SuggestionUser.get_config(self.bot.database, ctx.author.id)
 

@@ -16,7 +16,7 @@ class SpotifyTrack:
 
 
 async def get_spotify_tracks(
-    ctx, search_type: str, spotify_id: str, spotify_client, spotify_http
+    ctx: Context, search_type: str, spotify_id: str, spotify_client, spotify_http
 ) -> t.Tuple[str, list]:
     name = None
     search_tracks = None
@@ -54,7 +54,7 @@ async def get_spotify_tracks(
     return name, search_tracks
 
 
-async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, requester):
+async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, requester) -> None:
     for track in tracks:
         if not track:
             continue
@@ -72,7 +72,7 @@ async def play(
     spotify_id: str,
     spotify_client,
     spotify_http,
-):
+) -> None:
     requester = ctx.author
     name, tracks = await get_spotify_tracks(
         ctx, search_type, spotify_id, spotify_client, spotify_http

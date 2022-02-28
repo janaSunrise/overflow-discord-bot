@@ -41,7 +41,7 @@ class Roles(Cog):
                         f"""
                         ❯ **Moderator roles:**
                         {mod_role}
-                        
+
                         ❯ Mute role: {mute_role.mention}
                         ❯ Default role: {default_role.mention}
                         """

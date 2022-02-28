@@ -18,7 +18,7 @@ class HackerNews(Cog):
         self.bot = bot
         self.send_feed.start()
 
-    def cog_unload(self):
+    def cog_unload(self) -> None:
         self.send_feed.cancel()
 
     async def _generate_embeds(self, article_numbers: list) -> t.List[discord.Embed]:

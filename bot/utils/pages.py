@@ -21,15 +21,16 @@ class EmbedPages(ListPageSource):
     async def start(self, ctx: Context, **menupages_kwargs) -> None:
         """Start the pagination."""
         pages = MenuPages(source=self, **menupages_kwargs)
+
         await pages.start(ctx)
 
 
 class SimplePageSource(ListPageSource):
-    def __init__(self, entries, *, per_page=12):
+    def __init__(self, entries: t.List[Embed], *, per_page=12):
         super().__init__(entries, per_page=per_page)
         self.initial_page = True
 
-    async def format_page(self, menu, entries):
+    async def format_page(self, menu: Menu, entries: t.List[Embed]) -> Embed:
         pages = []
         for index, entry in enumerate(entries, start=menu.current_page * self.per_page):
             pages.append(f"{index + 1}. {entry}")
@@ -52,20 +53,23 @@ class SimplePageSource(ListPageSource):
 
 
 class SimplePages(EmbedPages):
-    def __init__(self, entries, *, per_page=12):
+    def __init__(self, entries: t.List[Embed], *, per_page: int = 12):
         super().__init__(SimplePageSource(entries, per_page=per_page))
+
         self.embed = Embed(colour=Color.blurple())
 
 
 class SauceSource(ListPageSource):
     """Source for the sauce command."""
 
-    async def format_page(self, menu: Menu, page: str):
+    async def format_page(self, menu: Menu, page: str) -> Embed:
         """Format the page of code."""
         max_pages = self.get_max_pages()
         embed = Embed(description=page, colour=Color.purple())
+
         if max_pages > 1:
             embed.set_footer(text=f"Page {menu.current_page + 1}/{max_pages}")
+
         return embed
 
 
@@ -77,7 +81,7 @@ class CodeInfoSource(ListPageSource):
         self.title = title
         self.footer = footer
 
-    async def format_page(self, menu: Menu, page: str):
+    async def format_page(self, menu: Menu, page: str) -> Embed:
         """Format the page of code."""
         max_pages = self.get_max_pages()
 

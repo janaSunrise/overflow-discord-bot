@@ -23,9 +23,9 @@ from bot.utils.spotify_parse import SpotifyTrack, play
 from bot.utils.utils import format_time, progress_bar
 
 # URL matching REGEX.
-TIME_REG = re.compile("[0-9]+")
-URL_REG = re.compile(r"https?://(?:www\.)?.+")
-SPOTIFY_URL_REG = re.compile(
+TIME_REGEX = re.compile("[0-9]+")
+URL_REGEX = re.compile(r"https?://(?:www\.)?.+")
+SPOTIFY_URL_REGEX = re.compile(
     r"https?://open.spotify.com/(?P<type>album|playlist|track)/(?P<id>[a-zA-Z0-9]+)"
 )
 
@@ -45,9 +45,10 @@ class SongQueue(asyncio.Queue):
     def __init__(self) -> None:
         super().__init__()
 
-    def __getitem__(self, item) -> t.Union[list, str]:
+    def __getitem__(self, item: t.Any) -> t.Union[list, str]:
         if isinstance(item, slice):
             return list(itertools.islice(self._queue, item.start, item.stop, item.step))
+
         return self._queue[item]
 
     @property
@@ -633,7 +634,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         if not player.is_connected:
             await ctx.invoke(self.connect)
 
-        spotify_url_check = SPOTIFY_URL_REG.match(query)
+        spotify_url_check = SPOTIFY_URL_REGEX.match(query)
 
         if not spotify_url_check:
             url = yarl.URL(query)
@@ -795,7 +796,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             guild_id=ctx.guild.id, cls=Player, context=ctx
         )
 
-        raw_seconds = TIME_REG.search(time)
+        raw_seconds = TIME_REGEX.search(time)
         if not raw_seconds:
             await ctx.send(
                 embed=discord.Embed(

@@ -56,13 +56,16 @@ class JSONParser:
     @classmethod
     async def from_embed(
         cls, ctx: Context, embed: t.Optional[t.Union[EmbedInfo, discord.Embed]]
-    ):
+    ) -> "JSONParser":
         if isinstance(embed, EmbedInfo):
-            return cls(ctx, {"message": embed.message, "embed": embed.embed.to_dict()})
+            return cls(ctx, {
+                "message": embed.message, "embed": embed.embed.to_dict()
+            })
+
         return cls(ctx, embed.to_dict())
 
     @classmethod
-    async def from_str(cls, ctx: Context, json_string: str):
+    async def from_str(cls, ctx: Context, json_string: str) -> "JSONParser":
         return cls(ctx, await cls.parse_json(ctx, json_string))
 
     def create_embed(self) -> EmbedInfo:

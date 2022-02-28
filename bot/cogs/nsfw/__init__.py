@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .nekos import Neko
 from .nsfw import Nsfw
 

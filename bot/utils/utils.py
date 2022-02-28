@@ -3,21 +3,32 @@ import re
 import typing as t
 
 import discord
+from discord import Message
 
 
 def snake_to_camel(snake: str, start_lower: bool = False) -> str:
     camel = snake.title()
     camel = re.sub("([0-9A-Za-z])_(?=[0-9A-Z])", lambda m: m.group(1), camel)
+
     if start_lower:
         camel = re.sub("(^_*[A-Z])", lambda m: m.group(1).lower(), camel)
+
     return camel
 
 
 def camel_to_snake(camel: str) -> str:
-    snake = re.sub(r"([a-zA-Z])([0-9])",
-                   lambda m: f"{m.group(1)}_{m.group(2)}", camel)
-    snake = re.sub(r"([a-z0-9])([A-Z])",
-                   lambda m: f"{m.group(1)}_{m.group(2)}", snake)
+    snake = re.sub(
+        r"([a-zA-Z])([0-9])",
+        lambda m: f"{m.group(1)}_{m.group(2)}",
+        camel
+    )
+
+    snake = re.sub(
+        r"([a-z0-9])([A-Z])",
+        lambda m: f"{m.group(1)}_{m.group(2)}",
+        snake
+    )
+
     return snake.lower()
 
 
@@ -31,6 +42,7 @@ def format_time(time: int) -> str:
 def progress_bar(current: int, total: int) -> str:
     barsize = 12
     num = int(current / total * barsize)
+
     return "▬" * num + "▭" + "―" * (barsize - num)
 
 
@@ -41,20 +53,20 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
     def cleanup_definition(definition: str, *, regex: t.Pattern = BRACKETED) -> str:
         """Cleanup the definition."""
 
-        def repl(message) -> str:
+        def repl(message: Message) -> str:
             word = message.group(2)
             return f'[{word}](http://{word.replace(" ", "-")}.urbanup.com)'
 
         ret = regex.sub(repl, definition)
         if len(ret) >= 2048:
             return ret[0:2000] + " [...]"
+
         return ret
 
     for res in results:
         title = res["word"]
 
-        embed = discord.Embed(
-            colour=0xE86222, title=title, url=res["permalink"])
+        embed = discord.Embed(colour=0xE86222, title=title, url=res["permalink"])
         embed.set_footer(text=f'Author : {res["author"]}')
         embed.description = cleanup_definition(res["definition"])
 
@@ -71,10 +83,10 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
 
 
 async def confirmation(
-    ctx,
+    ctx: discord.Context,
     description: str,
     title: str,
-    color: discord.Color = discord.Color.blurple(),
+    color: discord.Color = discord.Color.blurple(),  # noqa: E741
     footer: t.Optional[str] = None,
 ) -> t.Optional[bool]:
     emojis = {"✅": True, "❌": False}
@@ -93,9 +105,7 @@ async def confirmation(
     try:
         reaction, user = await ctx.bot.wait_for(
             "reaction_add",
-            check=lambda r, u: (r.message.id == message.id)
-            and (u.id == user.id)
-            and (r.emoji in emojis),
+            check=lambda r, u: (r.message.id == message.id) and (u.id == user.id) and (r.emoji in emojis),
             timeout=30,
         )
     except asyncio.TimeoutError:

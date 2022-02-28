@@ -18,12 +18,12 @@ from discord.ext.commands import (
     MaxConcurrencyReached,
     MissingPermissions,
     MissingRole,
+    NSFWChannelRequired,
     NoPrivateMessage,
     NotOwner,
-    NSFWChannelRequired,
     PrivateMessageOnly,
     UnexpectedQuoteError,
-    errors,
+    errors
 )
 from loguru import logger
 
@@ -89,7 +89,7 @@ class ErrorHandler(Cog):
         )
 
     @classmethod
-    def _get_missing_permission(cls, error) -> str:
+    def _get_missing_permission(cls, error: any) -> str:
         """Missing permissions utility handler."""
         missing_perms = [
             perm.replace("_", " ").replace("guild", "server").title()
@@ -201,8 +201,7 @@ class ErrorHandler(Cog):
             return
 
         elif (
-            isinstance(error.original, discord.HTTPException)
-            and error.original.code == 50034
+            isinstance(error.original, discord.HTTPException) and error.original.code == 50034
         ):
             await self.error_embed(
                 ctx,

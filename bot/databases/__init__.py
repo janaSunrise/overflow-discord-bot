@@ -41,16 +41,14 @@ class CustomBase:
 
 _Base = declarative_base(cls=CustomBase, metaclass=CustomMeta)
 
-if t.TYPE_CHECKING:
 
+if t.TYPE_CHECKING:
     class DatabaseBase(_Base, CustomBase, metaclass=CustomMeta):
         __table__: alchemy.Table
-        __tablename_: str
+        __tablename__: str
 
         metadata: alchemy.MetaData
         columns: ImmutableColumnCollection
-
-
 else:
     DatabaseBase = _Base
 
@@ -79,7 +77,7 @@ def get_datatype_int(
         discord.Member,
         discord.User,
     ]
-):
+) -> int:
     if isinstance(
         datatype,
         (

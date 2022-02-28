@@ -153,7 +153,7 @@ RESPONSES = {
     400: "Bad Request",
     401: "Not Authenticated",
     404: "The resource you tried to access wasn't found on the server.",
-    403: "The resource you’re trying to access is forbidden — you don’t have the right permissions to see it.",
+    403: "The resource you're trying to access is forbidden. You don't have the right permissions to see it.",
 }
 
 
@@ -175,6 +175,7 @@ REGEXP = ""
 for filter_word in filter_words:
     filter_word = filter_word.replace("\n", "")
     REGEXP += f"{filter_word}|"
+
 REGEXP = REGEXP[:-1]
 
 filter_words = re.compile(REGEXP, re.I)

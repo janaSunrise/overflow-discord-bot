@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .comics import Comics
 from .fun import Fun
 from .reddit import Reddit

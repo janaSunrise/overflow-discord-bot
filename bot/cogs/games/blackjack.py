@@ -1,6 +1,5 @@
 import random
 import traceback
-from datetime import datetime
 from itertools import cycle
 
 import discord
@@ -11,7 +10,7 @@ from bot.utils.utils import confirmation
 
 
 class BCard:
-    def __init__(self, value, colour) -> None:
+    def __init__(self, value: int, colour: discord.Color) -> None:
         self._value = value
         self.is_ace = value == 1
         self.colour = colour
@@ -42,7 +41,7 @@ class BCard:
     def tuple(self) -> tuple:
         return self._value, self.colour
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "BCard") -> bool:
         return self._value == other._value
 
     def min(self) -> int:
@@ -61,21 +60,25 @@ class BRow(list):
     def value(self) -> int:
         V = self.value_min()
         c = 0
+
         for card in self:
             if card.is_ace:
                 c += 1
+
         while c:
             if V <= 11:
                 V += 10
                 c -= 1
             else:
                 break
+
         return V
 
 
 class Deck:
-    def __init__(self, money, cost, player_id) -> None:
+    def __init__(self, money: int, cost: int, player_id: int) -> None:
         self.cards = [BRow()]
+
         self._money = money
         self.balance = -cost
         self.cost = cost
@@ -94,7 +97,7 @@ class Deck:
     def isvalid(self) -> bool:
         return any(column.isvalid() for column in self.cards) and self.money > 0
 
-    async def add(self, card, ctx, ini=False) -> None:
+    async def add(self, card: BCard, ctx: discord.Context, ini: bool = False) -> None:
         if card in self and self.cost < self.money and not ini:
 
             answer = confirmation(
@@ -114,11 +117,9 @@ class Deck:
                 f"You have {len(L)} rows available. In which one do you want to play ?"
             )
 
-            def check(message) -> bool:
+            def check(message: discord.Message) -> bool:
                 if (
-                    message.author == ctx.author
-                    and message.channel == ctx.channel
-                    and message.content.isdigit()
+                    message.author == ctx.author and message.channel == ctx.channel and message.content.isdigit()
                 ):
                     try:
                         return self.cards[int(message.content) - 1].isvalid()
@@ -242,9 +243,7 @@ class Blackjack(menus.Menu):
         for player in self.players:
             n = []
             if (
-                player.cards[0].value() == 21
-                and len(player.cards) == 1
-                and len(player.cards[0]) == 2
+                player.cards[0].value() == 21 and len(player.cards) == 1 and len(player.cards[0]) == 2
             ):
                 n.append(
                     f"Blackjack : {', '.join([card.name for card in player.cards[0]])}"
@@ -299,8 +298,7 @@ class Blackjack_players(menus.Menu):
 
     def reaction_check(self, payload) -> bool:
         return (
-            payload.message_id == self.message.id
-            and payload.user_id != self.bot.user.id
+            payload.message_id == self.message.id and payload.user_id != self.bot.user.id
         )
 
     async def update(self, payload) -> None:
@@ -371,12 +369,13 @@ class Blackjack_players(menus.Menu):
             self.players.append(member)
 
     @menus.button("\U000023ed\N{variation selector-16}")
-    async def skipper(self, payload) -> None:
+    async def skipper(self, payload: discord.RawReactionActionEvent) -> None:
         self.time = 5
         self.current_state = -1
+
         await self.updater()
 
-    async def prompt(self, ctx) -> tuple:
+    async def prompt(self, ctx: discord.Context) -> tuple:
         await self.start(ctx, wait=True)
         return self.players, self.money_dict
 

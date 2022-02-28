@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .file_security import FileSecurity
 from .link_lock import LinkLock
 from .mod_lock import ModerationLock

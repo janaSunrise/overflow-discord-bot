@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .logging import LoggingSettings
 from .roles import Roles
 

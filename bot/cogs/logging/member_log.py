@@ -101,7 +101,7 @@ class MemberLog(Cog):
                 description=textwrap.dedent(
                     f"""
                     **`Mention`**: {after.mention}]
-                    
+
                     User has passed the server verification.
                     """
                 ),
@@ -131,7 +131,7 @@ class MemberLog(Cog):
             )
 
             if audit_log:
-                description += f"\n**`Moderator`**: {user.mention}"
+                description += f"\n**`Moderator`**: {user.mention} | Action: {action}"
 
             embed = discord.Embed(
                 title="Roles action",

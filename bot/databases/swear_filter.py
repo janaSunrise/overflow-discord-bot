@@ -78,7 +78,7 @@ class SwearFilter(DatabaseBase):
         session: sessionmaker,
         guild_id: t.Union[str, int, discord.Guild],
         mode: bool,
-    ):
+    ) -> None:
         guild_id = get_datatype_int(guild_id)
 
         async with session() as session:
