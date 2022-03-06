@@ -12,10 +12,10 @@ more features in it.
 
 ### Usage
 
-Go to any channel in a discord server where this bot is invited and invoke
-it using `=help`.
+Go to any channel in discord of any server where this bot is invited, and 
+invoke it using `=help`.
 
-### Developement / Contributing
+### Development / Contributing
 
 If you're interested in growing this project further,
 Add a .env file based on .env.example file. And add the following things:
