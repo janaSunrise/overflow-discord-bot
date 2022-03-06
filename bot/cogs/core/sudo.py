@@ -304,13 +304,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
         await ctx.send(
             embed=Embed(
                 title="Cluster info",
-                description=textwrap.dedent(
-                    f"""
-                Clusters IDs: `{self.bot.shard_ids}`
-
-                """
-                    + shard_info
-                ),
+                description=textwrap.dedent(f"Clusters IDs: `{self.bot.shard_ids}`" + shard_info),
                 color=Color.blue(),
             )
         )
@@ -370,7 +364,7 @@ class Sudo(*STANDARD_FEATURES, Cog):
         return content.strip("` \n")
 
     @sudo.command(name="eval")
-    async def _eval(self, ctx: Context, *, code: str):
+    async def _eval(self, ctx: Context, *, code: str) -> None:
         """Eval some code"""
         env = {
             "bot": self.bot,

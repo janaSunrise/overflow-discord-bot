@@ -33,9 +33,10 @@ class Connect4(menus.Menu):
         return Embed(
             description="\n".join(
                 [
-                    "".join([self.status[column[5 - i]]
-                            for column in self.state])
-                    for i in range(6)
+                    "".join([
+                        self.status[column[5 - i]]
+                        for column in self.state
+                    ]) for i in range(6)
                 ]
             )
         )
@@ -52,7 +53,8 @@ class Connect4(menus.Menu):
         uid = self.id_dict[payload.user_id]
         self.state[n][self.state[n].index(0)] = uid
 
-        await self.embed_updating()
+        # Update the embed
+        await self.update_embed()
 
         check = self.check(uid)
         if check:
@@ -60,30 +62,30 @@ class Connect4(menus.Menu):
             self.stop()
 
     def check(self, id: int) -> bool:
-        S = str(id) + 3 * f", {id}"
+        s = str(id) + 3 * f", {id}"
 
-        if any(S in str(x) for x in self.state):
+        if any(s in str(x) for x in self.state):
             return True
 
         for i in range(6):
-            if S in str([column[i] for column in self.state]):
+            if s in str([column[i] for column in self.state]):
                 return True
 
         for i in range(3):
-            L, L2, L3, L4 = [], [], [], []
+            l, l2, l3, l4 = [], [], [], []
 
             for c in range(4 + i):
-                L.append(self.state[3 + i - c][c])
-                L2.append(self.state[3 + i - c][5 - c])
-                L3.append(self.state[3 - i + c][c])
-                L4.append(self.state[3 - i + c][5 - c])
+                l.append(self.state[3 + i - c][c])
+                l2.append(self.state[3 + i - c][5 - c])
+                l3.append(self.state[3 - i + c][c])
+                l4.append(self.state[3 - i + c][5 - c])
 
-            if any(S in str(column) for column in (L, L2, L3, L4)):
+            if any(s in str(column) for column in (l, l2, l3, l4)):
                 return True
 
         return False
 
-    async def embed_updating(self) -> None:
+    async def update_embed(self) -> None:
         await self.message.edit(embed=self.get_embed())
 
     @menus.button("1\N{variation selector-16}\N{combining enclosing keycap}")

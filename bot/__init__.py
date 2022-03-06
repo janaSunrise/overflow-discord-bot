@@ -52,7 +52,7 @@ class Bot(AutoShardedBot):
         self.session = None
         self.database = None
 
-        # -- Counters config --
+        # Counters config
         self.bot_counters = collections.defaultdict(collections.Counter)
         self.guild_counters = collections.defaultdict(collections.Counter)
 
@@ -79,8 +79,7 @@ class Bot(AutoShardedBot):
         """Initialize the database."""
         bring_databases_into_scope()
 
-        engine = create_async_engine(
-            config.DATABASE_CONN, pool_size=30, max_overflow=0)
+        engine = create_async_engine(config.DATABASE_CONN, pool_size=30, max_overflow=0)
 
         try:
             async with engine.begin() as conn:

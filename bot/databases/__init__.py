@@ -13,13 +13,13 @@ from sqlalchemy.sql.base import ImmutableColumnCollection
 from bot.utils.utils import camel_to_snake
 
 
-# -- Custom database base --
+# Custom database base
 class CustomMeta(DeclarativeMeta):
     __table__: alchemy.Table
 
     @property
-    def columns(cls) -> ImmutableColumnCollection:
-        return cls.__table__.columns
+    def columns(self) -> ImmutableColumnCollection:
+        return self.__table__.columns
 
 
 class CustomBase:
@@ -28,14 +28,14 @@ class CustomBase:
     if t.TYPE_CHECKING:
         __tablename__: str
     else:
-
         @declared_attr
         def __tablename__(self) -> str:
             return camel_to_snake(self.__name__)
 
     def dict(self) -> t.Dict[str, t.Any]:
-        data = {key: getattr(self, key)
-                for key in self.__table__.columns.keys()}
+        data = {
+            key: getattr(self, key) for key in self.__table__.columns.keys()
+        }
         return data
 
 
@@ -66,7 +66,7 @@ def bring_databases_into_scope() -> t.List:
     return loaded_tables
 
 
-# -- Utility methods --
+# Utility methods
 def get_datatype_int(
     datatype: t.Union[
         int,
@@ -111,8 +111,6 @@ async def on_conflict(
     if not affected_columns:
         raise ValueError("Couldn't find any columns to update.")
 
-    stmt = stmt.on_conflict_do_update(
-        index_elements=conflict_columns, set_=affected_columns
-    )
+    stmt = stmt.on_conflict_do_update(index_elements=conflict_columns, set_=affected_columns)
 
     await session.execute(stmt, values)

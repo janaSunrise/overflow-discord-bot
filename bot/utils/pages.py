@@ -26,7 +26,7 @@ class EmbedPages(ListPageSource):
 
 
 class SimplePageSource(ListPageSource):
-    def __init__(self, entries: t.List[Embed], *, per_page=12):
+    def __init__(self, entries: t.List[Embed], *, per_page: int = 12):
         super().__init__(entries, per_page=per_page)
         self.initial_page = True
 

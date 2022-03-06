@@ -18,7 +18,7 @@ class Lock(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    def cog_check(self, ctx: Context):
+    def cog_check(self, ctx: Context) -> bool:
         if ctx.guild:
             return True
 

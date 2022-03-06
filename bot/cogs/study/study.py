@@ -14,6 +14,7 @@ from bot.utils.utils import create_urban_embed_list
 class Study(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
         self.base_url = "https://en.wikipedia.org/w/api.php"
         self.headers = {"user-agent": "overflow-discord-bot"}
         self.footer_icon = (
@@ -72,8 +73,7 @@ class Study(Cog):
 
         if response is True:
             embed = discord.Embed(title="Equation Results")
-            embed.add_field(name="**❯❯ Question**",
-                            value=equation, inline=False)
+            embed.add_field(name="**❯❯ Question**", value=equation, inline=False)
             embed.add_field(name="**❯❯ Result**", value=r, inline=False)
             embed.set_footer(text=f"Invoked by {str(ctx.message.author)}")
             await ctx.send(embed=embed)
@@ -133,14 +133,14 @@ class Study(Cog):
 
     @command()
     async def latex(self, ctx: Context, *, equation: str) -> None:
-        LATEX_URL = "https://latex.codecogs.com/gif.download?%5Cbg_white%20%5Clarge%20"
+        latex_url = "https://latex.codecogs.com/gif.download?%5Cbg_white%20%5Clarge%20"
 
         cleaned = await clean_content().convert(ctx, equation)
         raw_eq = r"{}".format(cleaned)
         url_eq = urllib.parse.quote(raw_eq)
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(LATEX_URL + url_eq) as result:
+            async with session.get(latex_url + url_eq) as result:
                 img = await result.read()
 
         if not 200 <= result.status < 300:

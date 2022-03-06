@@ -15,6 +15,7 @@ import wavelink
 import yarl
 from aioradios import RadioBrowser
 from discord.ext import commands, menus
+from discord.ext.commands import Context
 from loguru import logger
 
 from bot import config
@@ -25,14 +26,11 @@ from bot.utils.utils import format_time, progress_bar
 # URL matching REGEX.
 TIME_REGEX = re.compile("[0-9]+")
 URL_REGEX = re.compile(r"https?://(?:www\.)?.+")
-SPOTIFY_URL_REGEX = re.compile(
-    r"https?://open.spotify.com/(?P<type>album|playlist|track)/(?P<id>[a-zA-Z0-9]+)"
-)
+SPOTIFY_URL_REGEX = re.compile(r"https?://open.spotify.com/(?P<type>album|playlist|track)/(?P<id>[a-zA-Z0-9]+)")
 
 
 class Track(wavelink.Track):
     """Wavelink Track object with a requester attribute."""
-
     __slots__ = ("requester",)
 
     def __init__(self, *args, **kwargs):
@@ -250,7 +248,7 @@ class Player(wavelink.Player):
 
         return False
 
-    async def teardown(self):
+    async def teardown(self) -> None:
         """Clear internal states, remove player controller and disconnect."""
         try:
             await self.controller.message.delete()
@@ -273,13 +271,13 @@ class InteractiveController(menus.Menu):
         self.embed = embed
         self.player = player
 
-    def update_context(self, payload: discord.RawReactionActionEvent):
+    def update_context(self, payload: discord.RawReactionActionEvent) -> Context:
         """Update our context with the user who reacted."""
         ctx = copy.copy(self.ctx)
         ctx.author = payload.member
         return ctx
 
-    def reaction_check(self, payload: discord.RawReactionActionEvent):
+    def reaction_check(self, payload: discord.RawReactionActionEvent) -> bool:
         if payload.event_type == "REACTION_REMOVE":
             return False
 
@@ -292,21 +290,16 @@ class InteractiveController(menus.Menu):
         if payload.message_id != self.message.id:
             return False
 
-        if (
-            payload.member
-            not in self.bot.get_channel(int(self.player.channel_id)).members
-        ):
+        if payload.member not in self.bot.get_channel(int(self.player.channel_id)).members:
             return False
 
         return payload.emoji in self.buttons
 
-    async def send_initial_message(
-        self, ctx: commands.Context, channel: discord.TextChannel
-    ) -> discord.Message:
+    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel) -> discord.Message:
         return await channel.send(embed=self.embed)
 
     @menus.button(emoji="\u25B6")
-    async def resume_command(self, payload: discord.RawReactionActionEvent):
+    async def resume_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Resume button."""
         ctx = self.update_context(payload)
 
@@ -316,7 +309,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\u23F8")
-    async def pause_command(self, payload: discord.RawReactionActionEvent):
+    async def pause_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Pause button"""
         ctx = self.update_context(payload)
 
@@ -326,7 +319,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\u23F9")
-    async def stop_command(self, payload: discord.RawReactionActionEvent):
+    async def stop_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Stop button."""
         ctx = self.update_context(payload)
 
@@ -336,7 +329,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\u23ED")
-    async def skip_command(self, payload: discord.RawReactionActionEvent):
+    async def skip_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Skip button."""
         ctx = self.update_context(payload)
 
@@ -346,7 +339,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\U0001F500")
-    async def shuffle_command(self, payload: discord.RawReactionActionEvent):
+    async def shuffle_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Shuffle button."""
         ctx = self.update_context(payload)
 
@@ -356,7 +349,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\u2795")
-    async def volup_command(self, payload: discord.RawReactionActionEvent):
+    async def volup_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Volume up button"""
         ctx = self.update_context(payload)
 
@@ -366,7 +359,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\u2796")
-    async def voldown_command(self, payload: discord.RawReactionActionEvent):
+    async def voldown_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Volume down button."""
         ctx = self.update_context(payload)
 
@@ -376,7 +369,7 @@ class InteractiveController(menus.Menu):
         await self.bot.invoke(ctx)
 
     @menus.button(emoji="\U0001F1F6")
-    async def queue_command(self, payload: discord.RawReactionActionEvent):
+    async def queue_command(self, payload: discord.RawReactionActionEvent) -> None:
         """Player queue button."""
         ctx = self.update_context(payload)
 
@@ -388,11 +381,10 @@ class InteractiveController(menus.Menu):
 
 class PaginatorSource(menus.ListPageSource):
     """Player queue paginator class."""
-
-    def __init__(self, entries, *, per_page=8):
+    def __init__(self, entries: list, *, per_page: int = 8):
         super().__init__(entries, per_page=per_page)
 
-    async def format_page(self, menu: menus.Menu, page):
+    async def format_page(self, menu: menus.Menu, page: list) -> discord.Embed:
         offset = menu.current_page * self.per_page
 
         embed = discord.Embed(title="Coming up ⤵️", colour=0x4F0321)
@@ -437,29 +429,24 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         logger.info("RADIOS initialized.")
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-        player: Player = self.bot.wavelink.get_player(
-            member.guild.id, cls=Player)
+    async def on_voice_state_update(self, member: discord.Member, before: t.Any, after: t.Any) -> None:
+        player: Player = self.bot.wavelink.get_player(member.guild.id, cls=Player)
 
-        if (
-            not member.bot
-            and after.channel is None
-            and not [m for m in before.channel.members if not m.bot]
-        ):
+        if not member.bot and after.channel is None and not [m for m in before.channel.members if not m.bot]:
             await player.teardown()
 
     @wavelink.WavelinkMixin.listener()
-    async def on_node_ready(self, node: wavelink.Node):
+    async def on_node_ready(self, node: wavelink.Node) -> None:
         logger.info(f"Node {node.identifier} is ready!")
 
     @wavelink.WavelinkMixin.listener("on_track_stuck")
     @wavelink.WavelinkMixin.listener("on_track_end")
     @wavelink.WavelinkMixin.listener("on_track_exception")
-    async def on_player_stop(self, node: wavelink.Node, payload):
+    async def on_player_stop(self, node: wavelink.Node, payload: t.Any) -> None:
         await payload.player.do_next()
 
     @commands.Cog.listener()
-    async def on_voice_state_update(
+    async def on_voice_state_update(  # noqa: F811
         self,
         member: discord.Member,
         before: discord.VoiceState,
@@ -486,14 +473,14 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         elif after.channel == channel and player.dj not in channel.members:
             player.dj = member
 
-    async def cog_check(self, ctx: commands.Context):
+    async def cog_check(self, ctx: commands.Context) -> bool:
         """Cog wide check, which disallows commands in DMs."""
         if ctx.guild:
             return True
 
         raise commands.NoPrivateMessage
 
-    async def cog_before_invoke(self, ctx: commands.Context):
+    async def cog_before_invoke(self, ctx: commands.Context) -> None:
         """
         Coroutine called before command invocation.
 
@@ -513,12 +500,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
             raise IncorrectChannelError
 
-        if (
-            ctx.command.name in ["connect", "play",
-                                 "equalizer", "volume", "repeat"]
-            and not player.context
-        ):
+        if ctx.command.name in ["connect", "play", "equalizer", "volume", "repeat"] and not player.context:
             return
+
         if self.is_privileged(ctx):
             return
 
@@ -538,7 +522,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
             raise IncorrectChannelError
 
-    def required(self, ctx: commands.Context):
+    def required(self, ctx: commands.Context) -> int:
         """Method which returns required votes based on amount of members in a channel."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -548,9 +532,10 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
         if ctx.command.name in ["stop", "skip"] and len(channel.members) == 3:
             required = 2
+
         return required
 
-    def is_privileged(self, ctx: commands.Context):
+    def is_privileged(self, ctx: commands.Context) -> bool:
         """Check whether the user is an Admin or DJ."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -559,9 +544,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         return player.dj == ctx.author or ctx.author.guild_permissions.kick_members
 
     @commands.command()
-    async def connect(
-        self, ctx: commands.Context, *, channel: discord.VoiceChannel = None
-    ):
+    async def connect(self, ctx: commands.Context, *, channel: discord.VoiceChannel = None) -> None:
         """Connect to a voice channel."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -577,10 +560,8 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.connect(channel.id)
 
     @commands.command(aliases=["leave", "dc"])
-    async def disconnect(self, ctx: commands.Context):
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
+    async def disconnect(self, ctx: commands.Context) -> None:
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         await player.teardown()
         await ctx.send(
@@ -591,10 +572,6 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
 
     @commands.command()
     async def find(self, ctx: commands.Context, *, query: str) -> None:
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
-
         raw_query = query
         if not query.startswith("ytsearch:") and not query.startswith("scsearch:"):
             query = "ytsearch:" + query
@@ -625,7 +602,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["p"])
-    async def play(self, ctx: commands.Context, *, query: str):
+    async def play(self, ctx: commands.Context, *, query: str) -> None:
         """Play or queue a song with the given query."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -698,7 +675,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await player.do_next()
 
     @commands.command()
-    async def pause(self, ctx: commands.Context):
+    async def pause(self, ctx: commands.Context) -> None:
         """Pause the currently playing song."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -744,7 +721,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
 
     @commands.command()
-    async def resume(self, ctx: commands.Context):
+    async def resume(self, ctx: commands.Context) -> None:
         """Resume a currently paused player."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -822,7 +799,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         )
 
     @commands.command()
-    async def repeat(self, ctx, mode: str):
+    async def repeat(self, ctx: Context, mode: str) -> None:
         """
         Repeat one or more songs.
 
@@ -899,7 +876,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         )
 
     @commands.command()
-    async def skip(self, ctx: commands.Context):
+    async def skip(self, ctx: commands.Context) -> None:
         """Skip the currently playing song."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -957,7 +934,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
 
     @commands.command()
-    async def stop(self, ctx: commands.Context):
+    async def stop(self, ctx: commands.Context) -> None:
         """Stop the player and clear all internal states."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1000,7 +977,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
 
     @commands.command(aliases=["v", "vol"])
-    async def volume(self, ctx: commands.Context, *, vol: int):
+    async def volume(self, ctx: commands.Context, *, vol: int) -> None:
         """Change the players volume, between 1 and 100."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1038,7 +1015,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         )
 
     @commands.command(aliases=["mix"])
-    async def shuffle(self, ctx: commands.Context):
+    async def shuffle(self, ctx: commands.Context) -> None:
         """Shuffle the players queue."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1091,7 +1068,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
 
     @commands.command(hidden=True)
-    async def vol_up(self, ctx: commands.Context):
+    async def vol_up(self, ctx: commands.Context) -> None:
         """Command used for volume up button."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1114,7 +1091,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.set_volume(vol)
 
     @commands.command(hidden=True)
-    async def vol_down(self, ctx: commands.Context):
+    async def vol_down(self, ctx: commands.Context) -> None:
         """Command used for volume down button."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1137,7 +1114,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.set_volume(vol)
 
     @commands.command(aliases=["eq"])
-    async def equalizer(self, ctx: commands.Context, *, equalizer: str):
+    async def equalizer(self, ctx: commands.Context, *, equalizer: str) -> None:
         """
         Change the players equalizer.
 
@@ -1149,9 +1126,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         - Jazz
         - Pop
         """
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
             return
@@ -1233,11 +1208,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.set_eq(eq)
 
     @commands.command(aliases=["q", "que"])
-    async def queue(self, ctx: commands.Context):
+    async def queue(self, ctx: commands.Context) -> None:
         """Display the players queued songs."""
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
             return
@@ -1261,11 +1234,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await paginator.start(ctx)
 
     @commands.command(aliases=["np", "nowplaying", "current"])
-    async def now_playing(self, ctx: commands.Context):
+    async def now_playing(self, ctx: commands.Context) -> None:
         """Update the player controller."""
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
             return
@@ -1273,11 +1244,9 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         await player.invoke_controller()
 
     @commands.command(aliases=["clear-queue", "clear-q"])
-    async def clear_queue(self, ctx: commands.Context):
+    async def clear_queue(self, ctx: commands.Context) -> None:
         """Clear the songs from the queue."""
-        player: Player = self.bot.wavelink.get_player(
-            guild_id=ctx.guild.id, cls=Player, context=ctx
-        )
+        player: Player = self.bot.wavelink.get_player(guild_id=ctx.guild.id, cls=Player, context=ctx)
 
         if not player.is_connected:
             return
@@ -1331,7 +1300,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             )
 
     @commands.command(aliases=["swap"])
-    async def swap_dj(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def swap_dj(self, ctx: commands.Context, *, member: discord.Member = None) -> None:
         """Swap the current DJ to another member in the voice channel."""
         player: Player = self.bot.wavelink.get_player(
             guild_id=ctx.guild.id, cls=Player, context=ctx
@@ -1560,7 +1529,7 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             await player.do_next()
 
     @commands.command(aliases=["wavelink-info", "wv-info"])
-    async def wavelink_info(self, ctx: commands.Context):
+    async def wavelink_info(self, ctx: commands.Context) -> None:
         """Retrieve various Node/Server/Player information."""
         player = self.bot.wavelink.get_player(ctx.guild.id)
         node = player.node
@@ -1589,5 +1558,5 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
         )
 
 
-def setup(bot: commands.Bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(Music(bot))

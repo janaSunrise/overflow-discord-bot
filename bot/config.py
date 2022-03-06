@@ -4,6 +4,7 @@ import re
 # Bot info section
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "=")
 
+# Branding for bot
 branding = "Overflow bot"
 creator = "Sunrit Jana"
 

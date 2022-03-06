@@ -35,7 +35,7 @@ class Moderation(Cog):
         """Get currently loaded Embed cog instance."""
         return self.bot.get_cog("Embeds")
 
-    def cog_check(self, ctx: Context):
+    def cog_check(self, ctx: Context) -> bool:
         if ctx.guild:
             return True
 
@@ -54,27 +54,28 @@ class Moderation(Cog):
                 limit=amount, check=lambda msg: msg.author == member
             )
 
-        description = dedent(
-            f"""
+        description = dedent(f"""
         **Cleared messages!**
 
         • Count: {amount}
-        """
-        )
+        """)
 
         description += f"• Member: {member.mention}" if member else ""
 
         message = await ctx.send(
             f"Hey {ctx.author.mention}!",
-            embed=discord.Embed(description=description,
-                                color=discord.Color.green()),
+            embed=discord.Embed(description=description, color=discord.Color.green()),
         )
         await asyncio.sleep(4)
         await message.delete()
 
-    async def do_removal(self, ctx, limit, predicate, *, before=None, after=None):
+    @staticmethod
+    async def do_removal(
+            ctx: Context, limit: int, predicate: t.Callable, *, before: t.Any = None, after: t.Any = None
+    ) -> None:
         if limit > 2000:
-            return await ctx.send(f"Too many messages to search given ({limit}/2000)")
+            await ctx.send(f"Too many messages to search given ({limit}/2000)")
+            return
 
         if before is None:
             before = ctx.message
@@ -85,22 +86,19 @@ class Moderation(Cog):
             after = discord.Object(id=after)
 
         try:
-            deleted = await ctx.channel.purge(
-                limit=limit, before=before, after=after, check=predicate
-            )
+            deleted = await ctx.channel.purge(limit=limit, before=before, after=after, check=predicate)
         except discord.HTTPException as e:
-            return await ctx.send(f"Error: {e} (try a smaller search?)")
+            await ctx.send(f"Error: {e} (try a smaller search?)")
+            return
 
         spammers = Counter(m.author.display_name for m in deleted)
         deleted = len(deleted)
-        messages = [
-            f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
+        messages = [f'{deleted} message{" was" if deleted == 1 else "s were"} removed.']
+
         if deleted:
             messages.append("")
-            spammers = sorted(spammers.items(),
-                              key=lambda t: t[1], reverse=True)
-            messages.extend(
-                f"• **{name}**: {count}" for name, count in spammers)
+            spammers = sorted(spammers.items(), key=lambda t: t[1], reverse=True)
+            messages.extend(f"• **{name}**: {count}" for name, count in spammers)
 
         to_send = "\n".join(messages)
 
@@ -112,7 +110,7 @@ class Moderation(Cog):
     @group(aliases=["advanced-purge", "advanced-clear", "advanced-clean"])
     @guild_only()
     @has_permissions(manage_messages=True)
-    async def advanced_clear(self, ctx):
+    async def advanced_clear(self, ctx: Context) -> None:
         """Advanced message removal service with various categories, like images embeds, certain text and such."""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
@@ -165,7 +163,7 @@ class Moderation(Cog):
         """Removes all messages containing custom emoji."""
         custom_emoji = re.compile(r"<a?:[a-zA-Z0-9\_]+:([0-9]+)>")
 
-        def predicate(m) -> t.Optional[re.Match[str]]:
+        def predicate(m: discord.Message) -> t.Optional[re.Match[str]]:
             return custom_emoji.search(m.content)
 
         await self.do_removal(ctx, search, predicate)

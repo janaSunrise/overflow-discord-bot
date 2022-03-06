@@ -4,6 +4,7 @@ import typing as t
 
 import discord
 from discord import Message
+from discord.ext.commands import Context
 
 
 def snake_to_camel(snake: str, start_lower: bool = False) -> str:
@@ -47,12 +48,11 @@ def progress_bar(current: int, total: int) -> str:
 
 
 async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
-    BRACKETED = re.compile(r"(\[(.+?)\])")
+    bracketed = re.compile(r"(\[(.+?)])")
     embeds_list = []
 
-    def cleanup_definition(definition: str, *, regex: t.Pattern = BRACKETED) -> str:
+    def cleanup_definition(definition: str, *, regex: t.Pattern = bracketed) -> str:
         """Cleanup the definition."""
-
         def repl(message: Message) -> str:
             word = message.group(2)
             return f'[{word}](http://{word.replace(" ", "-")}.urbanup.com)'
@@ -83,10 +83,10 @@ async def create_urban_embed_list(results: list) -> t.List[discord.Embed]:
 
 
 async def confirmation(
-    ctx: discord.Context,
+    ctx: Context,
     description: str,
     title: str,
-    color: discord.Color = discord.Color.blurple(),  # noqa: E741
+    color: discord.Color = discord.Color.blurple(),  # noqa: B008
     footer: t.Optional[str] = None,
 ) -> t.Optional[bool]:
     emojis = {"✅": True, "❌": False}

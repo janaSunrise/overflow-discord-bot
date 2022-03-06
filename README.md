@@ -7,12 +7,13 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot/badge)](https://www.codefactor.io/repository/github/janasunrise/overflow-discord-bot)
 [![DeepSource](https://deepsource.io/gh/janaSunrise/overflow-discord-bot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/janaSunrise/overflow-discord-bot/?ref=repository-badge)
 
-A small bot designed to help you with coding and finding and solving
-issues faster by integrating stack overflow workflow into discord and more.
+A multipurpose bot to assist you with code, moderation and more, while integrating
+more features in it.
 
 ### Usage
-Go to any channel in discord of any server where this bot is invited, and
-invoke it using `=help`
+
+Go to any channel in a discord server where this bot is invited and invoke
+it using `=help`.
 
 ### Developement / Contributing
 
@@ -35,16 +36,11 @@ Add a .env file based on .env.example file. And add the following things:
 6. Go to **OAuth2** and click bot, than add **Administrator** permissions
 7. You can follow the link that will appear to add the bot to your discord server
 
-
 ## Installation
 
-This is a guide to help you self host the Bot, and use it privately which simplifies the work, and allows you to have
-a bot for yourself.
+This guide is to assist you with self-hosting and running an instance of this bot for yourself.
 
 ## Docker
-
-**NOTE**: The docker is being tested and being made to worked properly. It hasn't been working perfectly yet. I advise
-to use non docker steps until the docker works perfectly when deploying / running. Sorry for this inconvenience.
 
 Docker is an easy way of containerizing and delivering your applications quickly and easily, in an
 convenient way. It's really simple to get started with this, with docker handling all the installation
@@ -66,7 +62,7 @@ be able to do it, this is the perfect method to get started with the self-hostin
 #### Postgres
 
 You need a postgres database configured locally to run this bot.
-If you haven't done that yet, take a look at the official documentation from EDB[The company behind PG-SQL]
+If you haven't done that yet, take a look at the official documentation from EDB (The company behind postgres)
 [here](https://www.postgresql.org/docs/13/tutorial-install.html)
 
 Once your done, create the databases and users accordingly, and configure it in `.env` as said in the future steps.
@@ -91,14 +87,13 @@ Migration guide:
 - To do a migration, use this: `alembic revision --autogenerate`
 - To bring the migration into actual change: `alembic upgrade head`
 
-NOTE: If you're using pipenv, go into the shell first using `pipenv shell` to use those commands.
+**NOTE:** If you're using pipenv, go into the shell first using `pipenv shell` to use those commands.
 
 ## Contributing
 
 Contributions, issues and feature requests are welcome. After cloning & setting up project locally, you
 can just submit a PR to this repo and it will be deployed once it's accepted. The contributing file can be
-found
-[here](https://github.com/janaSunrise/overflow-discord-bot/blob/main/CONTRIBUTING.md).
+found [here](https://github.com/janaSunrise/overflow-discord-bot/blob/main/CONTRIBUTING.md).
 
 ⚠️ It’s good to have descriptive commit messages, or PR titles so that other contributors can understand about your
 commit or the PR Created. Read [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.3/)
@@ -109,7 +104,4 @@ before making the commit message.
 We love people's support in growing and improving. Be sure to leave a ⭐️ if you like the project and
 also be sure to contribute, if you're interested!
 
-
-<div align="center">
-Made by Sunrit Jana with <3
-</div>
+<div align="center">Made by Sunrit Jana with <3</div>

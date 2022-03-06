@@ -7,7 +7,7 @@ from discord.ext.commands import Context
 
 
 class SpotifyTrack:
-    def __init__(self, track: spotify.Track, requester) -> None:
+    def __init__(self, track: spotify.Track, requester: discord.Member) -> None:
         self.title = track.name
         self.artists = ", ".join(artist.name for artist in track.artists)
         self.description = f"{self.title} - {self.artists}"
@@ -16,10 +16,14 @@ class SpotifyTrack:
 
 
 async def get_spotify_tracks(
-    ctx: Context, search_type: str, spotify_id: str, spotify_client, spotify_http
+    ctx: Context,
+    search_type: str,
+    spotify_id: str,
+    spotify_client: spotify.Client,
+    spotify_http: spotify.HTTPClient
 ) -> t.Tuple[str, list]:
-    name = None
-    search_tracks = None
+    name: t.Optional[str] = None
+    search_tracks: t.Optional[list] = None
 
     try:
         if search_type == "album":
@@ -54,7 +58,7 @@ async def get_spotify_tracks(
     return name, search_tracks
 
 
-async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, requester) -> None:
+async def play_tracks(ctx: Context, player: wavelink.Player, tracks: list, requester: discord.Member) -> None:
     for track in tracks:
         if not track:
             continue
@@ -70,24 +74,23 @@ async def play(
     player: wavelink.Player,
     search_type: str,
     spotify_id: str,
-    spotify_client,
-    spotify_http,
+    spotify_client: spotify.Client,
+    spotify_http: spotify.HTTPClient,
 ) -> None:
     requester = ctx.author
-    name, tracks = await get_spotify_tracks(
-        ctx, search_type, spotify_id, spotify_client, spotify_http
-    )
+    name, tracks = await get_spotify_tracks(ctx, search_type, spotify_id, spotify_client, spotify_http)
 
     await play_tracks(ctx, player, tracks, requester)
 
     if not name:
-        return await ctx.send(
+        await ctx.send(
             embed=discord.Embed(
                 description=f"```ini\nAdded {tracks[0].title} to the Queue\n```",
                 color=discord.Color.blurple(),
             ),
             delete_after=10,
         )
+        return
 
     await ctx.send(
         embed=discord.Embed(

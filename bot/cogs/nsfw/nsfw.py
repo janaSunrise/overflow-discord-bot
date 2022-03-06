@@ -14,7 +14,6 @@ from bot.utils.embeds import reddit_embed
 
 class Nsfw(Cog):
     """NSFW, Pictures of the nature."""
-
     def __init__(self, bot: Bot) -> None:
         try:
             self.reddit_client = RedditAPI(
@@ -46,10 +45,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -225,10 +221,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -244,10 +237,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -263,10 +253,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -282,10 +269,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -301,10 +285,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -320,10 +301,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -339,10 +317,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -358,10 +333,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -377,10 +349,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -396,10 +365,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -415,10 +381,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -434,10 +397,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -453,10 +413,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -472,10 +429,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -491,10 +445,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -510,10 +461,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -529,10 +477,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -548,10 +493,7 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)
 
     @nsfw.command()
@@ -567,8 +509,5 @@ class Nsfw(Cog):
 
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
-        if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
-        ):
+        if "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url:
             await ctx.send(randompost.url)

@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands, menus
 
 
-class TTT_Game(menus.Menu):
+class TTTGame(menus.Menu):
     """Tic-tac-Toe menu."""
 
     emojis = [
