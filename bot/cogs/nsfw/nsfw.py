@@ -23,9 +23,9 @@ class Nsfw(Cog):
                 username=os.getenv("REDDIT_USERNAME"),
             )
         except MissingRequiredAttributeException:
-            logger.error(
-                "Reddit cog requires correct enviroment variables to run.")
+            logger.error("Reddit cog requires correct enviroment variables to run.")
             self.cog_unload()
+
         self.bot = bot
 
     @group(invoke_without_command=True)
