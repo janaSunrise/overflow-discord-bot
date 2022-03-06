@@ -12,16 +12,14 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class Roles(DatabaseBase):
     __tablename__ = "roles"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+
     mod_role = Column(ARRAY(BigInteger))
     mute_role = Column(BigInteger)
     default_role = Column(BigInteger)
 
     @classmethod
-    async def get_roles(
-        cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]
-    ) -> t.Optional[dict]:
+    async def get_roles(cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         async with session() as session:

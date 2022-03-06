@@ -11,10 +11,11 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SuggestionConfig(DatabaseBase):
     __tablename__ = "suggestion_config"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
     channel_id = Column(BigInteger, unique=True)
+
     submission_channel_id = Column(BigInteger, unique=True)
+
     anonymous = Column(Boolean, default=True)
     dm_notification = Column(Boolean, default=False)
     limit = Column(BigInteger, default=1)

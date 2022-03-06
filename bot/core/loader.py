@@ -19,7 +19,7 @@ def is_a_cog(module: types.ModuleType) -> bool:
 
 
 def get_modules_list(
-    package: types.ModuleType, check: t.Optional[types.FunctionType] = None
+    package: types.ModuleType, check: t.Optional[t.Callable] = None
 ) -> t.List[str]:
     """Get the list of the submodules from the specified package."""
     modules = []

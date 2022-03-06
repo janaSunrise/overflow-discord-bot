@@ -1,5 +1,3 @@
-# TODO: use .scalars() in database to fix the .dict() issue
-
 import typing as t
 from importlib import import_module
 
@@ -19,7 +17,7 @@ class CustomMeta(DeclarativeMeta):
 
     @property
     def columns(self) -> ImmutableColumnCollection:
-        return self.__table__.columns
+        return self.__table__.columns()
 
 
 class CustomBase:

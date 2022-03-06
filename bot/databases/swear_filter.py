@@ -12,17 +12,15 @@ from bot.databases import DatabaseBase, get_datatype_int, on_conflict
 class SwearFilter(DatabaseBase):
     __tablename__ = "swear_filter"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+
     manual_on = Column(Boolean, default=False)
     autoswear = Column(Boolean, default=False)
     notification = Column(Boolean, default=False)
     words = Column(ARRAY(String), default=[])
 
     @classmethod
-    async def get_config(
-        cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]
-    ) -> t.Optional[dict]:
+    async def get_config(cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         async with session() as session:

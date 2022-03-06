@@ -32,9 +32,7 @@ class Announcements(Cog):
     @has_permissions(manage_roles=True)
     async def role(self, ctx: Context, role: RoleConverter) -> None:
         """Setup the announcement role."""
-        await AnnouncementDB.set_announcement_role(
-            self.bot.database, ctx.guild.id, role.id
-        )
+        await AnnouncementDB.set_announcement_role(self.bot.database, ctx.guild.id, role.id)
 
         await ctx.send(f"The role has been successfully set to {role.mention}")
 
@@ -42,9 +40,7 @@ class Announcements(Cog):
     @has_permissions(manage_channels=True)
     async def channel(self, ctx: Context, channel: TextChannelConverter) -> None:
         """Setup the announcement channel."""
-        await AnnouncementDB.set_announcement_channel(
-            self.bot.database, ctx.guild.id, channel.id
-        )
+        await AnnouncementDB.set_announcement_channel(self.bot.database, ctx.guild.id, channel.id)
 
         await ctx.send(f"The channel has been successfully set to {channel.mention}")
 
@@ -56,24 +52,18 @@ class Announcements(Cog):
 
         This supports sending a simple message, or sending customized messages using our embed handler.
         """
-        # -- Get the roles and IDs from database
-        role = await AnnouncementDB.get_announcement_role(
-            self.bot.database, ctx.guild.id
-        )
+        # Get the roles and IDs from database
+        role = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
 
         if not role["role_id"]:
-            await ctx.send(
-                "The announcement role hasn't been configured for this server!"
-            )
+            await ctx.send("The announcement role hasn't been configured for this server!")
 
         channel = await AnnouncementDB.get_announcement_channel(
             self.bot.database, ctx.guild.id
         )
 
         if not channel["channel_id"]:
-            await ctx.send(
-                "The announcement channel hasn't been configured for this server!"
-            )
+            await ctx.send("The announcement channel hasn't been configured for this server!")
 
         # -- Get the embeds cog. --
         embed_data = self.embeds_cog.embeds[ctx.author.id]
@@ -86,9 +76,7 @@ class Announcements(Cog):
         channel = ctx.guild.get_channel(channel["channel_id"])
 
         if not message and embed.description is None and embed.title is None:
-            await ctx.send(
-                ":x: You need to create an embed using our embed maker before sending it or specify a message!"
-            )
+            await ctx.send(":x: You need to create an embed using our embed maker before sending it or specify a message!")
             return
 
         if message is not None:
@@ -112,9 +100,7 @@ class Announcements(Cog):
     @announcement.command()
     async def subscribe(self, ctx: Context) -> None:
         """Subscribe to the notifications and announcements in the server."""
-        row = await AnnouncementDB.get_announcement_role(
-            self.bot.database, ctx.guild.id
-        )
+        row = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
 
         if not row["role_id"]:
             await ctx.send(
@@ -133,17 +119,12 @@ class Announcements(Cog):
     @announcement.command()
     async def unsubscribe(self, ctx: Context) -> None:
         """Unsubscribe from the notifications and announcements."""
-        row = await AnnouncementDB.get_announcement_role(
-            self.bot.database, ctx.guild.id
-        )
+        row = await AnnouncementDB.get_announcement_role(self.bot.database, ctx.guild.id)
 
         if not row:
-            await ctx.send(
-                "ERROR! The Announcement role hasn't been configured for this server!"
-            )
+            await ctx.send("The Announcement role hasn't been configured for this server!")
 
-        role = discord.utils.find(
-            lambda r: r.id == row["role_id"], ctx.guild.roles)
+        role = discord.utils.find(lambda r: r.id == row["role_id"], ctx.guild.roles)
 
         if role not in ctx.author.roles:
             await ctx.send("You're already unsubscribed!")

@@ -23,14 +23,12 @@ class LinkLock(DatabaseBase):
 
     __tablename__ = "link_lock"
 
-    guild_id = Column(BigInteger, primary_key=True,
-                      nullable=False, unique=True)
+    guild_id = Column(BigInteger, primary_key=True, nullable=False, unique=True)
+    # TODO: Replace with enum
     lock_code = Column(Integer, nullable=False, default=0)
 
     @classmethod
-    async def get_config(
-        cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]
-    ) -> t.Optional[dict]:
+    async def get_config(cls, session: sessionmaker, guild_id: t.Union[str, int, discord.Guild]) -> t.Optional[dict]:
         guild_id = get_datatype_int(guild_id)
 
         async with session() as session:
