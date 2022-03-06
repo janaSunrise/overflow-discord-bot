@@ -5,18 +5,30 @@ import typing as t
 import discord
 from discord import Color, Embed
 from discord.ext import menus
-from discord.ext.commands import (BotMissingPermissions, BotMissingRole,
-                                  BucketType, Cog, CommandOnCooldown, Context,
-                                  DisabledCommand, ExpectedClosingQuoteError,
-                                  InvalidEndOfQuotedStringError,
-                                  MaxConcurrencyReached, MissingPermissions,
-                                  MissingRole, NoPrivateMessage, NotOwner,
-                                  NSFWChannelRequired, PrivateMessageOnly,
-                                  UnexpectedQuoteError, errors)
+from discord.ext.commands import (
+    BotMissingPermissions,
+    BotMissingRole,
+    BucketType,
+    Cog,
+    CommandOnCooldown,
+    Context,
+    DisabledCommand,
+    ExpectedClosingQuoteError,
+    InvalidEndOfQuotedStringError,
+    MaxConcurrencyReached,
+    MissingPermissions,
+    MissingRole,
+    NSFWChannelRequired,
+    NoPrivateMessage,
+    NotOwner,
+    PrivateMessageOnly,
+    UnexpectedQuoteError,
+    errors
+)
 from loguru import logger
 
 from bot import Bot
-from bot.utils.errors import IncorrectChannelError, NoChannelProvided
+from bot.utils.errors import IncorrectChannelError, InvalidRepeatMode, NoChannelProvided
 from bot.utils.utils import format_time
 
 
@@ -77,7 +89,7 @@ class ErrorHandler(Cog):
         )
 
     @classmethod
-    def _get_missing_permission(cls, error) -> str:
+    def _get_missing_permission(cls, error: any) -> str:
         """Missing permissions utility handler."""
         missing_perms = [
             perm.replace("_", " ").replace("guild", "server").title()
@@ -94,8 +106,6 @@ class ErrorHandler(Cog):
     @Cog.listener()
     async def on_command_error(self, ctx: Context, error: errors.CommandError) -> None:
         """Common error handler for the bot, so It doesnt interrupt and runs perfectly."""
-        logger.warning(type(error))
-
         if hasattr(ctx.command, "on_error"):
             return
 
@@ -108,6 +118,13 @@ class ErrorHandler(Cog):
         elif isinstance(error, NoChannelProvided):
             await self.error_embed(
                 ctx, "You must be in a voice channel or provide one to connect to."
+            )
+            return
+
+        elif isinstance(error, InvalidRepeatMode):
+            await self.error_embed(
+                ctx,
+                "The repeat mode specified is wrong. Check the help for the command to know the repeat modes.",
             )
             return
 
@@ -184,8 +201,7 @@ class ErrorHandler(Cog):
             return
 
         elif (
-            isinstance(error.original, discord.HTTPException)
-            and error.original.code == 50034
+            isinstance(error.original, discord.HTTPException) and error.original.code == 50034
         ):
             await self.error_embed(
                 ctx,
@@ -289,7 +305,6 @@ class ErrorHandler(Cog):
                     f"the message({ctx.message.content}) invoked by {ctx.author.id} in {ctx.guild.name}[{ctx.guild.id}]"
                 )
             raise error_cause
-            return
 
         await self.error_embed(
             ctx,

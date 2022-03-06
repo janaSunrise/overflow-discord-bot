@@ -14,17 +14,15 @@ def moderation_embed(
     action: str,
     user: t.Union[discord.Member, MemberConverter, discord.User, UserConverter],
     reason: t.Union[str, ModerationReason],
-    color: discord.Color = discord.Color.blue(),
+    color: discord.Color = discord.Color.blue(),  # noqa: B008
 ) -> discord.Embed:
     """Return a quick embed for moderation event."""
-    description = dedent(
-        f"""
+    description = dedent(f"""
     User: {user.mention} [`{user.id}`]
     Reason: {reason}
 
     Moderator: {ctx.author} [`{ctx.author.id}`]
-    """
-    )
+    """)
 
     embed = discord.Embed(
         title=f"User {action}ed",
@@ -35,9 +33,7 @@ def moderation_embed(
     return embed
 
 
-async def reddit_embed(
-    subreddit: str, randompost: RedditAPI.submission
-) -> discord.Embed:
+async def reddit_embed(subreddit: str, randompost: RedditAPI.submission) -> discord.Embed:
     """Make a reddit post an embed."""
     embed = discord.Embed(colour=discord.Color.green(), url=randompost.url)
 
@@ -54,25 +50,25 @@ async def reddit_embed(
     if not randompost.url.startswith("https://v.redd.it/") or randompost.url.startswith(
         "https://youtube.com/"
     ):
-        IMGUR_LINKS = (
+        imgur_links = (
             "https://imgur.com/",
             "https://i.imgur.com/",
             "http://i.imgur.com/",
             "http://imgur.com",
             "https://m.imgur.com",
         )
-        ACCEPTED_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif")
+        accepted_extensions = (".png", ".jpg", ".jpeg", ".gif")
 
         url = randompost.url
 
-        if url.startswith(IMGUR_LINKS):
+        if url.startswith(imgur_links):
             if url.endswith(".mp4"):
                 url = url[:-3] + "gif"
 
             elif url.endswith(".gifv"):
                 url = url[:-1]
 
-            elif url.endswith(ACCEPTED_EXTENSIONS):
+            elif url.endswith(accepted_extensions):
                 url = url
 
             else:
@@ -83,7 +79,7 @@ async def reddit_embed(
 
             url = f"https://thumbs.gfycat.com/{url_cut}-size_restricted.gif"
 
-        elif url.endswith(ACCEPTED_EXTENSIONS):
+        elif url.endswith(accepted_extensions):
             url = url
 
         embed.set_image(url=url)

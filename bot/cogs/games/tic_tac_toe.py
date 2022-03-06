@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands, menus
 
 
-class TTT_Game(menus.Menu):
+class TTTGame(menus.Menu):
     """Tic-tac-Toe menu."""
 
     emojis = [
@@ -128,10 +128,10 @@ class TTT_Game(menus.Menu):
         # columns
         for column_id in range(3):
             all_checks.append([self.status[row_id][column_id]
-                               for row_id in range(3)])
+                              for row_id in range(3)])
         # diagonals
         all_checks.append([self.status[place_id][place_id]
-                           for place_id in range(3)])
+                          for place_id in range(3)])
         all_checks.append(
             [self.status[2 - place_id][place_id] for place_id in range(3)]
         )

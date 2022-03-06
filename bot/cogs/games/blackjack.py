@@ -1,37 +1,41 @@
 import random
 import traceback
-from datetime import datetime
+import typing as t
 from itertools import cycle
 
 import discord
+from discord import RawReactionActionEvent, TextChannel
 from discord.ext import menus
+from discord.ext.commands import Context
 from loguru import logger
 
 from bot.utils.utils import confirmation
 
 
 class BCard:
-    def __init__(self, value, colour) -> None:
+    def __init__(self, value: int, colour: int) -> None:
         self._value = value
         self.is_ace = value == 1
         self.colour = colour
 
     @property
     def name(self) -> str:
+        # spades, clubs, hearts, diamonds
         if self.is_ace:
-            N = "Ace of "
+            card_name = "Ace of "
         elif self._value > 10:
-            N = ["Jack", "Queen", "King"][self._value - 11] + " of "
+            card_name = ["Jack", "Queen", "King"][self._value - 11] + " of "
         else:
-            N = f"{self._value} of "
-        N += [
+            card_name = f"{self._value} of "
+
+        card_name += [
             "\U00002660\N{variation selector-16}",
             "\U00002663\N{variation selector-16}",
             "\U00002665\N{variation selector-16}",
             "\U00002666\N{variation selector-16}",
         ][self.colour]
-        return N
-        # spades, clubs, hearts, diamonds
+
+        return card_name
 
     @property
     def value(self) -> int:
@@ -42,7 +46,7 @@ class BCard:
     def tuple(self) -> tuple:
         return self._value, self.colour
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: "BCard") -> bool:
         return self._value == other._value
 
     def min(self) -> int:
@@ -59,23 +63,27 @@ class BRow(list):
         return sum([card.min() for card in self])
 
     def value(self) -> int:
-        V = self.value_min()
+        val = self.value_min()
         c = 0
+
         for card in self:
             if card.is_ace:
                 c += 1
+
         while c:
-            if V <= 11:
-                V += 10
+            if val <= 11:
+                val += 10
                 c -= 1
             else:
                 break
-        return V
+
+        return val
 
 
 class Deck:
-    def __init__(self, money, cost, player_id) -> None:
+    def __init__(self, money: int, cost: int, player_id: int) -> None:
         self.cards = [BRow()]
+
         self._money = money
         self.balance = -cost
         self.cost = cost
@@ -85,7 +93,7 @@ class Deck:
     def money(self) -> int:
         return self._money + self.balance
 
-    def __contains__(self, card) -> int:
+    def __contains__(self, card: BCard) -> int:
         return any(card in column for column in self.cards) and len(self.cards) < 3
 
     def __iter__(self) -> list:
@@ -94,9 +102,8 @@ class Deck:
     def isvalid(self) -> bool:
         return any(column.isvalid() for column in self.cards) and self.money > 0
 
-    async def add(self, card, ctx, ini=False) -> None:
+    async def add(self, card: BCard, ctx: Context, ini: bool = False) -> None:
         if card in self and self.cost < self.money and not ini:
-
             answer = confirmation(
                 ctx,
                 f"You have a {card.name}. Do you want to split?",
@@ -106,31 +113,26 @@ class Deck:
             if answer:
                 return self.split(card)
 
-        L = [i for i in range(len(self.cards)) if self.cards[i].isvalid()]
-        if len(L) == 1:
-            id = L[0]
+        valid_cards = [i for i in range(len(self.cards)) if self.cards[i].isvalid()]
+        if len(valid_cards) == 1:
+            id = valid_cards[0]
         else:
-            m1 = await ctx.send(
-                f"You have {len(L)} rows available. In which one do you want to play ?"
-            )
+            m1 = await ctx.send(f"You have {len(valid_cards)} rows available. In which one do you want to play?")
 
-            def check(message) -> bool:
-                if (
-                    message.author == ctx.author
-                    and message.channel == ctx.channel
-                    and message.content.isdigit()
-                ):
+            def check(message: discord.Message) -> bool:
+                if (message.author == ctx.author and message.channel == ctx.channel and message.content.isdigit()):
                     try:
                         return self.cards[int(message.content) - 1].isvalid()
                     except Exception:
                         pass
+
                 return False
 
             try:
                 message = await ctx.bot.wait_for("message", check=check, timeout=30)
                 id = int(message.content) - 1
             except Exception:
-                id = L[0]
+                id = valid_cards[0]
                 await ctx.send(f"Defaulting to row {id + 1}", delete_after=4)
 
             try:
@@ -141,14 +143,15 @@ class Deck:
 
         self.cards[id].append(card)
 
-    def split(self, card) -> None:
+    def split(self, card: BCard) -> None:
         self.balance -= self.cost
         self.cards.append(BRow([card]))
 
 
 class Blackjack(menus.Menu):
-    def __init__(self, players, money_dict, cost, **kwargs) -> None:
+    def __init__(self, players: list, money_dict: dict, cost: int, **kwargs) -> None:
         super().__init__(**kwargs)
+
         self.ids = cycle([player.id for player in players])
         self.index = cycle([i for i in range(len(players))])
         self.next = next(self.ids)
@@ -158,7 +161,7 @@ class Blackjack(menus.Menu):
         self.money_dict = money_dict
         self.cost = cost
 
-    def reaction_check(self, payload) -> bool:
+    def reaction_check(self, payload: discord.RawReactionActionEvent) -> bool:
         if payload.message_id != self.message.id:
             return False
 
@@ -173,13 +176,16 @@ class Blackjack(menus.Menu):
         self.cards = [
             BCard(i + 1, j) for i in range(13) for j in range(4) for _ in range(6)
         ]
-        self.players = [Deck(self.money_dict[i], self.cost, i)
-                        for i in self.money_dict]
+        self.players = [
+            Deck(self.money_dict[i], self.cost, i) for i in self.money_dict
+        ]
         self.dealer = BRow()
         self.dealer.append(self.card)
+
         for i in range(len(self.players)):
             for _ in range(2):
                 await self.players[i].add(self.card, None, True)
+
         self.next_card = self.card
 
     def generate_embed(self) -> discord.Embed:
@@ -201,12 +207,12 @@ class Blackjack(menus.Menu):
             )
         return embed
 
-    async def send_initial_message(self, ctx, channel) -> discord.Message:
+    async def send_initial_message(self, ctx: Context, channel: Context) -> discord.Message:
         return await ctx.send(
             self.player_dict[self.next].mention, embed=self.generate_embed()
         )
 
-    async def update_embed(self, new_turn=False) -> None:
+    async def update_embed(self, new_turn: bool = False) -> None:
         if new_turn:
             self.next = next(self.ids)
             self.next_index = next(self.index)
@@ -228,83 +234,85 @@ class Blackjack(menus.Menu):
 
         if not self.dealer.isvalid():
             n = "Busted"
-            V = 0
+            val = 0
         elif len(self.dealer) == 2 and self.dealer.value() == 21:
             n = "Blackjack"
-            V = 22
+            val = 22
         else:
-            V = self.dealer.value()
-            n = f"{V} points"
+            val = self.dealer.value()
+            n = f"{val} points"
 
         n += f" : {', '.join([card.name for card in self.dealer])}"
         embed.add_field(name="Dealer", value=n, inline=False)
 
         for player in self.players:
             n = []
-            if (
-                player.cards[0].value() == 21
-                and len(player.cards) == 1
-                and len(player.cards[0]) == 2
-            ):
-                n.append(
-                    f"Blackjack : {', '.join([card.name for card in player.cards[0]])}"
-                )
-                if V == 22:
+            if (player.cards[0].value() == 21 and len(player.cards) == 1 and len(player.cards[0]) == 2):
+                n.append(f"Blackjack : {', '.join([card.name for card in player.cards[0]])}")
+                if val == 22:
                     player.balance += self.cost
                 else:
                     player.balance += round(2.5 * self.cost)
             else:
                 for row in player.cards:
                     if row.isvalid():
-                        n.append(
-                            f"{row.value()} points : {', '.join([card.name for card in row])}"
-                        )
-                        if row.value() == V:
+                        n.append(f"{row.value()} points : {', '.join([card.name for card in row])}")
+
+                        if row.value() == val:
                             player.balance += self.cost
-                        elif row.value() > V:
+                        elif row.value() > val:
                             player.balance += 2 * self.cost
                     else:
-                        n.append(
-                            f"Busted : {', '.join([card.name for card in row])}")
+                        n.append(f"Busted : {', '.join([card.name for card in row])}")
+
             embed.add_field(
                 name=f"{self.player_dict[player.player_id]} : {player.money} GP",
                 value="\n".join(n),
                 inline=False,
             )
+
         await self.message.edit(content=None, embed=embed)
         self.stop()
 
     @menus.button("\U00002795")
-    async def action(self, payload) -> None:
+    async def action(self, payload: RawReactionActionEvent) -> None:
         await self.players[self.next_index].add(self.next_card, self.ctx)
         await self.update_embed(not self.players[self.next_index].isvalid())
 
     @menus.button("\U0000274c")
-    async def next_turn(self, payload) -> None:
+    async def next_turn(self, payload: RawReactionActionEvent) -> None:
         await self.update_embed(True)
 
-    async def prompt(self, ctx) -> dict:
+    async def prompt(self, ctx: Context) -> dict:
         await self.new_game()
         await self.start(ctx, wait=True)
-        return {P.player_id: P.balance for P in self.players}
+
+        return {player.player_id: player.balance for player in self.players}
 
 
-class Blackjack_players(menus.Menu):
-    def __init__(self, author, author_money, cost, **kwargs) -> None:
+class BlackjackPlayers(menus.Menu):
+    def __init__(self, author: t.Any, author_money: int, cost: int, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.players = [author]
+
+        self.players: t.List[t.Any] = [author]
         self.money_dict = {author.id: author_money}
         self.cost = cost
         self.current_state = 0
 
-    def reaction_check(self, payload) -> bool:
+        # Time
+        self.time = 120
+
+        # `self.ctx` type
+        self.ctx: Context
+
+    def reaction_check(self, payload: discord.RawReactionActionEvent) -> bool:
         return (
-            payload.message_id == self.message.id
-            and payload.user_id != self.bot.user.id
+            payload.message_id == self.message.id and payload.user_id != self.bot.user.id
         )
 
-    async def update(self, payload) -> None:
+    async def update(self, payload: discord.RawReactionActionEvent) -> None:
         button = self.buttons[payload.emoji]
+
         if not self._running:
             return
 
@@ -318,7 +326,8 @@ class Blackjack_players(menus.Menu):
         except Exception as error:
             embed = discord.Embed(color=0xFF0000)
             embed.set_author(
-                name=str(self.ctx.author), icon_url=str(self.ctx.author.avatar_url)
+                name=str(self.ctx.author),
+                icon_url=str(self.ctx.author.avatar_url)
             )
             message = f"{self.ctx.author.id} caused an error in blackjack. | {type(error).__name__} : {error}"
 
@@ -330,39 +339,41 @@ class Blackjack_players(menus.Menu):
             elif isinstance(self.ctx.channel, discord.DMChannel):
                 message += f"\nin a Private Channel ({self.ctx.channel.id})"
             else:
-                message += (
-                    f"\nin the Group {self.ctx.channel.name} ({self.ctx.channel.id})"
-                )
+                message += f"\nin the Group {self.ctx.channel.name} ({self.ctx.channel.id})"
 
+            # Log traceback
             tb = "".join(traceback.format_tb(error.__traceback__))
             message += f"```\n{tb}```"
 
             logger.error(message)
 
-    async def send_initial_message(self, ctx, channel) -> discord.Message:
+    async def send_initial_message(self, ctx: Context, channel: TextChannel) -> discord.Message:
         self.time = 120
         return await ctx.send(embed=self.get_embed())
 
     async def updater(self) -> None:
         self.time -= 5
         await self.message.edit(embed=self.get_embed())
+
         if self.time == 0:
             self.stop()
 
     def get_embed(self) -> discord.Embed:
-        r = "\n -"
-        ini = (
+        separator = "\n -"
+        initial_game_message = (
             "Check the command's help for the rules. React with :white_check_mark: to join, :track_next: to begin "
-            "the game\n\n"
+            "the game.\n\n"
         )
+
         return discord.Embed(
-            title=f"Come play blackjack ! Initial bet is {self.cost}. ({self.time} seconds left)",
-            description=f"{ini}Current players :\n -{r.join([player.mention for player in self.players])}",
+            title=f"Come play blackjack! Initial bet is {self.cost}. ({self.time} seconds left)",
+            description=f"{initial_game_message}Current players:\n -{separator.join([player.mention for player in self.players])}",
         )
 
     @menus.button("\U00002705")
-    async def adder(self, payload) -> None:
+    async def adder(self, payload: discord.RawReactionActionEvent) -> None:
         member = self.ctx.guild.get_member(payload.user_id)
+
         if member in self.players:
             self.players.remove(member)
             del self.money_dict[payload.user_id]
@@ -371,12 +382,13 @@ class Blackjack_players(menus.Menu):
             self.players.append(member)
 
     @menus.button("\U000023ed\N{variation selector-16}")
-    async def skipper(self, payload) -> None:
+    async def skipper(self, payload: discord.RawReactionActionEvent) -> None:
         self.time = 5
         self.current_state = -1
+
         await self.updater()
 
-    async def prompt(self, ctx) -> tuple:
+    async def prompt(self, ctx: Context) -> tuple:
         await self.start(ctx, wait=True)
         return self.players, self.money_dict
 

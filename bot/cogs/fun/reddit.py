@@ -45,8 +45,7 @@ class Reddit(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 
@@ -62,8 +61,7 @@ class Reddit(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 
@@ -80,8 +78,7 @@ class Reddit(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 
@@ -96,8 +93,7 @@ class Reddit(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 
@@ -113,8 +109,7 @@ class Reddit(Cog):
         embed = await reddit_embed(subreddit, randompost)
         await ctx.send(embed=embed)
         if (
-            "https://v.redd.it/" in randompost.url
-            or "https://youtube.com/" in randompost.url
+            "https://v.redd.it/" in randompost.url or "https://youtube.com/" in randompost.url
         ):
             await ctx.send(randompost.url)
 

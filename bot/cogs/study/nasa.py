@@ -3,8 +3,7 @@ import random
 import re
 
 from discord import Color, Embed
-from discord.ext.commands import (Bot, BucketType, Cog, Context, command,
-                                  cooldown)
+from discord.ext.commands import Bot, BucketType, Cog, Context, command, cooldown
 
 NASA_API = os.getenv("NASA_API")
 
@@ -16,10 +15,11 @@ def remove_tags(text: str) -> str:
 
 
 class Nasa(Cog):
-    """And she's buying a stairway to heaven..."""
+    """And she's buying a stairway to heaven."""
 
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
+
         if NASA_API is None:
             self.cog_unload()
 
@@ -130,10 +130,9 @@ class Nasa(Cog):
                     description=json[i].get("caption"),
                     colour=Color.blurple(),
                 )
+
                 embed.set_image(
-                    url="https://epic.gsfc.nasa.gov/epic-archive/jpg/"
-                    + json[i]["image"]
-                    + ".jpg"
+                    url=f"https://epic.gsfc.nasa.gov/epic-archive/jpg/{json[i]['image']}.jpg"
                 )
 
                 await ctx.send(embed=embed)
@@ -154,9 +153,7 @@ class Nasa(Cog):
             return
 
         async with self.bot.session.get(
-            "https://api.nasa.gov/mars-photos/api/v1/rovers/"
-            + rover.lower()
-            + "/photos",
+            "https://api.nasa.gov/mars-photos/api/v1/rovers/" + rover.lower() + "/photos",
             params={"earth_date": date, "api_key": NASA_API},
         ) as response:
             images = await response.json()
@@ -169,8 +166,7 @@ class Nasa(Cog):
             for i in range(min(number, len(images["photos"]))):
                 embed = Embed(
                     title="Picture from " + rover.capitalize(),
-                    description="Picture taken from the "
-                    + images["photos"][i]["camera"]["full_name"],
+                    description=f"Picture taken from the {images['photos'][i]['camera']['full_name']}",
                     colour=Color.blurple(),
                 )
                 embed.set_image(url=images["photos"][i]["img_src"])

@@ -18,13 +18,16 @@ intents = discord.Intents.all()
 intents.presences = False
 
 bot = Bot(
-    version="0.1.3",
+    version="0.2.0",
     command_prefix=command_prefix,
     intents=intents,
     activity=discord.Game(name=f"{PREFIX}help | Busy coding with developers!"),
     case_insensitive=True,
     owner_ids=config.devs,
     heartbeat_timeout=150.0,
+    member_cache_flags=discord.MemberCacheFlags(
+        online=False, joined=True, voice=True
+    ),
 )
 
 if __name__ == "__main__":

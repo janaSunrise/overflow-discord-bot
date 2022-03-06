@@ -64,7 +64,7 @@ class Search(Cog):
 
             return to_parse["data"]["result"]["items"]
 
-    async def _basic_search(self, ctx, query: str, category: str) -> None:
+    async def _basic_search(self, ctx: Context, query: str, category: str) -> None:
         """Basic search formatting."""
         is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, "is_nsfw") else False
 
@@ -320,16 +320,14 @@ class Search(Cog):
         except CommandInvokeError:
             await ctx.send("You didn't provide a city")
 
-        WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+        weather_api_key = os.getenv("WEATHER_API_KEY")
 
-        if WEATHER_API_KEY is None:
+        if weather_api_key is None:
             await ctx.send("Fetch Error!")
             return
 
-        weather_lookup_url = (
-            f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}"
-            f"&appid={WEATHER_API_KEY}"
-        )
+        weather_lookup_url = f"https://api.openweathermap.org/data/2.5/weather?q={url_formatted_city}" \
+                             f"&appid={weather_api_key}"
 
         async with self.bot.session.get(weather_lookup_url) as resp:
             data = await resp.json()

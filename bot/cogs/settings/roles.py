@@ -1,8 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, RoleConverter, group,
-                                  has_permissions)
+from discord.ext.commands import Cog, Context, RoleConverter, group, has_permissions
 
 from bot import Bot
 from bot.databases.autorole import AutoRoles
@@ -42,7 +41,7 @@ class Roles(Cog):
                         f"""
                         ❯ **Moderator roles:**
                         {mod_role}
-                        
+
                         ❯ Mute role: {mute_role.mention}
                         ❯ Default role: {default_role.mention}
                         """
@@ -66,7 +65,7 @@ class Roles(Cog):
     async def mute(self, ctx: Context, role: RoleConverter = None) -> None:
         """Configure the muted role for the server."""
         if not role:
-            await ctx.send(":x: Specify a role to configured as the mute role.")
+            await ctx.send(":x: Specify a role to configure as the mute role.")
 
         await RolesDB.set_role(self.bot.database, "mute_role", ctx.guild, role.id)
         await ctx.send("Successfully configured the mute role.")
@@ -75,7 +74,7 @@ class Roles(Cog):
     async def moderator(self, ctx: Context, role: RoleConverter = None) -> None:
         """Configure the muted role for the server."""
         if not role:
-            await ctx.send(":x: Specify a role to configured as the moderator role.")
+            await ctx.send(":x: Specify a role to configure as the moderator role.")
 
         await RolesDB.set_role(self.bot.database, "mod_role", ctx.guild, [role.id])
         await ctx.send("Successfully configured the moderator role.")

@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
     image: postgres:12-alpine
     restart: on-failure
     ports:
-      - 5432:5432
+      - "5432:5432"
     networks:
       - common-shared-network
     environment:
@@ -20,7 +20,7 @@ services:
       - ./lavalink.yml:/opt/Lavalink/application.yml
       - ./lavalink_logs:/opt/Lavalink/logs
     ports:
-      - 2333:2333
+      - "2333:2333"
     networks:
       - common-shared-network
 

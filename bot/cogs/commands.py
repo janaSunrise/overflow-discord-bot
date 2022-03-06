@@ -8,8 +8,16 @@ from datetime import datetime
 
 import discord
 from dateutil.relativedelta import relativedelta
-from discord.ext.commands import (BadArgument, BucketType, Cog, Context,
-                                  command, cooldown, group, has_permissions)
+from discord.ext.commands import (
+    BadArgument,
+    BucketType,
+    Cog,
+    Context,
+    command,
+    cooldown,
+    group,
+    has_permissions,
+)
 
 from bot import Bot, config
 from bot.core.converters import TimeConverter
@@ -38,7 +46,7 @@ class Commands(Cog):
             ctx_id = self.bot.get_id(ctx)
 
             await Prefix.set_prefix(self.bot.database, ctx_id, prefix=prefix)
-            self.bot.prefix_dict[ctx_id] = prefix
+            self.bot.prefix_dict[ctx_id] = [prefix, self.bot.default_prefix]
 
             await ctx.send(
                 f"Prefix changed to **`{discord.utils.escape_markdown(prefix)}`**"
@@ -88,9 +96,9 @@ class Commands(Cog):
         desc = textwrap.dedent(
             f"""
             :ping_pong: Pong!
-            Bot ping: **{duration}ms**
+            Bot Ping: **{round(self.bot.latency * 1000)}ms**
+            Message ping: **{duration}ms**
             Discord Server Ping: **{discord_ms}**
-            Speed Ping: **{round(self.bot.latency * 1000)}ms**
             """
         )
 
@@ -188,7 +196,7 @@ class Commands(Cog):
         A maximum of 20 options can be provided, as Discord supports a max of 20
         reactions on a single message.
 
-        Syntax: vote "Option 1" "Option 2" ... "Option n"
+        Syntax: [p]vote "Option 1" "Option 2" ... "Option n"
         """
         codepoint_start = 127462
 

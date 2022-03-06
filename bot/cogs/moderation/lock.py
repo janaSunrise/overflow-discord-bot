@@ -1,7 +1,14 @@
 import discord
-from discord.ext.commands import (Cog, Context, Greedy, NoPrivateMessage,
-                                  RoleConverter, TextChannelConverter, command,
-                                  has_permissions)
+from discord.ext.commands import (
+    Cog,
+    Context,
+    Greedy,
+    NoPrivateMessage,
+    RoleConverter,
+    TextChannelConverter,
+    command,
+    has_permissions,
+)
 
 from bot import Bot
 from bot.databases.roles import Roles as RolesDB
@@ -11,7 +18,7 @@ class Lock(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    def cog_check(self, ctx: Context):
+    def cog_check(self, ctx: Context) -> bool:
         if ctx.guild:
             return True
 

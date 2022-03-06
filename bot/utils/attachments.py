@@ -2,10 +2,11 @@ import json
 import typing as t
 from contextlib import suppress
 
+import aiohttp
 import discord
 
 
-async def file_uploader(attachments: list) -> t.Optional[str]:
+async def file_uploader(session: aiohttp.ClientSession, attachments: list) -> t.Optional[str]:
     file_list_json = []
 
     for attachment in attachments:
@@ -32,7 +33,7 @@ async def file_uploader(attachments: list) -> t.Optional[str]:
     }
 
     with suppress(discord.NotFound, ConnectionError):
-        response = await self.bot.session.post(
+        response = await session.post(
             "https://api.paste.gg/v1/pastes",
             headers={"Content-Type": "application/json"},
             data=json.dumps(payload),

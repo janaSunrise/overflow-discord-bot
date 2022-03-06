@@ -164,8 +164,9 @@ class Eval(Cog):
 
             if not options["--stats"]:
                 try:
-                    start, end = result.rindex("Real time: "), result.rindex(
-                        "%\nExit code: "
+                    start, end = (
+                        result.rindex("Real time: "),
+                        result.rindex("%\nExit code: "),
                     )
                     result = result[:start] + result[end + 2:]
                 except ValueError:
@@ -173,10 +174,7 @@ class Eval(Cog):
 
             format_output = FormatOutput(language=lang)
 
-            if (
-                len(result) > format_output.max_output_length
-                or result.count("\n") > format_output.max_lines
-            ):
+            if len(result) > format_output.max_output_length or result.count("\n") > format_output.max_lines:
                 output = await eval_helper.paste(result)
 
                 embed = format_output.format_hastebin_output(output, result)

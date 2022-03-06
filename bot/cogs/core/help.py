@@ -105,9 +105,7 @@ class HelpPages(EmbedPages):
         embeds.append(initial_embed)
 
         for page, page_fields in enumerate(fields[1:]):
-            embed = Embed(
-                title=f"{initial_embed.title} [{page + 2}]", color=Color.blue()
-            )
+            embed = Embed(title=f"{initial_embed.title} [{page + 2}]", color=Color.blue())
             for fld in page_fields:
                 embed.add_field(name=fld.name, value=fld.value, inline=False)
             embeds.append(embed)
@@ -124,9 +122,7 @@ class HelpPages(EmbedPages):
         Automatically split the given group command messages into multiple embeds.
         Return an instance of this class with these embeds set as entries for the menu
         """
-        split_messages = cls._split_messages(
-            cmd_messages, len(initial_embed.description)
-        )
+        split_messages = cls._split_messages(cmd_messages, len(initial_embed.description))
         embeds = cls._make_group_embeds(split_messages, initial_embed)
         return cls(embeds)
 
@@ -134,8 +130,7 @@ class HelpPages(EmbedPages):
     def split_cog_commands(
         cls, fields: t.List[field], initial_embed: Embed
     ) -> "HelpPages":
-        split_fields = cls._split_fields(
-            fields, len(initial_embed.description))
+        split_fields = cls._split_fields(fields, len(initial_embed.description))
         embeds = cls._make_cog_embeds(split_fields, initial_embed)
         return cls(embeds)
 
@@ -149,13 +144,11 @@ class HelpCommand(BaseHelpCommand):
                 "help": "Shows help for given command / all commands"}
         )
 
-    def command_not_found(self, string):
+    def command_not_found(self, string: str) -> str:
         ctx = self.context
         output = f"No command called `{string}` found."
 
-        close_matches = difflib.get_close_matches(
-            string, ctx.bot.all_commands.keys(), n=1
-        )
+        close_matches = difflib.get_close_matches(string, ctx.bot.all_commands.keys(), n=1)
         if close_matches:
             output += f"\nDid you mean `{close_matches[0]}`?"
 
@@ -169,7 +162,7 @@ class HelpCommand(BaseHelpCommand):
         1. `command_name`: the exact syntax (without prefix) used to call the command
         2. `command_syntax`: contains the command name with prefix and the values command takes
         3. `command_help`: the help docstring from given command
-        4. `aliases`: all aliases the command has, separated by comma
+        4. `aliases`: all aliases the command has, separated by comma.
         """
         if not await command.can_run(self.context):
             raise CheckFailure(
@@ -177,12 +170,10 @@ class HelpCommand(BaseHelpCommand):
             )
 
         parent = command.full_parent_name
-        command_prefix = await self.context.bot.get_msg_prefix(
-            self.context.message, not_print=False
-        )
+        command_prefix = await self.context.bot.get_msg_prefix(self.context.message, not_print=False)
+        print(command_prefix)
 
-        command_name = str(
-            command) if not parent else f"{parent} {command.name}"
+        command_name = str(command) if not parent else f"{parent} {command.name}"
         command_syntax = f"{command_prefix}{command_name} {command.signature}"
         command_help = f"{command.help or 'No description provided.'}"
 

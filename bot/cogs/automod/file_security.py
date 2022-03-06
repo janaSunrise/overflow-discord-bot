@@ -14,7 +14,7 @@ FILE_EMBED_DESCRIPTION = """
 
     • Try shortening your message, if it exceeds 2000 character limit
     to fit within the character limit or use a pasting service (see below)
-    
+
     • To protect other users, we keep a watch on the binaries, and the executable files sent and more, in order
     to save them from malicious / harmful files.
 

@@ -1,5 +1,4 @@
 from bot import Bot
-
 from .lock import Lock
 from .moderation import Moderation
 

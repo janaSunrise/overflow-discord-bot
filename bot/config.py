@@ -1,45 +1,44 @@
 import os
 import re
 
-# ---- About bot section ----
+# Bot info section
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "=")
 
+# Branding for bot
 branding = "Overflow bot"
 creator = "Sunrit Jana"
+
 devs = [711194921683648523, 372063179557175297]
 
-# ---- Config settings section ----
-# -- Database config --
+# Database config
 DATABASE = {
     "user": os.getenv("DB_USERNAME"),
     "password": os.getenv("DB_PASSWORD"),
     "hostname": os.getenv("DB_HOST"),
     "database": os.getenv("DB_NAME"),
 }
+
 # Syntax: "postgresql+asyncpg://<user>:<password>@<hostname>/<dbname>"
 DATABASE_CONN = (
     f"postgresql+asyncpg://{DATABASE['user']}:{DATABASE['password']}@{DATABASE['hostname']}"
     f"/{DATABASE['database']}"
 )
 
-# -- Logger configuration --
+# Logger configuration
 log_file = "logs/bot.log"
 log_level = "INFO"
 log_format = (
     "<green>{time:YYYY-MM-DD hh:mm:ss}</green> | <level>{level: <8}</level> | "
     "<cyan>{name: <18}</cyan> | <level>{message}</level>"
 )
-log_file_size = "400 MB"
+log_file_size = "300 MB"
 
 # -- Music --
 nodes = {
     "MAIN": {
         "host": os.getenv("LAVALINK_HOST"),
         "port": os.getenv("LAVALINK_PORT"),
-        "rest_uri": "http://"
-        + os.getenv("LAVALINK_HOST")
-        + ":"
-        + os.getenv("LAVALINK_PORT"),
+        "rest_uri": f"http://{os.getenv('LAVALINK_HOST')}:{os.getenv('LAVALINK_PORT')}",
         "password": os.getenv("LAVALINK_PASSWORD"),
         "identifier": "MAIN",
         "region": "us_central",
@@ -52,13 +51,37 @@ nodes = {
         "identifier": "NODE_1",
         "region": "us_central",
     },
+    "HELIA_MAIN": {
+        "host": "heroku-lavalink-heliaservice.herokuapp.com",
+        "port": 80,
+        "rest_uri": "https://heroku-lavalink-heliaservice.herokuapp.com",
+        "password": "youshallnotpass",
+        "identifier": "MAIN",
+        "region": "us_central",
+    },
+    "HELIA_BACKUP": {
+        "host": "backup-lavalink-servics.herokuapp.com",
+        "port": 80,
+        "rest_uri": "https://backup-lavalink-servics.herokuapp.com",
+        "password": "youshallnotpass",
+        "identifier": "EULAVA",
+        "region": "europe",
+    },
+    "LAVA_LINK": {
+        "host": "lava.link",
+        "port": 80,
+        "rest_uri": "https://lava.link",
+        "password": "youshallnotpass",
+        "identifier": "BACKUP",
+        "region": "us_central",
+    },
 }
 
-# -- Spotify --
+# Spotify for music
 spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
 spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-# -- 8ball response --
+# 8ball responses
 BALL_REPLIES = {
     "positive": [
         "Yep.",
@@ -113,7 +136,7 @@ BALL_REPLIES = {
     ],
 }
 
-# -- Search --
+# Searching
 basic_search_categories = [
     "web",
     "videos",
@@ -124,18 +147,18 @@ basic_search_categories = [
     "maps",
 ]
 
-# -- Study --
+# Responses for HTTP
 RESPONSES = {
     200: True,
     301: "Switching to a different endpoint",
     400: "Bad Request",
     401: "Not Authenticated",
     404: "The resource you tried to access wasn't found on the server.",
-    403: "The resource you’re trying to access is forbidden — you don’t have the right permissions to see it.",
+    403: "The resource you're trying to access is forbidden. You don't have the right permissions to see it.",
 }
 
 
-# ---- Cogs resource section ----
+# Icons mapping
 WEATHER_ICONS = {
     "wind": "https://cdn.discordapp.com/attachments/728569086174298112/735550169222873118/windy.png",
     "rain": "https://cdn.discordapp.com/attachments/728569086174298112/735550164458274947/raining.png",
@@ -145,7 +168,7 @@ WEATHER_ICONS = {
     "snow": "https://cdn.discordapp.com/attachments/728569086174298112/735550166563684474/snowy.png",
 }
 
-# -- Swear filter --
+# Swear filter
 with open("bot/assets/filter_words.txt", "r") as f:
     filter_words = f.readlines()
 
@@ -153,12 +176,12 @@ REGEXP = ""
 for filter_word in filter_words:
     filter_word = filter_word.replace("\n", "")
     REGEXP += f"{filter_word}|"
+
 REGEXP = REGEXP[:-1]
 
 filter_words = re.compile(REGEXP, re.I)
 
-# -- Reddit config --
-# -- Subreddit config --
+# Subreddits
 subreddits_list = {
     "memes": (
         "ComedyCemetery",
@@ -283,4 +306,223 @@ subreddits_list = {
         "EverythingScience",
         "spaceporn",
     ),
+}
+
+nsfw_subreddits_list = {
+    "fourk": ["HighResNSFW", "UHDnsfw", "nsfw_hd", "NSFW_Wallpapers", "closeup"],
+    "ahegao": [
+        "AhegaoGirls",
+        "RealAhegao",
+        "EyeRollOrgasm",
+        "MouthWideOpen",
+        "O_Faces",
+    ],
+    "ass": [
+        "ass",
+        "pawg",
+        "AssholeBehindThong",
+        "girlsinyogapants",
+        "girlsinleggings",
+        "bigasses",
+        "asshole",
+        "AssOnTheGlass",
+        "TheUnderbun",
+        "asstastic",
+        "booty",
+        "AssReveal",
+        "beautifulbutt",
+        "Mooning",
+        "BestBooties",
+        "brunetteass",
+        "assinthong",
+        "paag",
+        "asstastic",
+        "GodBooty",
+        "Underbun",
+        "datass",
+        "ILikeLittleButts",
+        "datgap",
+    ],
+    "anal": [
+        "MasterOfAnal",
+        "analgonewild",
+        "anal",
+        "buttsex",
+        "buttsthatgrip",
+        "AnalGW",
+        "analinsertions",
+        "AnalGW",
+        "assholegonewild",
+    ],
+    "bdsm": ["BDSMGW", "bdsm", "ropeart", "shibari"],
+    "blowjob": [
+        "blowjobsandwich",
+        "Blowjobs",
+        "BlowjobGifs",
+        "BlowjobEyeContact",
+        "blowbang",
+        "AsianBlowjobs",
+        "SuckingItDry",
+        "OralCreampie",
+        "SwordSwallowers",
+    ],
+    "boobs": [
+        "boobs",
+        "TheHangingBoobs",
+        "bigboobs",
+        "BigBoobsGW",
+        "hugeboobs",
+        "pokies",
+        "ghostnipples",
+        "PiercedNSFW",
+        "piercedtits",
+        "PerfectTits",
+        "BestTits",
+        "Boobies",
+        "JustOneBoob",
+        "tits",
+        "naturaltitties",
+        "smallboobs",
+        "Nipples",
+        "homegrowntits",
+        "TheUnderboob",
+        "BiggerThanYouThought",
+        "fortyfivefiftyfive",
+        "Stacked",
+        "BigBoobsGonewild",
+        "AreolasGW",
+        "TittyDrop",
+        "Titties",
+        "Boobies",
+        "boobbounce",
+        "TinyTits",
+        "cleavage",
+        "BoobsBetweenArms",
+        "BustyNaturals",
+        "burstingout",
+    ],
+    "cunnilingus": ["cunnilingus", "CunnilingusSelfie", "Hegoesdown"],
+    "bottomless": ["upskirt", "Bottomless", "nopanties", "Pantiesdown"],
+    "cumshots": [
+        "OralCreampie",
+        "cumfetish",
+        "cumontongue",
+        "cumshots",
+        "CumshotSelfies",
+        "facialcumshots",
+        "pulsatingcumshots",
+        "gwcumsluts",
+        "ImpresssedByCum",
+        "GirlsFinishingTheJob",
+        "amateurcumsluts",
+        "unexpectedcum",
+        "bodyshots",
+        "ContainTheLoad",
+        "bodyshots",
+    ],
+    "dick": [
+        "DickPics4Freedom",
+        "mangonewild",
+        "MassiveCock",
+        "penis",
+        "cock",
+        "ThickDick",
+    ],
+    "doublepenetration": ["doublepenetration", "dp_porn", "Technical_DP"],
+    "deepthroat": ["DeepThroatTears", "deepthroat", "SwordSwallowers"],
+    "gay": ["gayporn", "ladybonersgw", "mangonewild"],
+    "group": ["GroupOfNudeGirls", "GroupOfNudeMILFs", "groupsex"],
+    "hentai": [
+        "hentai",
+        "thick_hentai",
+        "HQHentai",
+        "AnimeBooty",
+        "thighdeology",
+        "ecchigifs",
+        "nsfwanimegifs",
+        "oppai_gif",
+    ],
+    "lesbian": ["lesbians", "HDLesbianGifs", "amateurlesbians", "Lesbian_gifs"],
+    "milf": [
+        "amateur_milfs",
+        "GroupOfNudeMILFs",
+        "ChocolateMilf",
+        "milf",
+        "Milfie",
+        "hairymilfs",
+        "HotAsianMilfs",
+        "HotMILFs",
+        "MILFs",
+        "maturemilf",
+        "puremilf",
+        "amateur_milfs",
+    ],
+    "public": [
+        "RealPublicNudity",
+        "FlashingAndFlaunting",
+        "FlashingGirls",
+        "PublicFlashing",
+        "Unashamed",
+        "NudeInPublic",
+        "publicplug",
+        "casualnudity",
+    ],
+    "rule34": [
+        "rule34",
+        "rule34cartoons",
+        "Rule_34",
+        "Rule34LoL",
+        "AvatarPorn",
+        "Overwatch_Porn",
+        "Rule34Overwatch",
+        "WesternHentai",
+    ],
+    "thigh": ["Thighs", "ThickThighs", "thighhighs", "Thigh", "leggingsgonewild"],
+    "trap": [
+        "Transex",
+        "DeliciousTraps",
+        "traps",
+        "trapgifs",
+        "GoneWildTrans",
+        "SexyShemales",
+        "Shemales",
+        "shemale_gifs",
+        "Shemales",
+        "ShemalesParadise",
+        "Shemale_Big_Cock",
+        "ShemaleGalleries",
+    ],
+    "wild": [
+        "gonewild",
+        "GWNerdy",
+        "dirtysmall",
+        "MyCalvins",
+        "AsiansGoneWild",
+        "GoneWildSmiles",
+        "gonewildcurvy",
+        "BigBoobsGonewild",
+        "gonewildcouples",
+        "gonewildcolor",
+        "PetiteGoneWild",
+        "GWCouples",
+        "BigBoobsGW",
+        "altgonewild",
+        "LabiaGW",
+        "UnderwearGW",
+        "JustTheTop",
+        "TallGoneWild",
+        "LingerieGW",
+        "Swingersgw",
+        "workgonewild",
+    ],
+    "redhead": [
+        "redheadxxx",
+        "redheads",
+        "ginger",
+        "FireBush",
+        "FreckledRedheads",
+        "redhead",
+        "thesluttyginger",
+        "RedheadGifs",
+    ],
 }

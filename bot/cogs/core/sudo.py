@@ -1,3 +1,5 @@
+import collections
+import enum
 import io
 import os
 import platform
@@ -10,17 +12,24 @@ from datetime import datetime
 
 import humanize
 import psutil
-from discord import (Activity, ActivityType, Color, DiscordException, Embed,
-                     Game, Status)
+from discord import Activity, ActivityType, Color, DiscordException, Embed, Game, Status
 from discord import __version__ as discord_version
 from discord.ext.commands import Cog, Context, group, is_owner
-from jishaku.cog import OPTIONAL_FEATURES, STANDARD_FEATURES
+from jishaku.cog import STANDARD_FEATURES
+from tabulate import tabulate
 
 from bot import Bot, config
 from bot.databases.command_stats import CommandStats
 
 
-class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
+class CounterKeys(enum.Enum):
+    MESSAGES_RECIEVED = 0x100
+
+    def __repr__(self) -> str:
+        return self.name
+
+
+class Sudo(*STANDARD_FEATURES, Cog):
     def __init__(self, bot: Bot) -> None:
         super().__init__(bot=bot)
         self.bot = bot
@@ -259,12 +268,12 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
             f"""
             • System: **`{uname.system}`**
             • Node Name: **`{uname.node}`**
-            
+
             • Release: **`{uname.release}`**
             • Version: **`{uname.version}`**
-            
+
             • Machine: **`{uname.machine}`**
-            • Processor: **`{uname.processor}`**            
+            • Processor: **`{uname.processor}`**
             """
         )
         embed.add_field(
@@ -295,16 +304,56 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         await ctx.send(
             embed=Embed(
                 title="Cluster info",
-                description=textwrap.dedent(
-                    f"""
-                Clusters IDs: `{self.bot.shard_ids}`
-
-                """
-                    + shard_info
-                ),
+                description=textwrap.dedent(f"Clusters IDs: `{self.bot.shard_ids}`" + shard_info),
                 color=Color.blue(),
             )
         )
+
+    @sudo.command(aliases=["shard-stats"])
+    async def shard_stats(self, ctx: Context) -> None:
+        """Provides statistics for each shard of the bot."""
+        output = []
+        latencies = dict(ctx.bot.latencies)
+
+        columns = (
+            "Shard",
+            "Guilds",
+            "Total Members",
+            "Loaded Members",
+            "Music",
+            "Messages",
+            "Latency",
+        )
+        shard_stats = {
+            shard_id: self.get_shard_stats(ctx, shard_id)
+            for shard_id in latencies.keys()
+        }
+
+        for shard_id, stats in sorted(shard_stats.items()):
+            stats["Latency"] = round(latencies.get(shard_id) * 1000) or "N/A"
+            output.append([shard_id] + [stats[key] for key in columns[1:]])
+
+        table = tabulate(output, headers=columns)
+        await ctx.send(f"```{table}```")
+
+    @staticmethod
+    def get_shard_stats(ctx: Context, shard_id: int) -> collections.Counter:
+        counters = collections.Counter()
+        counters["Shard"] = shard_id
+
+        for guild in ctx.bot.guilds:
+            if guild.shard_id != shard_id:
+                continue
+            guild_counts = ctx.bot.guild_counters[guild.id]
+            counters["Guilds"] += 1
+            counters["Total Members"] += guild.member_count
+            counters["Loaded Members"] += len(guild.members)
+            counters["Messages"] += guild_counts[CounterKeys.MESSAGES_RECIEVED]
+
+            if any(guild.me.id in vc.voice_states for vc in guild.voice_channels):
+                counters["Music"] += 1
+
+        return counters
 
     @staticmethod
     def cleanup_code(content: str) -> str:
@@ -315,7 +364,7 @@ class Sudo(*STANDARD_FEATURES, *OPTIONAL_FEATURES, Cog):
         return content.strip("` \n")
 
     @sudo.command(name="eval")
-    async def _eval(self, ctx: Context, *, code: str):
+    async def _eval(self, ctx: Context, *, code: str) -> None:
         """Eval some code"""
         env = {
             "bot": self.bot,

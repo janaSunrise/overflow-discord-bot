@@ -1,8 +1,7 @@
 import textwrap
 
 import discord
-from discord.ext.commands import (Cog, Context, group, guild_only,
-                                  has_permissions)
+from discord.ext.commands import Cog, Context, group, guild_only, has_permissions
 
 from bot import Bot, config
 from bot.databases.swear_filter import SwearFilter as SwearFilterDB
@@ -26,6 +25,7 @@ class SwearFilter(Cog):
         row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
 
         if not row:
+            await SwearFilterDB.set_words(self.bot.database, ctx.guild.id, [])
             row = {
                 "manual_on": False,
                 "autoswear": False,
@@ -49,23 +49,11 @@ class SwearFilter(Cog):
         )
 
     @swear_filter.command()
-    async def mode(self, ctx: Context, mode: str) -> None:
-        """
-        Configure the mode for the swear filter, if to enable or disable it.
+    async def mode(self, ctx: Context) -> None:
+        """Configure the mode for the swear filter, if to enable or disable it."""
+        row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
 
-        Modes available:
-        - `yes` / `enable` to enable it.
-        - `no` / `disable` to disable it.
-        """
-        mode = mode.lower()
-
-        if mode not in ("yes", "no", "enable", "disable"):
-            await ctx.send(
-                "Invalid mode! Possible modes are `yes`, `no`, `enable`, `disable`. Check the help for further notice."
-            )
-            return
-
-        if mode in ("yes", "enable"):
+        if not row["manual_on"]:
             await SwearFilterDB.set_filter_mode(self.bot.database, ctx.guild.id, True)
             await ctx.send("Swear filter enabled!")
         else:
@@ -73,23 +61,11 @@ class SwearFilter(Cog):
             await ctx.send("Swear filter disabled.")
 
     @swear_filter.command()
-    async def auto(self, ctx: Context, mode: str) -> None:
-        """
-        Automatic mode to catch filters, without adding words explicitly.
+    async def auto(self, ctx: Context) -> None:
+        """Automatic mode to catch filters, without adding words explicitly."""
+        row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
 
-        Modes available:
-        - `yes` / `enable` to enable it.
-        - `no` / `disable` to disable it.
-        """
-        mode = mode.lower()
-
-        if mode not in ("yes", "no", "enable", "disable"):
-            await ctx.send(
-                "Invalid mode! Possible modes are `yes`, `no`, `enable`, `disable`. Check the help for further notice."
-            )
-            return
-
-        if mode in ("yes", "enable"):
+        if not row["autoswear"]:
             await SwearFilterDB.set_auto_mode(self.bot.database, ctx.guild.id, True)
             await ctx.send("Automatic swear filter enabled!")
         else:
@@ -97,27 +73,15 @@ class SwearFilter(Cog):
             await ctx.send("Automatic swear filter disabled.")
 
     @swear_filter.command()
-    async def notification(self, ctx: Context, mode: str) -> None:
-        """
-        Command to notify owner if any user swears, if subscribed.
-
-        Modes available:
-        - `yes` / `enable` to enable it.
-        - `no` / `disable` to disable it.
-        """
-        mode = mode.lower()
-
-        if mode not in ("yes", "no", "enable", "disable"):
-            await ctx.send(
-                "Invalid mode! Possible modes are `yes`, `no`, `enable`, `disable`. Check the help for further notice."
-            )
-            return
+    async def notification(self, ctx: Context) -> None:
+        """Command to notify owner if any user swears, if subscribed."""
+        row = await SwearFilterDB.get_config(self.bot.database, ctx.guild.id)
 
         if ctx.author.id != ctx.guild.owner.id:
             await ctx.send("This command is available to guild owners only.")
             return
 
-        if mode in ("yes", "enable"):
+        if not row["notification"]:
             await SwearFilterDB.set_notification(self.bot.database, ctx.guild.id, True)
             await ctx.send("Automatic swear notification enabled!")
         else:

@@ -5,8 +5,7 @@ from textwrap import dedent
 
 import discord
 import humanize
-from discord.ext.commands import (Cog, Context, MemberConverter, UserConverter,
-                                  command)
+from discord.ext.commands import Cog, Context, MemberConverter, UserConverter, command
 
 from bot import Bot
 
@@ -15,10 +14,10 @@ class Lookup(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.STATUSES = {
-            discord.Status.online: "Online",
-            discord.Status.idle: "Idle",
-            discord.Status.dnd: "DND",
-            discord.Status.offline: "Offline",
+            discord.Status.online: "🟢",
+            discord.Status.idle: "🟡",
+            discord.Status.dnd: "🔴",
+            discord.Status.offline: "⚫",
         }
         self.features = {
             "VIP_REGIONS": "Has VIP voice regions",
@@ -58,7 +57,7 @@ class Lookup(Cog):
             Mention: {user.mention}
 
             Date Created: {created_time}
-            Created time delta: {humanize.precisedelta(datetime.utcnow() - user.created_at, suppress=["seconds", "minutes"], 
+            Created time delta: {humanize.precisedelta(datetime.utcnow() - user.created_at, suppress=["seconds", "minutes"],
                                             format="%0.0f")} ago
 
             Is a bot: {str(user.bot).replace("True", "Yes").replace("False", "No")}
@@ -164,7 +163,7 @@ class Lookup(Cog):
                 Created on: {datetime.strftime(guild.created_at, "%A %d %B %Y at %H:%M")}
                 Created At: {humanize.precisedelta(datetime.utcnow() - guild.created_at, suppress=
                 ["seconds", "minutes"], format="%0.0f")} ago
-                
+
                 Verification level: **{guild.verification_level}**
 
                 Owner: <@!{guild.owner.id}>
@@ -199,7 +198,7 @@ class Lookup(Cog):
                 Voice channels: `{len(guild.voice_channels)}`
 
                 Voice region: {region}
-                AFK timeout: `{round(guild.afk_timeout / 60)}`m | AFK channel: {None if guild.afk_channel is None else 
+                AFK timeout: `{round(guild.afk_timeout / 60)}`m | AFK channel: {None if guild.afk_channel is None else
                 guild.afk_channel}
                 """
             ),
@@ -301,7 +300,7 @@ class Lookup(Cog):
         await ctx.send(embed=embed)
 
     @command()
-    async def banner(self, ctx: Context):
+    async def banner(self, ctx: Context) -> None:
         """
         Displays a servers banner.
         `guild`: The server of which to get the banner for. Can be it's ID or Name. Defaults to the current server.
@@ -331,7 +330,7 @@ class Lookup(Cog):
         return
 
     @command()
-    async def splash(self, ctx: Context):
+    async def splash(self, ctx: Context) -> None:
         """
         Displays a servers splash.
         `guild`: The server of which to get the splash for. Can be it's ID or Name. Defaults to the current server.

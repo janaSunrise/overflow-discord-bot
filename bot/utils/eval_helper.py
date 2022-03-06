@@ -69,8 +69,7 @@ class Tio:
                     _to_tio_string,  # func
                     zip(strings.keys(), strings.values()),  # iterables
                 )
-            )
-            + b"R"
+            ) + b"R"
         )
 
         self.request = zlib.compress(bytes_, 9)[2:-4]
@@ -286,8 +285,7 @@ class FormatOutput:
 
         elif len(result) > self.max_output_length:
             program_output = (
-                result[: self.max_output_length] +
-                "\n... (truncated - too long)"
+                result[: self.max_output_length] + "\n... (truncated - too long)"
             )
 
         embed = self.embed_helper(
